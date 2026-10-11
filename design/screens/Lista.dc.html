@@ -1,0 +1,209 @@
+<!doctype html>
+<html lang="pt-PT">
+<head>
+<meta charset="utf-8">
+<title>Lista — Casa</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; position: relative; overflow: hidden; background: {{c.bg}}; color: {{c.text}}; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', sans-serif">
+
+  <div style="position: absolute; inset: 0; padding: 54px 16px 120px; box-sizing: border-box; display: flex; flex-direction: column; gap: 14px">
+
+    <div style="height: 44px; display: flex; align-items: center; justify-content: space-between; margin: 0 -8px">
+      <a href="Main.dc.html" style="height: 44px; display: flex; align-items: center; gap: 2px; padding-right: 8px; color: {{c.link}}; text-decoration: none; font-size: 17px">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 5-7 7 7 7"></path></svg>
+        Início
+      </a>
+      <button type="button" aria-label="Opções da lista: editar, arquivar, despesas recorrentes" style="width: 44px; height: 44px; border: 0; background: transparent; display: flex; align-items: center; justify-content: center; cursor: pointer; padding: 0">
+        <span style="width: 34px; height: 34px; border-radius: 17px; background: {{c.card}}; display: flex; align-items: center; justify-content: center; color: {{c.link}}">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="5" cy="12" r="2"></circle><circle cx="12" cy="12" r="2"></circle><circle cx="19" cy="12" r="2"></circle></svg>
+        </span>
+      </button>
+    </div>
+
+    <div style="display: flex; align-items: center; gap: 12px">
+      <span style="width: 48px; height: 48px; border-radius: 14px; background: {{c.accentSoft}}; display: flex; align-items: center; justify-content: center; font-size: 26px">{{d.icon}}</span>
+      <div style="display: flex; flex-direction: column; gap: 1px; min-width: 0">
+        <h1 style="margin: 0; font-size: 30px; line-height: 36px; font-weight: 700; letter-spacing: 0.2px">{{d.name}}</h1>
+        <span style="font-size: 13px; color: {{c.text2}}">{{d.sub}}</span>
+      </div>
+    </div>
+
+    <sc-if value="{{d.archived}}" hint-placeholder-val="{{ false }}">
+      <div role="status" style="display: flex; align-items: center; gap: 10px; padding: 8px 8px 8px 14px; border-radius: 16px; background: {{c.fill}}">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="{{c.text2}}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 4h18v4H3zM5 8v11a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8M10 12h4"></path></svg>
+        <span style="flex: 1; font-size: 15px">Esta lista está arquivada.</span>
+        <button type="button" style="height: 36px; padding: 0 14px; border: 0; border-radius: 10px; background: {{c.card}}; color: {{c.link}}; font: inherit; font-size: 15px; font-weight: 600; cursor: pointer">Desarquivar</button>
+      </div>
+    </sc-if>
+
+    <section aria-label="Saldo da lista" style="border-radius: 20px; background: {{c.card}}; box-shadow: {{c.shadow}}; padding: 16px; display: flex; flex-direction: column; gap: 12px">
+      <div style="display: flex; align-items: center; gap: 12px">
+        <div style="flex: 1; display: flex; flex-direction: column; gap: 2px">
+          <span style="font-size: 15px; color: {{c.text2}}">{{d.balLabel}}</span>
+          <span style="display: flex; align-items: center; gap: 6px; font-size: 30px; line-height: 36px; font-weight: 700; color: {{d.balColor}}; font-variant-numeric: tabular-nums">
+            <sc-if value="{{d.owed}}" hint-placeholder-val="{{ true }}">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 7 7 17M7 8v9h9"></path></svg>
+            </sc-if>
+            <sc-if value="{{d.settled}}" hint-placeholder-val="{{ false }}">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 5 5 9-10"></path></svg>
+            </sc-if>
+            {{d.balAmount}}
+          </span>
+        </div>
+        <sc-if value="{{d.canSettle}}" hint-placeholder-val="{{ true }}">
+          <a href="Acerto.dc.html" style="height: 44px; padding: 0 16px; border-radius: 14px; background: {{c.accent}}; color: #FFFFFF; font-size: 15px; font-weight: 600; display: flex; align-items: center; text-decoration: none">Acertar contas</a>
+        </sc-if>
+      </div>
+      <div style="border-top: 0.5px solid {{c.sep}}; padding-top: 10px; display: flex; align-items: center; gap: 8px; font-size: 13px; color: {{c.text2}}">
+        <span style="display: flex; height: 6px; width: 48px; border-radius: 3px; overflow: hidden"><span style="width: {{d.splitA}}; background: #2563EB"></span><span style="flex: 1; background: #C0367A"></span></span>
+        <span>{{d.splitText}}</span>
+      </div>
+    </section>
+
+    <div style="display: flex; gap: 8px">
+      <label style="flex: 1; height: 40px; border-radius: 12px; background: {{c.fill}}; display: flex; align-items: center; gap: 8px; padding: 0 12px; color: {{c.text2}}">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg>
+        <input type="search" placeholder="Pesquisar" aria-label="Pesquisar despesas" style="flex: 1; min-width: 0; border: 0; outline: none; background: transparent; font: inherit; font-size: 16px; color: {{c.text}}">
+      </label>
+      <button type="button" aria-label="Filtrar por categoria, quem pagou e datas" style="width: 44px; height: 40px; border: 0; border-radius: 12px; background: {{c.fill}}; color: {{c.link}}; display: flex; align-items: center; justify-content: center; cursor: pointer; padding: 0">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"></path><circle cx="16" cy="7" r="2"></circle><circle cx="10" cy="17" r="2"></circle></svg>
+      </button>
+    </div>
+
+    <sc-if value="{{d.empty}}" hint-placeholder-val="{{ false }}">
+      <div style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; text-align: center; padding: 0 24px 40px">
+        <svg width="132" height="116" viewBox="0 0 132 116" aria-hidden="true">
+          <circle cx="66" cy="36" r="22" fill="{{c.coin}}" stroke="{{c.accent}}" stroke-width="2.5"></circle>
+          <text x="66" y="44" text-anchor="middle" font-size="22" font-weight="700" fill="{{c.accent}}" font-family="-apple-system, sans-serif">€</text>
+          <path d="M18 54h96v12c0 26.5-21.5 44-48 44S18 92.5 18 66z" fill="{{c.pouch}}" stroke="{{c.accent}}" stroke-width="2.5" stroke-linejoin="round"></path>
+          <path d="M28 64h76" stroke="{{c.accent}}" stroke-width="2" stroke-dasharray="5 5" stroke-linecap="round" opacity="0.6"></path>
+        </svg>
+        <p style="margin: 0; font-size: 17px; font-weight: 600">Ainda não há despesas nesta lista.</p>
+        <a href="Despesa.dc.html" style="height: 48px; padding: 0 20px; border-radius: 14px; background: {{c.accent}}; color: #FFFFFF; font-size: 17px; font-weight: 600; display: flex; align-items: center; gap: 8px; text-decoration: none">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>
+          Adiciona a primeira despesa
+        </a>
+      </div>
+    </sc-if>
+
+    <sc-for list="{{d.months}}" as="m" hint-placeholder-count="2">
+      <section style="display: flex; flex-direction: column; gap: 8px">
+        <div style="display: flex; justify-content: space-between; padding: 4px 4px 0; font-size: 13px; font-weight: 600; color: {{c.text2}}; text-transform: uppercase; letter-spacing: 0.4px">
+          <span>{{m.label}}</span><span style="text-transform: none; letter-spacing: 0">{{m.total}}</span>
+        </div>
+        <div style="border-radius: 20px; background: {{c.card}}; box-shadow: {{c.shadow}}; overflow: hidden">
+          <sc-for list="{{m.rows}}" as="r" hint-placeholder-count="3">
+            <div style="border-top: {{r.border}}">
+              <sc-if value="{{r.isExpense}}" hint-placeholder-val="{{ true }}">
+                <a href="DespesaEditar.dc.html" style="text-decoration: none; color: inherit; min-height: 64px; padding: 10px 14px; display: flex; align-items: center; gap: 12px; box-sizing: border-box">
+                  <span style="width: 42px; height: 42px; border-radius: 12px; background: {{c.fill}}; display: flex; align-items: center; justify-content: center; font-size: 21px; flex: none">{{r.icon}}</span>
+                  <span style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px">
+                    <span style="display: flex; align-items: center; gap: 6px; font-size: 16px; font-weight: 600; white-space: nowrap">
+                      {{r.desc}}
+                      <sc-if value="{{r.recurring}}" hint-placeholder-val="{{ false }}">
+                        <span style="display: inline-flex; align-items: center; gap: 3px; font-size: 11px; font-weight: 600; color: {{c.link}}; background: {{c.accentSoft}}; padding: 2px 6px; border-radius: 999px">
+                          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 2l4 4-4 4M3 11V9a3 3 0 0 1 3-3h15M7 22l-4-4 4-4M21 13v2a3 3 0 0 1-3 3H3"></path></svg>
+                          Recorrente
+                        </span>
+                      </sc-if>
+                    </span>
+                    <span style="font-size: 13px; color: {{c.text2}}; white-space: nowrap">{{r.date}} · {{r.payer}}</span>
+                  </span>
+                  <span style="display: flex; flex-direction: column; align-items: flex-end; gap: 2px; flex: none">
+                    <span style="font-size: 16px; font-weight: 600; font-variant-numeric: tabular-nums">{{r.amount}}</span>
+                    <span style="font-size: 13px; font-weight: 500; color: {{r.posColor}}; font-variant-numeric: tabular-nums">{{r.position}}</span>
+                  </span>
+                </a>
+              </sc-if>
+              <sc-if value="{{r.isSettle}}" hint-placeholder-val="{{ false }}">
+                <div style="min-height: 56px; padding: 10px 14px; display: flex; align-items: center; gap: 12px; background: {{c.settleBg}}; box-sizing: border-box">
+                  <span style="width: 42px; height: 42px; border-radius: 21px; border: 1.5px dashed {{c.accent}}; color: {{c.link}}; display: flex; align-items: center; justify-content: center; box-sizing: border-box; flex: none">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 7h12l-4-4M17 17H5l4 4"></path></svg>
+                  </span>
+                  <span style="flex: 1; display: flex; flex-direction: column; gap: 2px">
+                    <span style="font-size: 16px; font-weight: 600; color: {{c.link}}">{{r.desc}}</span>
+                    <span style="font-size: 13px; color: {{c.text2}}">{{r.date}} · Acerto de contas</span>
+                  </span>
+                  <span style="font-size: 16px; font-weight: 600; color: {{c.link}}; font-variant-numeric: tabular-nums">{{r.amount}}</span>
+                </div>
+              </sc-if>
+            </div>
+          </sc-for>
+        </div>
+      </section>
+    </sc-for>
+  </div>
+
+  <div style="position: absolute; left: 0; bottom: 0; width: 390px; height: 100px">
+    <dc-import name="TabBar" active="inicio" dark="{{dark}}" disabled="{{d.archived}}" hint-size="390px,100px"></dc-import>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"dark":{"editor":"boolean","default":false},"variant":{"editor":"enum","options":["casa","vazia","arquivada"],"default":"casa"},"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const dark = !!this.props.dark;
+    const variant = this.props.variant ?? 'casa';
+    const c = dark ? {
+      bg: '#000000', card: '#1C1C1E', fill: '#2C2C2E', text: '#F5F5F7', text2: '#A1A1AA', sep: '#38383A',
+      link: '#A893FF', accent: '#7B5CFA', accentSoft: '#2A2342', pos: '#3DD6A3', neg: '#FF9A5C',
+      shadow: 'none', settleBg: '#211B36', coin: '#2A2342', pouch: '#1C1C1E'
+    } : {
+      bg: '#F2F2F7', card: '#FFFFFF', fill: '#F2F2F7', text: '#111114', text2: '#6B6B76', sep: '#E6E6EC',
+      link: '#5B3FD9', accent: '#6847F0', accentSoft: '#EFEAFE', pos: '#0B7A5C', neg: '#B93D0B',
+      shadow: '0 1px 2px rgba(17,17,20,0.04)', settleBg: '#F7F4FF', coin: '#FFFFFF', pouch: '#EFEAFE'
+    };
+    const exp = (icon, desc, date, mine, amount, position, extra) => Object.assign({
+      isExpense: true, isSettle: false, icon, desc, date,
+      payer: mine ? 'Pago por ti' : 'Pago pela Mara', amount,
+      position: (mine ? 'emprestaste ' : 'deves ') + position,
+      posColor: mine ? c.pos : c.neg, recurring: false
+    }, extra || {});
+    const settle = (desc, date, amount) => ({ isExpense: false, isSettle: true, desc, date, amount, recurring: false });
+    const sepd = (rows) => rows.map((r, i) => Object.assign(r, { border: i === 0 ? 'none' : '0.5px solid ' + c.sep }));
+    let d;
+    if (variant === 'vazia') {
+      d = { icon: '🎄', name: 'Natal 2026', sub: '20/12 – 26/12/2026', archived: false, empty: true,
+        balLabel: 'Estão quites', balAmount: '0,00 €', balColor: c.text2, owed: false, settled: true, canSettle: false,
+        splitA: '50%', splitText: 'Divisão predefinida: 50 / 50', months: [] };
+    } else if (variant === 'arquivada') {
+      d = { icon: '🏕️', name: 'Gerês', sub: '14/06 – 16/06/2026', archived: true, empty: false,
+        balLabel: 'Estão quites', balAmount: '0,00 €', balColor: c.text2, owed: false, settled: true, canSettle: false,
+        splitA: '50%', splitText: 'Divisão predefinida: 50 / 50',
+        months: [{ label: 'Junho 2026', total: '222,60 €', rows: sepd([
+          settle('A Mara pagou-te', '18 jun', '68,70 €'),
+          exp('🛒', 'Pingo Doce', '15 jun', false, '42,60 €', '21,30 €'),
+          exp('✈️', 'Casa no Gerês', '14 jun', true, '180,00 €', '90,00 €')
+        ]) }] };
+    } else {
+      d = { icon: '🏠', name: 'Casa', sub: 'Lista principal', archived: false, empty: false,
+        balLabel: 'A Mara deve-te', balAmount: '84,90 €', balColor: c.pos, owed: true, settled: false, canSettle: true,
+        splitA: '60%', splitText: 'Divisão predefinida: 60 / 40 (Miguel / Mara)',
+        months: [
+          { label: 'Outubro 2026', total: '1.411,55 €', rows: sepd([
+            exp('🛒', 'Continente', '10 out', true, '86,35 €', '34,54 €'),
+            exp('🍽️', 'Jantar no Ramiro', '08 out', false, '74,00 €', '44,40 €'),
+            settle('A Mara pagou-te', '06 out', '354,65 €'),
+            exp('💡', 'Eletricidade', '05 out', true, '61,20 €', '24,48 €'),
+            exp('🚗', 'Passe Navegante', '03 out', false, '40,00 €', '24,00 €'),
+            exp('🏠', 'Renda', '01 out', true, '1.150,00 €', '460,00 €', { recurring: true })
+          ]) },
+          { label: 'Setembro 2026', total: '18,45 €', rows: sepd([
+            exp('💊', 'Farmácia', '28 set', false, '18,45 €', '11,07 €')
+          ]) }
+        ] };
+    }
+    return { c, dark, d };
+  }
+}
+</script>
+</body>
+</html>

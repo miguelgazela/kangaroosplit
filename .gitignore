@@ -1,0 +1,11 @@
+node_modules
+dist
+.DS_Store
+
+# Local secrets and credentials
+*.local
+.env.local
+supabase/.secrets.local
+
+# Earlier push experiment, kept out of the repo (has its own keys)
+testPushNotificationsWebApp

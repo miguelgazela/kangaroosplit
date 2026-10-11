@@ -1,0 +1,273 @@
+<!doctype html>
+<html lang="pt-PT">
+<head>
+<meta charset="utf-8">
+<title>Nova despesa</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; position: relative; overflow: hidden; background: #000000; color: {{c.text}}; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', sans-serif">
+  <div aria-hidden="true" style="position: absolute; left: 18px; right: 18px; top: 44px; height: 40px; border-radius: 12px; background: {{c.ghost}}"></div>
+
+  <div role="dialog" aria-label="{{v.title}}" style="position: absolute; left: 0; right: 0; top: 56px; bottom: 0; border-radius: 14px 14px 0 0; background: {{c.bg}}; overflow: hidden; display: flex; flex-direction: column">
+    <div aria-hidden="true" style="width: 36px; height: 5px; border-radius: 3px; background: {{c.grabber}}; margin: 6px auto 0"></div>
+    <div style="height: 48px; display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; padding: 0 8px">
+      <button type="button" style="justify-self: start; height: 44px; padding: 0 8px; border: 0; background: transparent; color: {{c.link}}; font: inherit; font-size: 17px; cursor: pointer">Cancelar</button>
+      <h1 style="margin: 0; font-size: 17px; font-weight: 600">{{v.title}}</h1>
+      <button type="button" disabled="{{invalid}}" style="justify-self: end; height: 44px; padding: 0 8px; border: 0; background: transparent; color: {{saveColor}}; font: inherit; font-size: 17px; font-weight: 600; cursor: pointer">Guardar</button>
+    </div>
+
+    <div style="flex: 1; overflow: hidden; padding: 6px 16px 34px; display: flex; flex-direction: column; gap: 12px">
+
+      <div style="border-radius: 20px; background: {{c.card}}; overflow: hidden">
+        <div style="padding: 12px 16px 10px">
+          <label for="valor" style="font-size: 13px; color: {{c.text2}}">Valor</label>
+          <div style="display: flex; align-items: baseline; gap: 2px; font-size: 44px; line-height: 52px; font-weight: 700; letter-spacing: -0.8px; font-variant-numeric: tabular-nums">
+            <span id="valor">{{v.amountMain}}</span>
+            <sc-if value="{{keypad}}" hint-placeholder-val="{{ false }}"><span aria-hidden="true" style="width: 2px; height: 40px; background: {{c.accent}}; align-self: center; margin: 0 2px"></span></sc-if>
+            <span style="color: {{c.text2}}; font-weight: 500">{{v.amountRest}}</span>
+          </div>
+        </div>
+        <div style="border-top: 0.5px solid {{c.sep}}; padding: 0 16px; height: 50px; display: flex; align-items: center">
+          <input type="text" aria-label="Descrição" placeholder="Descrição" value="{{v.desc}}" style="flex: 1; border: 0; outline: none; background: transparent; font: inherit; font-size: 17px; color: {{c.text}}">
+        </div>
+      </div>
+
+      <sc-if value="{{keypad}}" hint-placeholder-val="{{ false }}">
+        <div style="display: flex; flex-direction: column; gap: 12px; flex: 1">
+          <div style="display: flex; flex-wrap: wrap; gap: 8px">
+            <button type="button" style="height: 36px; padding: 0 12px; border-radius: 999px; border: 0; background: {{c.card}}; color: {{c.text}}; font: inherit; font-size: 15px; cursor: pointer">🍽️ Restaurantes</button>
+            <button type="button" style="height: 36px; padding: 0 12px; border-radius: 999px; border: 0; background: {{c.card}}; color: {{c.text}}; font: inherit; font-size: 15px; cursor: pointer">🏠 Casa</button>
+            <button type="button" style="height: 36px; padding: 0 12px; border-radius: 999px; border: 0; background: {{c.card}}; color: {{c.text}}; font: inherit; font-size: 15px; cursor: pointer">Pago por ti</button>
+            <button type="button" style="height: 36px; padding: 0 12px; border-radius: 999px; border: 0; background: {{c.card}}; color: {{c.text}}; font: inherit; font-size: 15px; cursor: pointer">60 / 40</button>
+          </div>
+          <div style="flex: 1"></div>
+          <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px">
+            <sc-for list="{{keys}}" as="k" hint-placeholder-count="12">
+              <button type="button" aria-label="{{k.aria}}" style="height: 56px; border: 0; border-radius: 14px; background: {{c.card}}; color: {{c.text}}; font: inherit; font-size: 26px; font-weight: 500; display: flex; align-items: center; justify-content: center; cursor: pointer">{{k.label}}</button>
+            </sc-for>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{notKeypad}}" hint-placeholder-val="{{ true }}">
+        <div style="display: flex; flex-direction: column; gap: 12px">
+
+          <div style="border-radius: 20px; background: {{c.card}}; overflow: hidden">
+            <sc-for list="{{v.rows}}" as="r" hint-placeholder-count="3">
+              <button type="button" style="width: 100%; height: 48px; border: 0; border-top: {{r.border}}; background: transparent; color: {{c.text}}; font: inherit; display: flex; align-items: center; gap: 8px; padding: 0 12px 0 16px; cursor: pointer; text-align: left">
+                <span style="flex: 1; font-size: 17px">{{r.label}}</span>
+                <span style="font-size: 15px; padding: 5px 10px; border-radius: 999px; background: {{c.fill}}">{{r.value}}</span>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="{{c.text2}}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"></path></svg>
+              </button>
+            </sc-for>
+            <div style="border-top: 0.5px solid {{c.sep}}; height: 56px; display: flex; align-items: center; gap: 8px; padding: 0 8px 0 16px">
+              <span style="flex: 1; font-size: 17px">Pago por</span>
+              <div role="radiogroup" aria-label="Pago por" style="display: flex; padding: 3px; border-radius: 12px; background: {{c.fill}}">
+                <sc-for list="{{payers}}" as="p" hint-placeholder-count="2">
+                  <button type="button" role="radio" aria-checked="{{p.on}}" onClick="{{p.pick}}" style="height: 40px; padding: 0 12px 0 6px; border: 0; border-radius: 9px; background: {{p.bg}}; box-shadow: {{p.shadow}}; color: {{c.text}}; font: inherit; font-size: 15px; font-weight: {{p.fw}}; display: flex; align-items: center; gap: 6px; cursor: pointer">
+                    <span style="width: 28px; height: 28px; border-radius: 14px; background: {{p.color}}; color: #FFFFFF; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center">{{p.ini}}</span>
+                    {{p.name}}
+                  </button>
+                </sc-for>
+              </div>
+            </div>
+          </div>
+
+          <sc-if value="{{v.recurring}}" hint-placeholder-val="{{ false }}">
+            <div style="border-radius: 20px; background: {{c.card}}; overflow: hidden">
+              <div style="padding: 10px 16px; display: flex; flex-direction: column; gap: 8px">
+                <span style="font-size: 13px; color: {{c.text2}}">Frequência</span>
+                <div role="radiogroup" aria-label="Frequência" style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); padding: 3px; border-radius: 10px; background: {{c.fill}}">
+                  <button type="button" role="radio" aria-checked="false" style="height: 36px; border: 0; border-radius: 8px; background: transparent; color: {{c.text}}; font: inherit; font-size: 14px; cursor: pointer">Semanal</button>
+                  <button type="button" role="radio" aria-checked="true" style="height: 36px; border: 0; border-radius: 8px; background: {{c.segOn}}; box-shadow: {{c.segShadow}}; color: {{c.text}}; font: inherit; font-size: 14px; font-weight: 600; cursor: pointer">Mensal</button>
+                  <button type="button" role="radio" aria-checked="false" style="height: 36px; border: 0; border-radius: 8px; background: transparent; color: {{c.text}}; font: inherit; font-size: 14px; cursor: pointer">Anual</button>
+                </div>
+              </div>
+              <div style="border-top: 0.5px solid {{c.sep}}; height: 48px; display: flex; align-items: center; padding: 0 16px; gap: 8px">
+                <span style="flex: 1; font-size: 17px">Começa a</span>
+                <span style="font-size: 15px; padding: 5px 10px; border-radius: 999px; background: {{c.fill}}">01/01/2026</span>
+              </div>
+              <div style="border-top: 0.5px solid {{c.sep}}; height: 48px; display: flex; align-items: center; padding: 0 16px; gap: 8px">
+                <span style="flex: 1; font-size: 17px">Termina a (opcional)</span>
+                <span style="font-size: 15px; color: {{c.text2}}">Sem data</span>
+              </div>
+            </div>
+          </sc-if>
+
+          <div style="border-radius: 20px; background: {{c.card}}; overflow: hidden">
+            <button type="button" aria-expanded="{{expanded}}" onClick="{{toggleSplit}}" style="width: 100%; height: 52px; border: 0; background: transparent; color: {{c.text}}; font: inherit; display: flex; align-items: center; gap: 8px; padding: 0 12px 0 16px; cursor: pointer; text-align: left">
+              <span style="flex: 1; font-size: 17px">Divisão</span>
+              <span style="font-size: 15px; color: {{summaryColor}}; font-variant-numeric: tabular-nums">{{summary}}</span>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="{{c.text2}}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="transform: {{chev}}"><path d="m9 6 6 6-6 6"></path></svg>
+            </button>
+            <sc-if value="{{expanded}}" hint-placeholder-val="{{ false }}">
+              <div style="padding: 0 16px 12px; display: flex; flex-direction: column; gap: 6px">
+                <div role="radiogroup" aria-label="Modo de divisão" style="display: flex; padding: 3px; border-radius: 10px; background: {{c.fill}}">
+                  <sc-for list="{{modes}}" as="m" hint-placeholder-count="4">
+                    <button type="button" role="radio" aria-checked="{{m.on}}" onClick="{{m.pick}}" style="flex: 1 1 auto; height: 34px; padding: 0 8px; border: 0; border-radius: 8px; background: {{m.bg}}; box-shadow: {{m.shadow}}; color: {{c.text}}; font: inherit; font-size: 13px; font-weight: {{m.fw}}; white-space: nowrap; cursor: pointer">{{m.label}}</button>
+                  </sc-for>
+                </div>
+                <sc-for list="{{people}}" as="p" hint-placeholder-count="2">
+                  <div style="height: 54px; display: flex; align-items: center; gap: 10px; border-bottom: 0.5px solid {{c.sep}}">
+                    <span style="width: 32px; height: 32px; border-radius: 16px; background: {{p.color}}; color: #FFFFFF; font-size: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center">{{p.ini}}</span>
+                    <span style="flex: 1; font-size: 17px">{{p.name}}</span>
+                    <sc-if value="{{p.hasInput}}" hint-placeholder-val="{{ false }}">
+                      <label style="height: 40px; min-width: 92px; box-sizing: border-box; border-radius: 10px; border: 1.5px solid {{p.inputBorder}}; background: {{c.fill}}; display: flex; align-items: center; gap: 2px; padding: 0 10px">
+                        <input type="text" inputmode="decimal" aria-label="{{p.aria}}" value="{{p.input}}" style="width: 52px; border: 0; outline: none; background: transparent; font: inherit; font-size: 17px; font-weight: 600; text-align: right; color: {{c.text}}; font-variant-numeric: tabular-nums">
+                        <span style="font-size: 17px; color: {{c.text2}}">{{p.suffix}}</span>
+                      </label>
+                    </sc-if>
+                    <sc-if value="{{p.hasStepper}}" hint-placeholder-val="{{ false }}">
+                      <div style="display: flex; align-items: center; border-radius: 10px; background: {{c.fill}}; height: 40px">
+                        <button type="button" aria-label="Menos uma parte para {{p.name}}" style="width: 44px; height: 40px; border: 0; background: transparent; color: {{c.link}}; font: inherit; font-size: 22px; cursor: pointer">−</button>
+                        <span style="min-width: 20px; text-align: center; font-size: 17px; font-weight: 600">{{p.input}}</span>
+                        <button type="button" aria-label="Mais uma parte para {{p.name}}" style="width: 44px; height: 40px; border: 0; background: transparent; color: {{c.link}}; font: inherit; font-size: 22px; cursor: pointer">+</button>
+                      </div>
+                    </sc-if>
+                    <span style="min-width: 74px; text-align: right; font-size: 15px; color: {{p.amountColor}}; font-weight: {{p.amountWeight}}; font-variant-numeric: tabular-nums">{{p.amount}}</span>
+                  </div>
+                </sc-for>
+                <div role="status" style="min-height: 30px; display: flex; align-items: center; gap: 6px; font-size: 13px; color: {{statusColor}}; padding-top: 4px">
+                  <sc-if value="{{invalid}}" hint-placeholder-val="{{ false }}">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7.5v5.5M12 16.5h.01"></path></svg>
+                  </sc-if>
+                  <sc-if value="{{valid}}" hint-placeholder-val="{{ true }}">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 5 5 9-10"></path></svg>
+                  </sc-if>
+                  <span>{{status}}</span>
+                </div>
+              </div>
+            </sc-if>
+          </div>
+
+          <sc-if value="{{v.showNote}}" hint-placeholder-val="{{ true }}">
+            <div style="border-radius: 20px; background: {{c.card}}; height: 52px; display: flex; align-items: center; padding: 0 16px">
+              <input type="text" aria-label="Nota (opcional)" placeholder="Nota (opcional)" style="flex: 1; border: 0; outline: none; background: transparent; font: inherit; font-size: 17px; color: {{c.text}}">
+            </div>
+          </sc-if>
+
+          <sc-if value="{{v.edit}}" hint-placeholder-val="{{ false }}">
+            <div style="display: flex; flex-direction: column; gap: 12px">
+              <div style="display: flex; flex-direction: column; gap: 2px; padding: 0 4px; font-size: 13px; color: {{c.text2}}">
+                <span>{{v.meta1}}</span>
+                <span>{{v.meta2}}</span>
+              </div>
+              <div style="display: flex; gap: 10px">
+                <sc-if value="{{v.recurring}}" hint-placeholder-val="{{ false }}">
+                  <button type="button" style="flex: 1; height: 50px; border: 0; border-radius: 16px; background: {{c.card}}; color: {{c.link}}; font: inherit; font-size: 17px; font-weight: 600; cursor: pointer">Pausar</button>
+                </sc-if>
+                <button type="button" style="flex: 1; height: 50px; border: 0; border-radius: 16px; background: {{c.card}}; color: {{c.danger}}; font: inherit; font-size: 17px; font-weight: 600; cursor: pointer">{{v.deleteLabel}}</button>
+              </div>
+            </div>
+          </sc-if>
+        </div>
+      </sc-if>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"dark":{"editor":"boolean","default":false},"mode":{"editor":"enum","options":["igual","percentagem","exato","partes"],"default":"percentagem"},"expanded":{"editor":"boolean","default":false},"error":{"editor":"boolean","default":false},"keypad":{"editor":"boolean","default":false},"variant":{"editor":"enum","options":["nova","editar","recorrente"],"default":"nova"},"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = {};
+  }
+  renderVals() {
+    const dark = !!this.props.dark;
+    const variant = this.props.variant ?? 'nova';
+    const keypad = !!this.props.keypad;
+    const error = !!this.props.error;
+    const mode = this.state.mode ?? (this.props.mode ?? 'percentagem');
+    const expanded = this.state.expanded ?? !!this.props.expanded;
+    const c = dark ? {
+      bg: '#000000', card: '#1C1C1E', fill: '#2C2C2E', text: '#F5F5F7', text2: '#A1A1AA', sep: '#38383A',
+      link: '#A893FF', accent: '#7B5CFA', ghost: '#1C1C1E', grabber: '#545458', segOn: '#636366', segShadow: 'none',
+      pos: '#3DD6A3', danger: '#FF6B5E', disabled: '#5A5A60'
+    } : {
+      bg: '#F2F2F7', card: '#FFFFFF', fill: '#EEEEF3', text: '#111114', text2: '#6B6B76', sep: '#E6E6EC',
+      link: '#5B3FD9', accent: '#6847F0', ghost: '#8E8E93', grabber: '#C7C7CC', segOn: '#FFFFFF', segShadow: '0 1px 3px rgba(0,0,0,0.12)',
+      pos: '#0B7A5C', danger: '#C42B1C', disabled: '#B4B4BC'
+    };
+    const fmt = (n) => {
+      const parts = n.toFixed(2).split('.');
+      return parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, '.') + ',' + parts[1] + ' €';
+    };
+    const V = {
+      nova: { title: 'Nova despesa', amount: 40, desc: 'Jantar na Tasca', cat: '🍽️ Restaurantes', date: 'Hoje', payer: 'mi', edit: false, recurring: false, showNote: true },
+      editar: { title: 'Editar despesa', amount: 40, desc: 'Passe Navegante', cat: '🚗 Transportes', date: '03/10/2026', payer: 'ma', edit: true, recurring: false, showNote: true,
+        meta1: 'Criada pela Mara a 03/10/2026', meta2: 'Editada por ti a 04/10/2026', deleteLabel: 'Apagar despesa' },
+      recorrente: { title: 'Despesa recorrente', amount: 1150, desc: 'Renda', cat: '🏠 Renda', date: null, payer: 'mi', edit: true, recurring: true, showNote: false,
+        meta1: 'Próxima: 01/11/2026', meta2: 'Criada por ti a 02/01/2026', deleteLabel: 'Apagar' }
+    }[variant];
+    const A = V.amount;
+    const payer = this.state.payer ?? V.payer;
+    const amtStr = fmt(A);
+    const v = Object.assign({}, V, {
+      amountMain: keypad ? '40' : amtStr.split(',')[0],
+      amountRest: keypad ? '€' : ',' + amtStr.split(',')[1],
+      desc: keypad ? '' : V.desc
+    });
+    const rowsRaw = [{ label: 'Categoria', value: V.cat }, { label: 'Lista', value: '🏠 Casa' }];
+    if (V.date) rowsRaw.push({ label: 'Data', value: V.date });
+    v.rows = rowsRaw.map((r, i) => Object.assign(r, { border: i === 0 ? 'none' : '0.5px solid ' + c.sep }));
+
+    let a, b, inA, inB, suffix = '', status, invalid = false, summary;
+    if (mode === 'igual') {
+      a = A / 2; b = A / 2; summary = 'Igual · ' + fmt(a) + ' / ' + fmt(b); status = 'Cada um paga metade.';
+    } else if (mode === 'percentagem') {
+      const pa = 60, pb = error ? 30 : 40;
+      a = A * pa / 100; b = A * pb / 100; inA = String(pa); inB = String(pb); suffix = '%';
+      invalid = error;
+      summary = invalid ? pa + ' / ' + pb + ' · não soma 100 %' : '60 / 40 · ' + fmt(a) + ' / ' + fmt(b);
+      status = invalid ? 'As percentagens têm de somar 100 %.' : 'Soma 100 %.';
+    } else if (mode === 'exato') {
+      a = error ? 25 : A * 0.6; b = error ? 10 : A * 0.4;
+      inA = fmt(a).replace(' €', ''); inB = fmt(b).replace(' €', ''); suffix = '€';
+      invalid = error;
+      summary = invalid ? 'Faltam ' + fmt(A - a - b) : fmt(a) + ' / ' + fmt(b);
+      status = invalid ? 'Faltam ' + fmt(A - a - b) + '. Os valores têm de somar o total da despesa.' : 'Soma ' + fmt(A) + '.';
+    } else {
+      a = A * 3 / 5; b = A * 2 / 5; inA = '3'; inB = '2';
+      summary = '3 / 2 partes · ' + fmt(a) + ' / ' + fmt(b); status = '5 partes de ' + fmt(A / 5) + '.';
+    }
+    const hasInput = mode === 'percentagem' || mode === 'exato';
+    const people = [
+      { ini: 'Mi', name: 'Miguel', color: '#2563EB', input: inA, aria: 'Parte do Miguel' },
+      { ini: 'Ma', name: 'Mara', color: '#C0367A', input: inB, aria: 'Parte da Mara' }
+    ].map((p, i) => Object.assign(p, {
+      hasInput, hasStepper: mode === 'partes', suffix,
+      amount: hasInput && mode === 'exato' ? '' : fmt(i === 0 ? a : b),
+      amountColor: c.text2, amountWeight: 500,
+      inputBorder: invalid && (mode === 'percentagem' ? i === 1 : true) ? c.danger : 'transparent'
+    }));
+    if (mode === 'exato') { people[0].amount = Math.round(a / A * 100) + ' %'; people[1].amount = Math.round(b / A * 100) + ' %'; }
+
+    const modes = [['igual', 'Igual'], ['percentagem', 'Percentagem'], ['exato', 'Valor exato'], ['partes', 'Partes']].map(([id, label]) => ({
+      label, on: id === mode ? 'true' : 'false', bg: id === mode ? c.segOn : 'transparent', shadow: id === mode ? c.segShadow : 'none',
+      fw: id === mode ? 600 : 500, pick: () => this.setState({ mode: id, expanded: true })
+    }));
+    const payers = [['mi', 'Mi', 'Miguel', '#2563EB'], ['ma', 'Ma', 'Mara', '#C0367A']].map(([id, ini, name, color]) => ({
+      ini, name, color, on: id === payer ? 'true' : 'false', bg: id === payer ? c.segOn : 'transparent',
+      shadow: id === payer ? c.segShadow : 'none', fw: id === payer ? 600 : 500, pick: () => this.setState({ payer: id })
+    }));
+    const keys = ['1', '2', '3', '4', '5', '6', '7', '8', '9', ',', '0', '⌫'].map((k) => ({ label: k, aria: k === '⌫' ? 'Apagar dígito' : (k === ',' ? 'Vírgula decimal' : k) }));
+    return {
+      c, v, keypad, notKeypad: !keypad, expanded, invalid, valid: !invalid, keys, modes, people, payers, summary, status,
+      summaryColor: invalid ? c.danger : c.text2,
+      statusColor: invalid ? c.danger : c.text2,
+      saveColor: invalid ? c.disabled : c.link,
+      chev: expanded ? 'rotate(90deg)' : 'none',
+      toggleSplit: () => this.setState({ expanded: !expanded })
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,161 @@
+/*
+ * KangarooSplit design tokens — taken from design/screens (the Claude design canvas).
+ * Tailwind v4: import this file after `@import 'tailwindcss';` in web/src/index.css.
+ *   @import 'tailwindcss';
+ *   @import '../../design/tokens.css';
+ * Utilities then exist as bg-bg, bg-surface, text-text, text-text-2, text-pos, bg-accent, rounded-card, ...
+ * Dark mode follows the system setting (prefers-color-scheme). `.dark` / `.light` on <html> force a mode.
+ */
+
+:root {
+  color-scheme: light dark;
+
+  /* Surfaces */
+  --ks-bg: #F2F2F7;            /* page background (iOS grouped) */
+  --ks-surface: #FFFFFF;       /* cards, sheets content */
+  --ks-fill: #EEEEF3;          /* inputs, segmented track, search */
+  --ks-separator: #E6E6EC;     /* 0.5px hairlines */
+  --ks-skeleton: #ECECF1;
+  --ks-tabbar: rgba(255, 255, 255, 0.88); /* + backdrop-filter: blur(20px) */
+  --ks-sheet-backdrop: #000000;
+
+  /* Text */
+  --ks-text: #111114;
+  --ks-text-2: #6B6B76;        /* secondary; 4.5:1 on white */
+
+  /* Accent (violet) */
+  --ks-accent: #6847F0;        /* filled buttons, FAB, hero card */
+  --ks-accent-text: #5B3FD9;   /* links, text buttons, active tab */
+  --ks-accent-soft: #EFEAFE;   /* chips, icon tiles */
+  --ks-settle-bg: #F7F4FF;     /* settlement rows */
+
+  /* Balance direction — always paired with a text label and an arrow, never colour alone */
+  --ks-pos: #0B7A5C;           /* "deve-te", "emprestaste" */
+  --ks-pos-soft: #E3F4EE;
+  --ks-neg: #B93D0B;           /* "deves" */
+  --ks-neg-soft: #FDEDE3;
+
+  /* Status */
+  --ks-danger: #C42B1C;        /* validation errors, destructive actions */
+  --ks-danger-soft: #FDECEA;
+  --ks-warn-text: #7A4A00;     /* offline banner, "Em pausa" */
+  --ks-warn-soft: #FFF1D6;
+
+  /* People (same in both modes; white initials on top) */
+  --ks-miguel: #2563EB;
+  --ks-mara: #C0367A;
+
+  /* Category chart colours (fixed order, validated for colour-blind separation) */
+  --ks-cat-1: #6847F0;  /* Renda */
+  --ks-cat-2: #E07020;  /* Supermercado */
+  --ks-cat-3: #1A9E8F;  /* Restaurantes */
+  --ks-cat-4: #2F80ED;  /* Contas */
+  --ks-cat-5: #C99A06;  /* Transportes */
+  --ks-cat-6: #D04E8A;  /* Outros */
+
+  --ks-shadow-card: 0 1px 2px rgba(17, 17, 20, 0.04);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not(.light) {
+    --ks-bg: #000000;
+    --ks-surface: #1C1C1E;
+    --ks-fill: #2C2C2E;
+    --ks-separator: #38383A;
+    --ks-skeleton: #2C2C2E;
+    --ks-tabbar: rgba(22, 22, 24, 0.86);
+    --ks-text: #F5F5F7;
+    --ks-text-2: #A1A1AA;
+    --ks-accent: #7B5CFA;
+    --ks-accent-text: #A893FF;
+    --ks-accent-soft: #2A2342;
+    --ks-settle-bg: #211B36;
+    --ks-pos: #3DD6A3;
+    --ks-pos-soft: #12302A;
+    --ks-neg: #FF9A5C;
+    --ks-neg-soft: #3A2216;
+    --ks-danger: #FF6B5E;
+    --ks-danger-soft: #3A1A16;
+    --ks-warn-text: #FFC46B;
+    --ks-warn-soft: #3A2A12;
+    --ks-shadow-card: none;
+  }
+}
+
+:root.dark {
+  --ks-bg: #000000;
+  --ks-surface: #1C1C1E;
+  --ks-fill: #2C2C2E;
+  --ks-separator: #38383A;
+  --ks-skeleton: #2C2C2E;
+  --ks-tabbar: rgba(22, 22, 24, 0.86);
+  --ks-text: #F5F5F7;
+  --ks-text-2: #A1A1AA;
+  --ks-accent: #7B5CFA;
+  --ks-accent-text: #A893FF;
+  --ks-accent-soft: #2A2342;
+  --ks-settle-bg: #211B36;
+  --ks-pos: #3DD6A3;
+  --ks-pos-soft: #12302A;
+  --ks-neg: #FF9A5C;
+  --ks-neg-soft: #3A2216;
+  --ks-danger: #FF6B5E;
+  --ks-danger-soft: #3A1A16;
+  --ks-warn-text: #FFC46B;
+  --ks-warn-soft: #3A2A12;
+  --ks-shadow-card: none;
+}
+
+@theme inline {
+  --font-sans: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', sans-serif;
+
+  --color-bg: var(--ks-bg);
+  --color-surface: var(--ks-surface);
+  --color-fill: var(--ks-fill);
+  --color-separator: var(--ks-separator);
+  --color-skeleton: var(--ks-skeleton);
+  --color-text: var(--ks-text);
+  --color-text-2: var(--ks-text-2);
+  --color-accent: var(--ks-accent);
+  --color-accent-text: var(--ks-accent-text);
+  --color-accent-soft: var(--ks-accent-soft);
+  --color-settle: var(--ks-settle-bg);
+  --color-pos: var(--ks-pos);
+  --color-pos-soft: var(--ks-pos-soft);
+  --color-neg: var(--ks-neg);
+  --color-neg-soft: var(--ks-neg-soft);
+  --color-danger: var(--ks-danger);
+  --color-danger-soft: var(--ks-danger-soft);
+  --color-warn: var(--ks-warn-text);
+  --color-warn-soft: var(--ks-warn-soft);
+  --color-miguel: var(--ks-miguel);
+  --color-mara: var(--ks-mara);
+
+  /* Radii */
+  --radius-control: 10px;   /* inputs, segmented controls */
+  --radius-button: 14px;    /* buttons, icon tiles 48px */
+  --radius-cta: 16px;       /* full-width primary buttons, toasts */
+  --radius-card: 20px;      /* cards, grouped lists */
+  --radius-hero: 24px;      /* balance card */
+  --radius-sheet: 14px;     /* top corners of bottom sheets */
+
+  /* Type scale (size / line-height) */
+  --text-hero: 48px;        --text-hero--line-height: 58px;   /* balance amount, bold */
+  --text-large-title: 34px; --text-large-title--line-height: 41px; /* screen titles, bold */
+  --text-title2: 22px;      --text-title2--line-height: 28px; /* section titles, bold */
+  --text-headline: 17px;    --text-headline--line-height: 22px; /* semibold */
+  --text-body: 17px;        --text-body--line-height: 22px;   /* inputs never below 16px */
+  --text-subhead: 15px;     --text-subhead--line-height: 20px;
+  --text-footnote: 13px;    --text-footnote--line-height: 18px;
+  --text-tab: 10px;         --text-tab--line-height: 12px;
+
+  --shadow-card: var(--ks-shadow-card);
+}
+
+/* Layout constants (not Tailwind tokens) */
+:root {
+  --ks-gutter: 16px;            /* screen side padding */
+  --ks-tabbar-height: 49px;     /* + env(safe-area-inset-bottom) */
+  --ks-fab-size: 60px;          /* raised centre "+" button, 4px ring in --ks-bg */
+  --ks-row-min: 48px;           /* list rows; touch targets >= 44px */
+}

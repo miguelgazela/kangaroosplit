@@ -1,0 +1,67 @@
+{
+  "v": 3,
+  "createdOnFiles": {"v": 1, "at": "2026-10-11T12:00:00Z"},
+  "title": "KangarooSplit UI",
+  "launch": {"view": "canvas"},
+  "pages": [],
+  "boards": {
+    "Main.dc.html": {"x": 0, "y": 0, "w": 390, "h": 844, "title": "Início"},
+    "Lista.dc.html": {"x": 470, "y": 0, "w": 390, "h": 844, "title": "Lista — Casa"},
+    "Despesa.dc.html": {"x": 940, "y": 0, "w": 390, "h": 844, "title": "Nova despesa", "is_interactive": true},
+    "Acerto.dc.html": {"x": 1410, "y": 0, "w": 390, "h": 844, "title": "Acertar contas — lista"},
+    "Atividade.dc.html": {"x": 1880, "y": 0, "w": 390, "h": 844, "title": "Atividade"},
+    "Estatisticas.dc.html": {"x": 2350, "y": 0, "w": 390, "h": 844, "title": "Estatísticas"},
+    "Definicoes.dc.html": {"x": 2820, "y": 0, "w": 390, "h": 844, "title": "Definições"},
+
+    "DespesaTeclado.dc.html": {"x": 0, "y": 1220, "w": 390, "h": 844, "title": "Nova despesa — ao abrir (teclado)"},
+    "DespesaIgual.dc.html": {"x": 470, "y": 1220, "w": 390, "h": 844, "title": "Divisão — Igual"},
+    "DespesaPercentagem.dc.html": {"x": 940, "y": 1220, "w": 390, "h": 844, "title": "Divisão — Percentagem"},
+    "DespesaExatoErro.dc.html": {"x": 1410, "y": 1220, "w": 390, "h": 844, "title": "Divisão — Valor exato (erro)"},
+    "DespesaPartes.dc.html": {"x": 1880, "y": 1220, "w": 390, "h": 844, "title": "Divisão — Partes"},
+    "DespesaEditar.dc.html": {"x": 2350, "y": 1220, "w": 390, "h": 844, "title": "Editar despesa"},
+    "DespesaRecorrente.dc.html": {"x": 2820, "y": 1220, "w": 390, "h": 844, "title": "Nova despesa recorrente"},
+
+    "ListaVazia.dc.html": {"x": 0, "y": 2440, "w": 390, "h": 844, "title": "Lista nova — vazia"},
+    "ListaArquivada.dc.html": {"x": 470, "y": 2440, "w": 390, "h": 844, "title": "Lista arquivada"},
+    "NovaLista.dc.html": {"x": 940, "y": 2440, "w": 390, "h": 844, "title": "Nova lista"},
+    "EditarLista.dc.html": {"x": 1410, "y": 2440, "w": 390, "h": 844, "title": "Editar lista"},
+    "AcertarTudo.dc.html": {"x": 1880, "y": 2440, "w": 390, "h": 844, "title": "Acertar tudo"},
+    "AcertoSucesso.dc.html": {"x": 2350, "y": 2440, "w": 390, "h": 844, "title": "Contas acertadas"},
+    "Recorrentes.dc.html": {"x": 2820, "y": 2440, "w": 390, "h": 844, "title": "Despesas recorrentes"},
+    "RecorrentesVazio.dc.html": {"x": 3290, "y": 2440, "w": 390, "h": 844, "title": "Recorrentes — vazio"},
+
+    "Login.dc.html": {"x": 0, "y": 3660, "w": 390, "h": 844, "title": "Iniciar sessão"},
+    "LoginErro.dc.html": {"x": 470, "y": 3660, "w": 390, "h": 844, "title": "Iniciar sessão — erro"},
+    "InicioOffline.dc.html": {"x": 940, "y": 3660, "w": 390, "h": 844, "title": "Sem ligação"},
+    "InicioLoading.dc.html": {"x": 1410, "y": 3660, "w": 390, "h": 844, "title": "A carregar"},
+    "Notificacoes.dc.html": {"x": 1880, "y": 3660, "w": 390, "h": 844, "title": "Ativar notificações"},
+    "Instalar.dc.html": {"x": 2350, "y": 3660, "w": 390, "h": 844, "title": "Instalar (Safari)"},
+    "ConfirmarApagar.dc.html": {"x": 2820, "y": 3660, "w": 390, "h": 844, "title": "Confirmação destrutiva"},
+    "Toast.dc.html": {"x": 3290, "y": 3660, "w": 390, "h": 844, "title": "Toast"},
+
+    "InicioEscuro.dc.html": {"x": 0, "y": 4880, "w": 390, "h": 844, "title": "Início — escuro"},
+    "ListaEscuro.dc.html": {"x": 470, "y": 4880, "w": 390, "h": 844, "title": "Lista — escuro"},
+    "DespesaEscuro.dc.html": {"x": 940, "y": 4880, "w": 390, "h": 844, "title": "Nova despesa — escuro"},
+
+    "Componentes.dc.html": {"x": 0, "y": 6100, "w": 1440, "h": 1180, "title": "Componentes"},
+    "Icone.dc.html": {"x": 1520, "y": 6100, "w": 720, "h": 720, "title": "Ícone da app"},
+    "TabBar.dc.html": {"x": 2320, "y": 6100, "w": 390, "h": 100, "title": "Barra de separadores"}
+  },
+  "order": [
+    "Main.dc.html", "Lista.dc.html", "Despesa.dc.html", "Acerto.dc.html", "Atividade.dc.html", "Estatisticas.dc.html", "Definicoes.dc.html",
+    "DespesaTeclado.dc.html", "DespesaIgual.dc.html", "DespesaPercentagem.dc.html", "DespesaExatoErro.dc.html", "DespesaPartes.dc.html", "DespesaEditar.dc.html", "DespesaRecorrente.dc.html",
+    "ListaVazia.dc.html", "ListaArquivada.dc.html", "NovaLista.dc.html", "EditarLista.dc.html", "AcertarTudo.dc.html", "AcertoSucesso.dc.html", "Recorrentes.dc.html", "RecorrentesVazio.dc.html",
+    "Login.dc.html", "LoginErro.dc.html", "InicioOffline.dc.html", "InicioLoading.dc.html", "Notificacoes.dc.html", "Instalar.dc.html", "ConfirmarApagar.dc.html", "Toast.dc.html",
+    "InicioEscuro.dc.html", "ListaEscuro.dc.html", "DespesaEscuro.dc.html",
+    "Componentes.dc.html", "Icone.dc.html", "TabBar.dc.html"
+  ],
+  "notes": {
+    "r1": {"x": 0, "y": -260, "text": "Ecrãs principais", "kind": "title1", "maxW": 3210},
+    "r2": {"x": 0, "y": 960, "text": "Adicionar despesa — divisão e variantes", "kind": "title1", "maxW": 3210},
+    "r3": {"x": 0, "y": 2180, "text": "Listas, acertos e recorrentes", "kind": "title1", "maxW": 3680},
+    "r4": {"x": 0, "y": 3400, "text": "Sessão e estados do sistema", "kind": "title1", "maxW": 3680},
+    "r5": {"x": 0, "y": 4620, "text": "Modo escuro", "kind": "title1", "maxW": 1330},
+    "r6": {"x": 0, "y": 5840, "text": "Componentes e ícone", "kind": "title1", "maxW": 2710}
+  },
+  "designSystems": []
+}

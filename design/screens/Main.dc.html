@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="pt-PT">
+<head>
+<meta charset="utf-8">
+<title>Início</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; position: relative; overflow: hidden; background: {{c.bg}}; color: {{c.text}}; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', sans-serif">
+
+  <div style="position: absolute; inset: 0; overflow: hidden; padding: 54px 16px 120px; box-sizing: border-box; display: flex; flex-direction: column; gap: 16px">
+
+    <sc-if value="{{offline}}" hint-placeholder-val="{{ false }}">
+      <div role="status" style="display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 14px; background: {{c.warnSoft}}; color: {{c.warnText}}; font-size: 15px; font-weight: 500">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 8.8a15 15 0 0 1 4.2-2.6M22 8.8A15 15 0 0 0 10.5 5.1M5 12.6a10 10 0 0 1 5.2-2.6M19 12.6a10 10 0 0 0-2.3-1.6M8.5 16.4a5 5 0 0 1 7 0M12 20h.01M3 3l18 18"></path></svg>
+        <span>Sem ligação. Só podes consultar.</span>
+      </div>
+    </sc-if>
+
+    <div style="display: flex; align-items: center; justify-content: space-between; height: 52px; margin-top: 4px">
+      <h1 style="margin: 0; font-size: 34px; line-height: 41px; font-weight: 700; letter-spacing: 0.4px">Início</h1>
+      <div style="display: flex; align-items: center" aria-label="Miguel e Mara">
+        <span style="width: 36px; height: 36px; border-radius: 18px; background: #2563EB; color: #FFFFFF; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 600; border: 2px solid {{c.bg}}">Mi</span>
+        <span style="width: 36px; height: 36px; border-radius: 18px; background: #C0367A; color: #FFFFFF; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 600; border: 2px solid {{c.bg}}; margin-left: -10px">Ma</span>
+      </div>
+    </div>
+
+    <section aria-label="Saldo total" style="border-radius: 24px; background: {{c.hero}}; color: #FFFFFF; padding: 20px; display: flex; flex-direction: column; gap: 14px; position: relative; overflow: hidden">
+      <svg width="170" height="170" viewBox="0 0 170 170" aria-hidden="true" style="position: absolute; right: -40px; top: -46px; opacity: 0.14"><circle cx="85" cy="85" r="84" fill="none" stroke="#FFFFFF" stroke-width="2"></circle><circle cx="85" cy="85" r="58" fill="none" stroke="#FFFFFF" stroke-width="2"></circle></svg>
+      <div style="display: flex; align-items: center; justify-content: space-between">
+        <span style="font-size: 15px; font-weight: 500; color: rgba(255,255,255,0.86)">Saldo total</span>
+        <span style="font-size: 13px; font-weight: 500; padding: 4px 10px; border-radius: 999px; background: rgba(255,255,255,0.16)">3 listas ativas</span>
+      </div>
+      <sc-if value="{{loading}}" hint-placeholder-val="{{ false }}">
+        <div style="display: flex; flex-direction: column; gap: 10px; padding: 4px 0 6px">
+          <div style="width: 150px; height: 16px; border-radius: 8px; background: rgba(255,255,255,0.22)"></div>
+          <div style="width: 200px; height: 40px; border-radius: 12px; background: rgba(255,255,255,0.22)"></div>
+        </div>
+      </sc-if>
+      <sc-if value="{{notLoading}}" hint-placeholder-val="{{ true }}">
+        <div style="display: flex; flex-direction: column; gap: 2px">
+          <div style="display: flex; align-items: center; gap: 8px; font-size: 17px; font-weight: 600">
+            <span style="display: flex; align-items: center; gap: 0">
+              <span style="width: 26px; height: 26px; border-radius: 13px; background: #C0367A; border: 2px solid rgba(255,255,255,0.9); display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700">Ma</span>
+              <svg width="22" height="16" viewBox="0 0 22 16" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8h15M13 3l5 5-5 5"></path></svg>
+              <span style="width: 26px; height: 26px; border-radius: 13px; background: #2563EB; border: 2px solid rgba(255,255,255,0.9); display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700">Mi</span>
+            </span>
+            <span>A Mara deve-te</span>
+          </div>
+          <div style="font-size: 48px; line-height: 58px; font-weight: 700; letter-spacing: -1px; font-variant-numeric: tabular-nums">127<span style="color: rgba(255,255,255,0.7)">,40 €</span></div>
+        </div>
+      </sc-if>
+      <div style="display: flex; gap: 10px">
+        <button type="button" disabled="{{offline}}" style="flex: 1; height: 48px; border: 0; border-radius: 14px; background: {{c.heroBtn}}; color: {{c.heroBtnText}}; font: inherit; font-size: 17px; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 7h12l-4-4M17 17H5l4 4"></path></svg>
+          Acertar tudo
+        </button>
+      </div>
+    </section>
+
+    <div style="display: flex; align-items: center; justify-content: space-between; margin-top: 6px">
+      <h2 style="margin: 0; font-size: 22px; font-weight: 700">Listas</h2>
+      <button type="button" disabled="{{offline}}" style="height: 44px; padding: 0 4px 0 12px; border: 0; background: transparent; color: {{c.link}}; font: inherit; font-size: 17px; font-weight: 500; display: flex; align-items: center; gap: 4px; cursor: pointer">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>
+        Nova lista
+      </button>
+    </div>
+
+    <sc-if value="{{loading}}" hint-placeholder-val="{{ false }}">
+      <div style="display: flex; flex-direction: column; gap: 12px">
+        <sc-for list="{{skeletons}}" as="s" hint-placeholder-count="3">
+          <div style="height: 76px; border-radius: 20px; background: {{c.card}}; display: flex; align-items: center; gap: 14px; padding: 0 16px; box-sizing: border-box">
+            <div style="width: 48px; height: 48px; border-radius: 14px; background: {{c.skel}}"></div>
+            <div style="flex: 1; display: flex; flex-direction: column; gap: 8px">
+              <div style="width: {{s.w}}; height: 14px; border-radius: 7px; background: {{c.skel}}"></div>
+              <div style="width: 40%; height: 12px; border-radius: 6px; background: {{c.skel}}"></div>
+            </div>
+            <div style="width: 64px; height: 16px; border-radius: 8px; background: {{c.skel}}"></div>
+          </div>
+        </sc-for>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{notLoading}}" hint-placeholder-val="{{ true }}">
+      <div style="display: flex; flex-direction: column; gap: 12px">
+        <a href="Lista.dc.html" style="text-decoration: none; color: inherit; border-radius: 20px; background: {{c.card}}; padding: 14px 16px; display: flex; align-items: center; gap: 14px; box-shadow: {{c.shadow}}; outline: 1.5px solid {{c.mainRing}}">
+          <span style="width: 48px; height: 48px; border-radius: 14px; background: {{c.accentSoft}}; display: flex; align-items: center; justify-content: center; font-size: 24px">🏠</span>
+          <span style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px">
+            <span style="display: flex; align-items: center; gap: 8px">
+              <span style="font-size: 17px; font-weight: 600">Casa</span>
+              <span style="font-size: 12px; font-weight: 600; color: {{c.link}}; background: {{c.accentSoft}}; padding: 2px 8px; border-radius: 999px">Principal</span>
+            </span>
+            <span style="font-size: 13px; color: {{c.text2}}">Divisão predefinida: 60 / 40</span>
+          </span>
+          <span style="display: flex; flex-direction: column; align-items: flex-end; gap: 2px">
+            <span style="display: flex; align-items: center; gap: 4px; font-size: 17px; font-weight: 600; color: {{c.pos}}; font-variant-numeric: tabular-nums">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 7 7 17M7 8v9h9"></path></svg>
+              84,90 €
+            </span>
+            <span style="font-size: 13px; color: {{c.text2}}">deve-te</span>
+          </span>
+        </a>
+
+        <div style="border-radius: 20px; background: {{c.card}}; box-shadow: {{c.shadow}}; overflow: hidden">
+          <sc-for list="{{lists}}" as="l" hint-placeholder-count="2">
+            <a href="Lista.dc.html" style="text-decoration: none; color: inherit; padding: 14px 16px; display: flex; align-items: center; gap: 14px; border-top: {{l.border}}">
+              <span style="width: 48px; height: 48px; border-radius: 14px; background: {{l.tile}}; display: flex; align-items: center; justify-content: center; font-size: 24px">{{l.icon}}</span>
+              <span style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px">
+                <span style="font-size: 17px; font-weight: 600">{{l.name}}</span>
+                <span style="font-size: 13px; color: {{c.text2}}">{{l.sub}}</span>
+              </span>
+              <span style="display: flex; flex-direction: column; align-items: flex-end; gap: 2px">
+                <span style="display: flex; align-items: center; gap: 4px; font-size: 17px; font-weight: 600; color: {{l.color}}; font-variant-numeric: tabular-nums">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{l.arrow}}"></path></svg>
+                  {{l.amount}}
+                </span>
+                <span style="font-size: 13px; color: {{c.text2}}">{{l.dir}}</span>
+              </span>
+            </a>
+          </sc-for>
+        </div>
+
+        <a href="#" style="text-decoration: none; color: inherit; border-radius: 16px; background: {{c.card}}; height: 52px; padding: 0 16px; display: flex; align-items: center; gap: 12px; box-shadow: {{c.shadow}}">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="{{c.text2}}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 4h18v4H3zM5 8v11a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8M10 12h4"></path></svg>
+          <span style="flex: 1; font-size: 17px">Listas arquivadas</span>
+          <span style="font-size: 17px; color: {{c.text2}}">2</span>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="{{c.text2}}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"></path></svg>
+        </a>
+      </div>
+    </sc-if>
+  </div>
+
+  <div style="position: absolute; left: 0; bottom: 0; width: 390px; height: 100px">
+    <dc-import name="TabBar" active="inicio" dark="{{dark}}" disabled="{{offline}}" hint-size="390px,100px"></dc-import>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"dark":{"editor":"boolean","default":false},"offline":{"editor":"boolean","default":false},"loading":{"editor":"boolean","default":false},"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const dark = !!this.props.dark;
+    const offline = !!this.props.offline;
+    const loading = !!this.props.loading;
+    const c = dark ? {
+      bg: '#000000', card: '#1C1C1E', text: '#F5F5F7', text2: '#A1A1AA', sep: '#38383A',
+      link: '#A893FF', accentSoft: '#2A2342', hero: offline ? '#3A3A3D' : '#4A34B8', heroBtn: '#FFFFFF', heroBtnText: offline ? '#8E8E93' : '#3B2799',
+      pos: '#3DD6A3', neg: '#FF9A5C', shadow: 'none', mainRing: '#3A2F66', skel: '#2C2C2E',
+      warnSoft: '#3A2A12', warnText: '#FFC46B'
+    } : {
+      bg: '#F2F2F7', card: '#FFFFFF', text: '#111114', text2: '#6B6B76', sep: '#E6E6EC',
+      link: '#5B3FD9', accentSoft: '#EFEAFE', hero: offline ? '#9C9CA6' : '#6847F0', heroBtn: '#FFFFFF', heroBtnText: offline ? '#9C9CA6' : '#4B2FD0',
+      pos: '#0B7A5C', neg: '#B93D0B', shadow: '0 1px 2px rgba(17,17,20,0.04)', mainRing: '#DCD3FD', skel: '#ECECF1',
+      warnSoft: '#FFF1D6', warnText: '#7A4A00'
+    };
+    const up = 'M7 17 17 7M8 7h9v9';
+    const down = 'M17 7 7 17M7 8v9h9';
+    const lists = [
+      { icon: '✈️', name: 'Férias Açores', sub: '02/08 – 12/08/2026', amount: '62,50 €', dir: 'deve-te', color: c.pos, arrow: down, tile: dark ? '#13283F' : '#E6F0FF', border: 'none' },
+      { icon: '🎁', name: 'Prenda da mãe', sub: 'Divisão predefinida: 50 / 50', amount: '20,00 €', dir: 'deves', color: c.neg, arrow: up, tile: dark ? '#3A2216' : '#FFEFE5', border: '0.5px solid ' + c.sep }
+    ];
+    return {
+      c, dark, offline, loading, notLoading: !loading, lists,
+      skeletons: [{ w: '55%' }, { w: '70%' }, { w: '45%' }]
+    };
+  }
+}
+</script>
+</body>
+</html>

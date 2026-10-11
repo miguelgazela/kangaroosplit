@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="pt-PT">
+<head>
+<meta charset="utf-8">
+<title>Definições</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; position: relative; overflow: hidden; background: #F2F2F7; color: #111114; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', sans-serif">
+  <div style="position: absolute; inset: 0; padding: 54px 16px 120px; box-sizing: border-box; display: flex; flex-direction: column; gap: 10px">
+    <h1 style="margin: 4px 0 0; height: 52px; display: flex; align-items: center; font-size: 34px; font-weight: 700; letter-spacing: 0.4px">Definições</h1>
+
+    <h2 style="margin: 4px 0 0; padding: 0 16px; font-size: 13px; font-weight: 500; color: #6B6B76; text-transform: uppercase; letter-spacing: 0.3px">Perfil</h2>
+    <div style="border-radius: 20px; background: #FFFFFF; overflow: hidden; flex: none">
+      <div style="display: flex; align-items: center; gap: 14px; padding: 14px 16px">
+        <input id="foto-perfil" type="file" accept="image/*" onChange="{{onPhoto}}" style="position: absolute; width: 1px; height: 1px; opacity: 0; overflow: hidden; pointer-events: none">
+        <label for="foto-perfil" aria-label="Escolher foto de perfil" style="position: relative; width: 56px; height: 56px; flex: none; cursor: pointer">
+          <sc-if value="{{hasPhoto}}" hint-placeholder-val="{{ false }}">
+            <span style="display: block; width: 56px; height: 56px; border-radius: 28px; background-color: {{color}}; background-image: {{photoBg}}; background-size: cover; background-position: center"></span>
+          </sc-if>
+          <sc-if value="{{noPhoto}}" hint-placeholder-val="{{ true }}">
+            <span style="width: 56px; height: 56px; border-radius: 28px; background: {{color}}; color: #FFFFFF; font-size: 20px; font-weight: 700; display: flex; align-items: center; justify-content: center">Mi</span>
+          </sc-if>
+          <span aria-hidden="true" style="position: absolute; right: -4px; bottom: -4px; width: 24px; height: 24px; border-radius: 12px; background: #6847F0; border: 2px solid #FFFFFF; color: #FFFFFF; display: flex; align-items: center; justify-content: center">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h3l2-3h6l2 3h3v11H4z"></path><circle cx="12" cy="13" r="3.5"></circle></svg>
+          </span>
+        </label>
+        <span style="display: flex; flex-direction: column; gap: 1px; min-width: 0">
+          <span style="font-size: 20px; font-weight: 600">Miguel</span>
+          <span style="font-size: 13px; color: #6B6B76">miguel@exemplo.pt</span>
+          <span style="display: flex; gap: 14px">
+            <label for="foto-perfil" style="font-size: 15px; font-weight: 500; color: #5B3FD9; cursor: pointer; padding: 2px 0">{{photoLabel}}</label>
+            <sc-if value="{{hasPhoto}}" hint-placeholder-val="{{ false }}">
+              <button type="button" onClick="{{removePhoto}}" style="border: 0; background: transparent; padding: 2px 0; font: inherit; font-size: 15px; font-weight: 500; color: #C42B1C; cursor: pointer">Remover</button>
+            </sc-if>
+          </span>
+        </span>
+      </div>
+      <label style="border-top: 0.5px solid #E6E6EC; height: 48px; display: flex; align-items: center; gap: 8px; padding: 0 16px">
+        <span style="font-size: 17px; width: 80px">Nome</span>
+        <input type="text" value="Miguel" style="flex: 1; border: 0; outline: none; background: transparent; font: inherit; font-size: 17px; text-align: right; color: #6B6B76">
+      </label>
+      <div style="border-top: 0.5px solid #E6E6EC; padding: 10px 16px 12px; display: flex; flex-direction: column; gap: 8px">
+        <span style="font-size: 17px">Cor</span>
+        <div role="radiogroup" aria-label="Cor do avatar" style="display: flex; gap: 2px; margin-left: -5px">
+          <sc-for list="{{swatches}}" as="s" hint-placeholder-count="7">
+            <button type="button" role="radio" aria-checked="{{s.on}}" aria-label="{{s.label}}" disabled="{{s.taken}}" onClick="{{s.pick}}" style="width: 44px; height: 44px; border: 0; background: transparent; padding: 0; display: flex; align-items: center; justify-content: center; cursor: pointer">
+              <span style="width: 34px; height: 34px; border-radius: 17px; background: {{s.hex}}; box-shadow: {{s.ring}}; display: flex; align-items: center; justify-content: center; color: #FFFFFF; font-size: 10px; font-weight: 700; opacity: {{s.opacity}}">{{s.mark}}</span>
+            </button>
+          </sc-for>
+        </div>
+        <span style="font-size: 12px; line-height: 16px; color: #6B6B76">A cor rosa é da Mara. Cada pessoa tem uma cor diferente.</span>
+      </div>
+    </div>
+
+    <div style="border-radius: 20px; background: #FFFFFF; overflow: hidden; flex: none; margin-top: 10px">
+      <a href="#" style="height: 52px; display: flex; align-items: center; gap: 12px; padding: 0 14px 0 12px; color: inherit; text-decoration: none">
+        <span style="width: 32px; height: 32px; border-radius: 9px; background: #FFF1E6; display: flex; align-items: center; justify-content: center; color: #B85A12">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z"></path></svg>
+        </span>
+        <span style="flex: 1; font-size: 17px">Categorias</span>
+        <span style="font-size: 17px; color: #6B6B76">9</span>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#8A8A94" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"></path></svg>
+      </a>
+      <div style="padding: 0 14px 12px 56px; display: flex; flex-wrap: wrap; gap: 6px" aria-hidden="true">
+        <sc-for list="{{cats}}" as="k" hint-placeholder-count="9">
+          <span style="width: 30px; height: 30px; border-radius: 9px; background: {{k.bg}}; display: flex; align-items: center; justify-content: center; font-size: 16px">{{k.e}}</span>
+        </sc-for>
+      </div>
+      <a href="Recorrentes.dc.html" style="border-top: 0.5px solid #E6E6EC; height: 52px; display: flex; align-items: center; gap: 12px; padding: 0 14px 0 12px; color: inherit; text-decoration: none">
+        <span style="width: 32px; height: 32px; border-radius: 9px; background: #EFEAFE; display: flex; align-items: center; justify-content: center; color: #5B3FD9">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 2l4 4-4 4M3 11V9a3 3 0 0 1 3-3h15M7 22l-4-4 4-4M21 13v2a3 3 0 0 1-3 3H3"></path></svg>
+        </span>
+        <span style="flex: 1; font-size: 17px">Despesas recorrentes</span>
+        <span style="font-size: 17px; color: #6B6B76">5</span>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#8A8A94" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"></path></svg>
+      </a>
+      <div style="border-top: 0.5px solid #E6E6EC; height: 52px; display: flex; align-items: center; gap: 12px; padding: 0 14px 0 12px">
+        <span style="width: 32px; height: 32px; border-radius: 9px; background: #E3F4EE; display: flex; align-items: center; justify-content: center; color: #0B7A5C">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9M10.3 21a1.94 1.94 0 0 0 3.4 0"></path></svg>
+        </span>
+        <span style="flex: 1; font-size: 17px" id="lbl-notif">Notificações</span>
+        <button type="button" role="switch" aria-checked="{{notifOn}}" aria-labelledby="lbl-notif" onClick="{{toggleNotif}}" style="width: 51px; height: 31px; border: 0; border-radius: 16px; background: {{switchBg}}; position: relative; cursor: pointer; padding: 0">
+          <span style="position: absolute; top: 2px; left: {{knobLeft}}; width: 27px; height: 27px; border-radius: 14px; background: #FFFFFF; box-shadow: 0 2px 4px rgba(0,0,0,0.2)"></span>
+        </button>
+      </div>
+    </div>
+
+    <div style="border-radius: 20px; background: #FFFFFF; overflow: hidden; flex: none; margin-top: 10px">
+      <button type="button" style="width: 100%; height: 52px; border: 0; background: transparent; color: #C42B1C; font: inherit; font-size: 17px; cursor: pointer">Terminar sessão</button>
+    </div>
+    <p style="margin: 6px 0 0; text-align: center; font-size: 13px; color: #6B6B76">Versão 1.0.0</p>
+  </div>
+  <div style="position: absolute; left: 0; bottom: 0; width: 390px; height: 100px">
+    <dc-import name="TabBar" active="definicoes" hint-size="390px,100px"></dc-import>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(props) { super(props); this.state = { color: '#2563EB', notif: true }; }
+  renderVals() {
+    const sel = this.state.color;
+    const list = [['#2563EB', 'Azul'], ['#0B7A5C', 'Verde'], ['#B85A12', 'Laranja'], ['#6847F0', 'Violeta'], ['#0E7490', 'Petróleo'], ['#4A4A55', 'Grafite'], ['#C0367A', 'Rosa (Mara)']];
+    const swatches = list.map(([hex, label]) => {
+      const taken = hex === '#C0367A';
+      return { hex, label, taken, on: hex === sel ? 'true' : 'false',
+        ring: hex === sel ? '0 0 0 2px #FFFFFF, 0 0 0 4px ' + hex : 'none',
+        mark: taken ? 'Ma' : '', opacity: taken ? 0.45 : 1,
+        pick: () => { if (!taken) this.setState({ color: hex }); } };
+    });
+    const cats = [['🛒', '#FFF1E6'], ['🏠', '#EFEAFE'], ['💡', '#E8F1FE'], ['🍽️', '#E3F6F3'], ['🚗', '#FFF6D9'], ['✈️', '#E8F1FE'], ['💊', '#FCE8F1'], ['🎉', '#EFEAFE'], ['📦', '#F0F0F3']].map(([e, bg]) => ({ e, bg }));
+    const on = this.state.notif;
+    const photo = this.state.photo || null;
+    return {
+      hasPhoto: !!photo, noPhoto: !photo,
+      photoBg: photo ? 'url("' + photo + '")' : 'none',
+      photoLabel: photo ? 'Alterar foto' : 'Escolher foto',
+      onPhoto: (e) => {
+        const f = e && e.target && e.target.files && e.target.files[0];
+        if (!f) return;
+        const r = new FileReader();
+        r.onload = () => this.setState({ photo: r.result });
+        r.readAsDataURL(f);
+        e.target.value = '';
+      },
+      removePhoto: () => this.setState({ photo: null }),
+      swatches, cats, color: sel,
+      notifOn: on ? 'true' : 'false', switchBg: on ? '#0B7A5C' : '#D1D1D6', knobLeft: on ? '22px' : '2px',
+      toggleNotif: () => this.setState({ notif: !on })
+    };
+  }
+}
+</script>
+</body>
+</html>

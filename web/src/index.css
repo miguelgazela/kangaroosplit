@@ -1,0 +1,103 @@
+@import 'tailwindcss';
+@import '../../design/tokens.css';
+
+/* Values the mockups use that tokens.css does not name. */
+:root {
+  --ks-hero: #6847f0;
+  --ks-hero-button-text: #4b2fd0;
+  --ks-main-ring: #dcd3fd;
+  --ks-tab-off: #6b6b76;
+  --ks-disabled: #c7c7ce;
+  --ks-fab-shadow: 0 6px 18px rgba(104, 71, 240, 0.35);
+  --ks-segment-on: #ffffff;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not(.light) {
+    --ks-hero: #4a34b8;
+    --ks-hero-button-text: #3b2799;
+    --ks-main-ring: #3a2f66;
+    --ks-tab-off: #9a9aa3;
+    --ks-disabled: #3a3a3d;
+    --ks-fab-shadow: 0 6px 18px rgba(123, 92, 250, 0.45);
+    --ks-segment-on: #636366;
+  }
+}
+
+:root.dark {
+  --ks-hero: #4a34b8;
+  --ks-hero-button-text: #3b2799;
+  --ks-main-ring: #3a2f66;
+  --ks-tab-off: #9a9aa3;
+  --ks-disabled: #3a3a3d;
+  --ks-fab-shadow: 0 6px 18px rgba(123, 92, 250, 0.45);
+  --ks-segment-on: #636366;
+}
+
+@theme inline {
+  --color-hero-bg: var(--ks-hero);
+  --color-hero-button-text: var(--ks-hero-button-text);
+  --color-main-ring: var(--ks-main-ring);
+  --color-tab-off: var(--ks-tab-off);
+  --color-disabled: var(--ks-disabled);
+  --color-tabbar: var(--ks-tabbar);
+  --color-segment-on: var(--ks-segment-on);
+  --shadow-fab: var(--ks-fab-shadow);
+}
+
+/* The page itself never scrolls: each screen owns its scroll area, so the
+   tab bar stays put and pull-to-refresh can be handled in-app. */
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  overflow: hidden;
+  overscroll-behavior: none;
+  background: var(--ks-bg);
+  color: var(--ks-text);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-text-size-adjust: 100%;
+  -webkit-touch-callout: none;
+  user-select: none;
+}
+
+input,
+textarea {
+  user-select: text;
+}
+
+/* iOS adds its own clear button and inner shadow to search fields. */
+input[type='search']::-webkit-search-cancel-button {
+  display: none;
+}
+
+@keyframes ks-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes ks-sheet-in {
+  from {
+    transform: translateY(100%);
+  }
+}
+
+@keyframes ks-fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes ks-toast-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+}

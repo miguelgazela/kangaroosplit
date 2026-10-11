@@ -1,0 +1,369 @@
+import { useMemo, useState } from 'react'
+import { useParams } from 'react-router-dom'
+import { FilterSheet, type ListFilter } from '../sheets/FilterSheet'
+import { BackLink } from '../components/BackLink'
+import { BalanceAmount } from '../components/Balance'
+import { Icon } from '../components/Icon'
+import { Screen } from '../components/Screen'
+import { t } from '../i18n/pt'
+import type { Category, ExpenseWithShares, List, Member, Settlement } from '../lib/database.types'
+import { monthKey } from '../lib/dates'
+import { formatDateRange, formatDayMonth, formatMoney, formatMonthYear } from '../lib/format'
+import { useOnline } from '../lib/online'
+import { nameForms, ratio } from '../lib/people'
+import { expensePosition, filterExpenses, listBalance, totalCents } from '../lib/stats'
+import {
+  useBalances,
+  useCategories,
+  useCurrentMember,
+  useDefaultShares,
+  useExpenses,
+  useLists,
+  useMembers,
+  useSetListArchived,
+  useSettlements,
+} from '../query/hooks'
+
+type Row =
+  | { kind: 'expense'; date: string; createdAt: string; expense: ExpenseWithShares }
+  | { kind: 'settlement'; date: string; createdAt: string; settlement: Settlement }
+
+function ExpenseRow({
+  expense,
+  category,
+  me,
+  partner,
+  onOpen,
+}: {
+  expense: ExpenseWithShares
+  category: Category | undefined
+  me: Member
+  partner: Member
+  onOpen: () => void
+}) {
+  const mine = expense.paid_by === me.user_id
+  const position = expensePosition(expense, me.user_id)
+
+  return (
+    <button type="button" onClick={onOpen} className="flex min-h-16 w-full items-center gap-3 px-3.5 py-2.5 text-left">
+      <span className="flex size-[42px] flex-none items-center justify-center rounded-xl bg-fill text-[21px]">
+        {category?.icon ?? '📦'}
+      </span>
+      <span className="flex min-w-0 flex-1 flex-col gap-0.5">
+        <span className="flex items-center gap-1.5 text-base font-semibold">
+          <span className="truncate">{expense.description}</span>
+          {expense.recurring_id && (
+            <span className="inline-flex flex-none items-center gap-[3px] rounded-full bg-accent-soft px-1.5 py-0.5 text-[11px] font-semibold text-accent-text">
+              <Icon name="repeat" size={11} strokeWidth={3} />
+              {t.expense.recurring}
+            </span>
+          )}
+        </span>
+        <span className="truncate text-footnote text-text-2">
+          {formatDayMonth(expense.spent_on)} · {mine ? t.expense.paidByYou : t.expense.paidBy(nameForms(partner).by)}
+        </span>
+      </span>
+      <span className="flex flex-none flex-col items-end gap-0.5">
+        <span className="text-base font-semibold tabular-nums">{formatMoney(expense.amount_cents)}</span>
+        {position !== 0 && (
+          <span className={`text-footnote font-medium tabular-nums ${position > 0 ? 'text-pos' : 'text-neg'}`}>
+            {position > 0 ? t.expense.lent(formatMoney(position)) : t.expense.owe(formatMoney(-position))}
+          </span>
+        )}
+      </span>
+    </button>
+  )
+}
+
+function SettlementRow({ settlement, me, partner }: { settlement: Settlement; me: Member; partner: Member }) {
+  const names = nameForms(partner)
+  return (
+    <div className="flex min-h-14 items-center gap-3 bg-settle px-3.5 py-2.5">
+      <span className="flex size-[42px] flex-none items-center justify-center rounded-full border-[1.5px] border-dashed border-accent text-accent-text">
+        <Icon name="settle" size={20} strokeWidth={2.2} />
+      </span>
+      <span className="flex min-w-0 flex-1 flex-col gap-0.5">
+        <span className="truncate text-base font-semibold text-accent-text">
+          {settlement.to_user === me.user_id ? t.settlement.paidYou(names.subject) : t.settlement.youPaid(names.to)}
+        </span>
+        <span className="truncate text-footnote text-text-2">
+          {formatDayMonth(settlement.settled_on)} · {t.settlement.label}
+        </span>
+      </span>
+      <span className="flex-none text-base font-semibold text-accent-text tabular-nums">
+        {formatMoney(settlement.amount_cents)}
+      </span>
+    </div>
+  )
+}
+
+function EmptyList({ onAdd, disabled }: { onAdd: () => void; disabled: boolean }) {
+  return (
+    <div className="flex flex-1 flex-col items-center justify-center gap-3 px-6 pb-10 text-center">
+      <svg width="132" height="116" viewBox="0 0 132 116" aria-hidden="true" className="text-accent">
+        <circle cx="66" cy="36" r="22" className="fill-surface" stroke="currentColor" strokeWidth="2.5" />
+        <text x="66" y="44" textAnchor="middle" fontSize="22" fontWeight="700" fill="currentColor">
+          €
+        </text>
+        <path
+          d="M18 54h96v12c0 26.5-21.5 44-48 44S18 92.5 18 66z"
+          className="fill-accent-soft"
+          stroke="currentColor"
+          strokeWidth="2.5"
+          strokeLinejoin="round"
+        />
+        <path d="M28 64h76" stroke="currentColor" strokeWidth="2" strokeDasharray="5 5" strokeLinecap="round" opacity="0.6" />
+      </svg>
+      <p className="text-headline font-semibold">{t.lists.empty}</p>
+      <button
+        type="button"
+        disabled={disabled}
+        onClick={onAdd}
+        className="flex h-12 items-center gap-2 rounded-button bg-accent px-5 text-headline font-semibold text-white disabled:bg-disabled"
+      >
+        <Icon name="plus" size={20} strokeWidth={2.4} />
+        {t.lists.addFirst}
+      </button>
+    </div>
+  )
+}
+
+export function ListDetail({
+  onAddExpense,
+  onEditExpense,
+  onSettle,
+  onOptions,
+}: {
+  onAddExpense: (listId: string) => void
+  onEditExpense: (expense: ExpenseWithShares) => void
+  onSettle: (listId: string) => void
+  onOptions: (list: List) => void
+}) {
+  const { id } = useParams()
+  const online = useOnline()
+  const { me, partner } = useCurrentMember()
+  const { data: members } = useMembers()
+  const { data: lists } = useLists()
+  const { data: balances } = useBalances()
+  const { data: defaultShares } = useDefaultShares()
+  const { data: expenses } = useExpenses()
+  const { data: settlements } = useSettlements()
+  const { data: categories } = useCategories()
+  const setArchived = useSetListArchived()
+  const [search, setSearch] = useState('')
+  const [filter, setFilter] = useState<ListFilter>({})
+  const [filtering, setFiltering] = useState(false)
+
+  const list = lists?.find((candidate) => candidate.id === id)
+  const filterCount = Object.values(filter).filter(Boolean).length
+  // Settlements are hidden while narrowing down expenses.
+  const searching = search.trim() !== '' || filterCount > 0
+
+  const months = useMemo(() => {
+    if (!id || !expenses || !settlements) return []
+    const rows: Row[] = filterExpenses(expenses, { ...filter, listId: id, search }).map((expense) => ({
+      kind: 'expense',
+      date: expense.spent_on,
+      createdAt: expense.created_at,
+      expense,
+    }))
+    if (!searching) {
+      for (const settlement of settlements) {
+        if (settlement.list_id !== id) continue
+        rows.push({ kind: 'settlement', date: settlement.settled_on, createdAt: settlement.created_at, settlement })
+      }
+    }
+    rows.sort((a, b) => b.date.localeCompare(a.date) || b.createdAt.localeCompare(a.createdAt))
+
+    const grouped = new Map<string, Row[]>()
+    for (const row of rows) {
+      const month = monthKey(row.date)
+      grouped.set(month, [...(grouped.get(month) ?? []), row])
+    }
+    return [...grouped].map(([month, monthRows]) => ({
+      month,
+      rows: monthRows,
+      total: totalCents(monthRows.flatMap((row) => (row.kind === 'expense' ? [row.expense] : []))),
+    }))
+  }, [id, expenses, settlements, search, filter, searching])
+
+  if (!me || !partner || !members || !lists || !balances || !defaultShares || !expenses || !settlements) {
+    return <Screen gap={14}>{null}</Screen>
+  }
+
+  if (!list) {
+    return (
+      <Screen gap={14}>
+        <BackLink to="/" label={t.tabs.home} />
+        <p className="py-10 text-center text-body text-text-2">{t.lists.notFound}</p>
+      </Screen>
+    )
+  }
+
+  const archived = list.archived_at !== null
+  const readOnly = archived || !online
+  const balance = listBalance(balances, list.id, me.user_id)
+  const names = nameForms(partner)
+  const split = ratio(members, defaultShares, list.id)
+  const splitTotal = split.reduce((sum, value) => sum + value, 0)
+  const hasRows = expenses.some((expense) => expense.list_id === list.id) || months.length > 0
+
+  return (
+    <Screen gap={14}>
+      <div className="-mx-2 flex h-11 items-center justify-between">
+        <BackLink to="/" label={t.tabs.home} />
+        <button
+          type="button"
+          aria-label={t.lists.options}
+          disabled={!online}
+          onClick={() => onOptions(list)}
+          className="flex size-11 items-center justify-center"
+        >
+          <span className={`flex size-[34px] items-center justify-center rounded-full bg-surface ${online ? 'text-accent-text' : 'text-disabled'}`}>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <circle cx="5" cy="12" r="2" />
+              <circle cx="12" cy="12" r="2" />
+              <circle cx="19" cy="12" r="2" />
+            </svg>
+          </span>
+        </button>
+      </div>
+
+      <div className="flex items-center gap-3">
+        <span className="flex size-12 flex-none items-center justify-center rounded-button bg-accent-soft text-[26px]">
+          {list.icon}
+        </span>
+        <div className="flex min-w-0 flex-col gap-px">
+          <h1 className="truncate text-[30px] leading-9 font-bold tracking-[0.2px]">{list.name}</h1>
+          <span className="text-footnote text-text-2">
+            {list.is_default ? t.lists.mainList : formatDateRange(list.starts_on, list.ends_on)}
+          </span>
+        </div>
+      </div>
+
+      {archived && (
+        <div role="status" className="flex items-center gap-2.5 rounded-cta bg-fill py-2 pr-2 pl-3.5">
+          <Icon name="archive" size={20} strokeWidth={1.8} className="text-text-2" />
+          <span className="flex-1 text-subhead">{t.lists.isArchived}</span>
+          <button
+            type="button"
+            disabled={!online || setArchived.isPending}
+            onClick={() => setArchived.mutate({ id: list.id, archived: false })}
+            className="h-9 rounded-control bg-surface px-3.5 text-subhead font-semibold text-accent-text disabled:text-disabled"
+          >
+            {t.lists.unarchive}
+          </button>
+        </div>
+      )}
+
+      <section className="flex flex-col gap-3 rounded-card bg-surface p-4 shadow-card">
+        <div className="flex items-center gap-3">
+          <div className="flex flex-1 flex-col gap-0.5">
+            <span className="text-subhead text-text-2">
+              {balance > 0 ? t.balance.owesYou(names.subject) : balance < 0 ? t.balance.youOwe(names.to) : t.balance.settled}
+            </span>
+            <BalanceAmount cents={balance} iconSize={20} className="gap-1.5 text-[30px] leading-9 !font-bold" />
+          </div>
+          {balance !== 0 && !archived && (
+            <button
+              type="button"
+              disabled={!online}
+              onClick={() => onSettle(list.id)}
+              className="h-11 rounded-button bg-accent px-4 text-subhead font-semibold text-white disabled:bg-disabled"
+            >
+              {t.balance.settleUp}
+            </button>
+          )}
+        </div>
+        <div className="flex items-center gap-2 border-t-[0.5px] border-separator pt-2.5 text-footnote text-text-2">
+          <span className="flex h-1.5 w-12 flex-none overflow-hidden rounded-full">
+            {members.map((member, index) => (
+              <span
+                key={member.user_id}
+                style={{ width: `${(split[index] * 100) / splitTotal}%`, background: member.color }}
+              />
+            ))}
+          </span>
+          <span className="truncate">
+            {t.lists.defaultSplit(split.join(' / '))} ({members.map((member) => member.display_name).join(' / ')})
+          </span>
+        </div>
+      </section>
+
+      {hasRows && (
+        <div className="flex gap-2">
+          <label className="flex h-10 flex-1 items-center gap-2 rounded-xl bg-fill px-3 text-text-2">
+            <Icon name="search" size={18} strokeWidth={2.2} />
+            <input
+              type="search"
+              placeholder={t.lists.search}
+              aria-label={t.lists.searchLabel}
+              value={search}
+              onChange={(event) => setSearch(event.target.value)}
+              className="min-w-0 flex-1 appearance-none bg-transparent text-base text-text outline-none placeholder:text-text-2"
+            />
+          </label>
+          <button
+            type="button"
+            aria-label={filterCount > 0 ? `${t.lists.filter} (${t.filter.active})` : t.lists.filter}
+            onClick={() => setFiltering(true)}
+            className={`relative flex h-10 w-11 items-center justify-center rounded-xl ${filterCount > 0 ? 'bg-accent text-white' : 'bg-fill text-accent-text'}`}
+          >
+            <Icon name="filter" size={20} />
+            {filterCount > 0 && (
+              <span className="absolute -top-1 -right-1 flex size-[18px] items-center justify-center rounded-full border-2 border-bg bg-accent-text text-[10px] font-bold text-white">
+                {filterCount}
+              </span>
+            )}
+          </button>
+        </div>
+      )}
+
+      {!hasRows && <EmptyList onAdd={() => onAddExpense(list.id)} disabled={readOnly} />}
+
+      {hasRows && months.length === 0 && (
+        <p className="py-10 text-center text-body text-text-2">{t.lists.noResults}</p>
+      )}
+
+      {months.map(({ month, rows, total }) => (
+        <section key={month} className="flex flex-col gap-2">
+          <div className="flex justify-between px-1 pt-1 text-footnote font-semibold text-text-2">
+            <span className="tracking-[0.4px] uppercase">{formatMonthYear(month)}</span>
+            <span>{formatMoney(total)}</span>
+          </div>
+          <div className="overflow-hidden rounded-card bg-surface shadow-card">
+            {rows.map((row, index) => (
+              <div key={row.kind === 'expense' ? row.expense.id : row.settlement.id} className={index > 0 ? 'border-t-[0.5px] border-separator' : ''}>
+                {row.kind === 'expense' ? (
+                  <ExpenseRow
+                    expense={row.expense}
+                    category={categories?.find((category) => category.id === row.expense.category_id)}
+                    me={me}
+                    partner={partner}
+                    onOpen={() => !readOnly && onEditExpense(row.expense)}
+                  />
+                ) : (
+                  <SettlementRow settlement={row.settlement} me={me} partner={partner} />
+                )}
+              </div>
+            ))}
+          </div>
+        </section>
+      ))}
+
+      {filtering && (
+        <FilterSheet
+          filter={filter}
+          categories={categories ?? []}
+          me={me}
+          partner={partner}
+          onApply={(next) => {
+            setFilter(next)
+            setFiltering(false)
+          }}
+          onClose={() => setFiltering(false)}
+        />
+      )}
+    </Screen>
+  )
+}

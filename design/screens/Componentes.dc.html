@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="pt-PT">
+<head>
+<meta charset="utf-8">
+<title>Componentes</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div style="width: 1440px; height: 1180px; box-sizing: border-box; padding: 56px 64px; background: #F7F7FA; color: #111114; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', sans-serif; display: flex; flex-direction: column; gap: 36px">
+  <div style="display: flex; align-items: baseline; gap: 16px">
+    <h1 style="margin: 0; font-size: 40px; font-weight: 700; letter-spacing: -0.5px">KangarooSplit</h1>
+    <span style="font-size: 20px; color: #6B6B76">Componentes e tokens</span>
+  </div>
+
+  <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 48px">
+
+    <section style="display: flex; flex-direction: column; gap: 14px">
+      <h2 style="margin: 0; font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: #6B6B76">Cores · claro / escuro</h2>
+      <div style="display: flex; flex-direction: column; gap: 6px">
+        <sc-for list="{{colors}}" as="k" hint-placeholder-count="13">
+          <div style="display: flex; align-items: center; gap: 10px; height: 30px">
+            <span style="width: 44px; height: 26px; border-radius: 8px; background: {{k.light}}; box-shadow: inset 0 0 0 1px rgba(0,0,0,0.08)"></span>
+            <span style="width: 44px; height: 26px; border-radius: 8px; background: {{k.dark}}; box-shadow: inset 0 0 0 1px rgba(255,255,255,0.12), inset 0 0 0 1px rgba(0,0,0,0.08)"></span>
+            <span style="flex: 1; font-size: 14px">{{k.name}}</span>
+            <span style="font-size: 12px; color: #6B6B76; font-family: ui-monospace, Menlo, monospace">{{k.light}} / {{k.dark}}</span>
+          </div>
+        </sc-for>
+      </div>
+    </section>
+
+    <section style="display: flex; flex-direction: column; gap: 14px">
+      <h2 style="margin: 0; font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: #6B6B76">Tipografia · SF Pro (-apple-system)</h2>
+      <div style="display: flex; flex-direction: column; gap: 10px">
+        <div style="display: flex; align-items: baseline; justify-content: space-between; gap: 12px"><span style="font-size: 48px; font-weight: 700; letter-spacing: -1px; line-height: 1">127<span style="color: #8A8A94">,40 €</span></span><span style="font-size: 12px; color: #6B6B76">Número herói 48/58 bold</span></div>
+        <div style="display: flex; align-items: baseline; justify-content: space-between"><span style="font-size: 34px; font-weight: 700">Início</span><span style="font-size: 12px; color: #6B6B76">Título grande 34/41 bold</span></div>
+        <div style="display: flex; align-items: baseline; justify-content: space-between"><span style="font-size: 22px; font-weight: 700">Listas</span><span style="font-size: 12px; color: #6B6B76">Título 2 · 22/28 bold</span></div>
+        <div style="display: flex; align-items: baseline; justify-content: space-between"><span style="font-size: 17px; font-weight: 600">Jantar no Ramiro</span><span style="font-size: 12px; color: #6B6B76">Destaque 17/22 semibold</span></div>
+        <div style="display: flex; align-items: baseline; justify-content: space-between"><span style="font-size: 17px">Pago por ti</span><span style="font-size: 12px; color: #6B6B76">Corpo 17/22 · campos ≥ 16</span></div>
+        <div style="display: flex; align-items: baseline; justify-content: space-between"><span style="font-size: 15px">Divisão predefinida</span><span style="font-size: 12px; color: #6B6B76">Subtítulo 15/20</span></div>
+        <div style="display: flex; align-items: baseline; justify-content: space-between"><span style="font-size: 13px; color: #6B6B76">10 out · Pago por ti</span><span style="font-size: 12px; color: #6B6B76">Nota 13/18</span></div>
+        <div style="display: flex; align-items: baseline; justify-content: space-between"><span style="font-size: 10px; font-weight: 600">Estatísticas</span><span style="font-size: 12px; color: #6B6B76">Separador 10/12</span></div>
+      </div>
+      <h2 style="margin: 14px 0 0; font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: #6B6B76">Espaçamento e raios</h2>
+      <div style="display: flex; align-items: flex-end; gap: 10px">
+        <sc-for list="{{spaces}}" as="s" hint-placeholder-count="7">
+          <div style="display: flex; flex-direction: column; align-items: center; gap: 4px">
+            <span style="width: {{s.px}}; height: {{s.px}}; background: #D9D0FC; border-radius: 2px"></span>
+            <span style="font-size: 11px; color: #6B6B76">{{s.v}}</span>
+          </div>
+        </sc-for>
+      </div>
+      <div style="display: flex; gap: 10px">
+        <sc-for list="{{radii}}" as="r" hint-placeholder-count="5">
+          <div style="display: flex; flex-direction: column; align-items: center; gap: 4px">
+            <span style="width: 56px; height: 40px; border-radius: {{r.px}}; background: #FFFFFF; box-shadow: inset 0 0 0 1.5px #6847F0"></span>
+            <span style="font-size: 11px; color: #6B6B76">{{r.label}}</span>
+          </div>
+        </sc-for>
+      </div>
+    </section>
+
+    <section style="display: flex; flex-direction: column; gap: 14px">
+      <h2 style="margin: 0; font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: #6B6B76">Botões</h2>
+      <div style="display: flex; flex-wrap: wrap; gap: 10px; align-items: center">
+        <button type="button" style="height: 52px; padding: 0 22px; border: 0; border-radius: 16px; background: #6847F0; color: #FFFFFF; font: inherit; font-size: 17px; font-weight: 600">Registar pagamento</button>
+        <button type="button" style="height: 44px; padding: 0 16px; border: 0; border-radius: 14px; background: #6847F0; color: #FFFFFF; font: inherit; font-size: 15px; font-weight: 600">Acertar contas</button>
+        <button type="button" style="height: 44px; padding: 0 16px; border: 0; border-radius: 14px; background: #FFFFFF; color: #5B3FD9; font: inherit; font-size: 15px; font-weight: 600">Desarquivar</button>
+        <button type="button" style="height: 44px; padding: 0 8px; border: 0; background: transparent; color: #5B3FD9; font: inherit; font-size: 17px">Cancelar</button>
+        <button type="button" style="height: 44px; padding: 0 16px; border: 0; border-radius: 14px; background: #FFFFFF; color: #C42B1C; font: inherit; font-size: 15px; font-weight: 600">Apagar despesa</button>
+        <button type="button" disabled="" style="height: 44px; padding: 0 16px; border: 0; border-radius: 14px; background: #E4E4EA; color: #8A8A94; font: inherit; font-size: 15px; font-weight: 600">Desativado</button>
+      </div>
+
+      <h2 style="margin: 10px 0 0; font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: #6B6B76">Campos</h2>
+      <div style="border-radius: 20px; background: #FFFFFF; overflow: hidden">
+        <label style="display: flex; flex-direction: column; gap: 2px; padding: 10px 16px"><span style="font-size: 13px; color: #6B6B76">Descrição</span><input type="text" value="Continente" style="border: 0; outline: none; font: inherit; font-size: 17px; padding: 0; background: transparent"></label>
+        <div style="border-top: 0.5px solid #E6E6EC; display: flex; align-items: center; gap: 10px; padding: 8px 16px">
+          <span style="flex: 1; font-size: 17px">Parte da Mara</span>
+          <span style="height: 40px; min-width: 92px; box-sizing: border-box; border-radius: 10px; border: 1.5px solid #C42B1C; background: #EEEEF3; display: flex; align-items: center; justify-content: flex-end; gap: 4px; padding: 0 10px; font-size: 17px; font-weight: 600">10,00 <span style="color: #6B6B76; font-weight: 400">€</span></span>
+        </div>
+        <div style="padding: 0 16px 10px; font-size: 13px; color: #C42B1C">Faltam 5,00 €</div>
+      </div>
+      <div style="display: flex; padding: 3px; border-radius: 10px; background: #EEEEF3">
+        <span style="flex: 1; height: 32px; display: flex; align-items: center; justify-content: center; font-size: 13px">Igual</span>
+        <span style="flex: 1.6; height: 32px; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 600; background: #FFFFFF; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.12)">Percentagem</span>
+        <span style="flex: 1.4; height: 32px; display: flex; align-items: center; justify-content: center; font-size: 13px">Valor exato</span>
+        <span style="flex: 1; height: 32px; display: flex; align-items: center; justify-content: center; font-size: 13px">Partes</span>
+      </div>
+
+      <h2 style="margin: 10px 0 0; font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: #6B6B76">Chips e avatares</h2>
+      <div style="display: flex; flex-wrap: wrap; gap: 8px; align-items: center">
+        <span style="font-size: 15px; padding: 6px 12px; border-radius: 999px; background: #FFFFFF">🛒 Supermercado</span>
+        <span style="font-size: 12px; font-weight: 600; color: #5B3FD9; background: #EFEAFE; padding: 3px 9px; border-radius: 999px">Principal</span>
+        <span style="font-size: 12px; font-weight: 600; color: #5B3FD9; background: #EFEAFE; padding: 3px 9px; border-radius: 999px">⟳ Recorrente</span>
+        <span style="font-size: 12px; font-weight: 600; color: #7A4A00; background: #FFF1D6; padding: 3px 9px; border-radius: 999px">Em pausa</span>
+        <span style="width: 36px; height: 36px; border-radius: 18px; background: #2563EB; color: #FFFFFF; font-size: 13px; font-weight: 700; display: flex; align-items: center; justify-content: center">Mi</span>
+        <span style="width: 36px; height: 36px; border-radius: 18px; background: #C0367A; color: #FFFFFF; font-size: 13px; font-weight: 700; display: flex; align-items: center; justify-content: center">Ma</span>
+      </div>
+    </section>
+  </div>
+
+  <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 48px">
+    <section style="display: flex; flex-direction: column; gap: 14px">
+      <h2 style="margin: 0; font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: #6B6B76">Linhas de lista</h2>
+      <div style="border-radius: 20px; background: #FFFFFF; overflow: hidden; width: 358px">
+        <div style="padding: 10px 14px; display: flex; align-items: center; gap: 12px">
+          <span style="width: 42px; height: 42px; border-radius: 12px; background: #F2F2F7; display: flex; align-items: center; justify-content: center; font-size: 21px">🛒</span>
+          <span style="flex: 1; display: flex; flex-direction: column; gap: 2px"><span style="font-size: 16px; font-weight: 600">Continente</span><span style="font-size: 13px; color: #6B6B76">10 out · Pago por ti</span></span>
+          <span style="display: flex; flex-direction: column; align-items: flex-end; gap: 2px"><span style="font-size: 16px; font-weight: 600">86,35 €</span><span style="font-size: 13px; color: #0B7A5C">emprestaste 34,54 €</span></span>
+        </div>
+        <div style="padding: 10px 14px; display: flex; align-items: center; gap: 12px; border-top: 0.5px solid #E6E6EC">
+          <span style="width: 42px; height: 42px; border-radius: 12px; background: #F2F2F7; display: flex; align-items: center; justify-content: center; font-size: 21px">🍽️</span>
+          <span style="flex: 1; display: flex; flex-direction: column; gap: 2px"><span style="font-size: 16px; font-weight: 600">Jantar no Ramiro</span><span style="font-size: 13px; color: #6B6B76">08 out · Pago pela Mara</span></span>
+          <span style="display: flex; flex-direction: column; align-items: flex-end; gap: 2px"><span style="font-size: 16px; font-weight: 600">74,00 €</span><span style="font-size: 13px; color: #B93D0B">deves 44,40 €</span></span>
+        </div>
+        <div style="padding: 10px 14px; display: flex; align-items: center; gap: 12px; border-top: 0.5px solid #E6E6EC; background: #F7F4FF">
+          <span style="width: 42px; height: 42px; border-radius: 21px; border: 1.5px dashed #6847F0; box-sizing: border-box; display: flex; align-items: center; justify-content: center; color: #5B3FD9"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 7h12l-4-4M17 17H5l4 4"></path></svg></span>
+          <span style="flex: 1; display: flex; flex-direction: column; gap: 2px"><span style="font-size: 16px; font-weight: 600; color: #5B3FD9">A Mara pagou-te</span><span style="font-size: 13px; color: #6B6B76">06 out · Acerto de contas</span></span>
+          <span style="font-size: 16px; font-weight: 600; color: #5B3FD9">354,65 €</span>
+        </div>
+      </div>
+      <p style="margin: 0; font-size: 13px; color: #6B6B76; line-height: 18px; max-width: 358px">A direção do saldo nunca depende só da cor: texto (“deve-te”, “deves”) e seta ↙ / ↗.</p>
+    </section>
+
+    <section style="display: flex; flex-direction: column; gap: 14px">
+      <h2 style="margin: 0; font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: #6B6B76">Cabeçalho de folha e toasts</h2>
+      <div style="width: 358px; border-radius: 14px 14px 0 0; background: #F2F2F7; box-shadow: inset 0 0 0 1px #E6E6EC">
+        <div style="width: 36px; height: 5px; border-radius: 3px; background: #C7C7CC; margin: 6px auto 0"></div>
+        <div style="height: 48px; display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; padding: 0 16px">
+          <span style="font-size: 17px; color: #5B3FD9">Cancelar</span><span style="font-size: 17px; font-weight: 600">Nova despesa</span><span style="justify-self: end; font-size: 17px; font-weight: 600; color: #5B3FD9">Guardar</span>
+        </div>
+      </div>
+      <div role="status" style="width: 358px; height: 52px; box-sizing: border-box; border-radius: 16px; background: #1C1C1E; color: #F5F5F7; display: flex; align-items: center; gap: 10px; padding: 0 6px 0 14px">
+        <span style="width: 24px; height: 24px; border-radius: 12px; background: #3DD6A3; color: #0B2A20; display: flex; align-items: center; justify-content: center"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 5 5 9-10"></path></svg></span>
+        <span style="flex: 1; font-size: 15px; font-weight: 500">Despesa guardada</span>
+        <span style="height: 44px; display: flex; align-items: center; padding: 0 12px; color: #B9A8FF; font-size: 15px; font-weight: 600">Anular</span>
+      </div>
+      <div role="status" style="width: 358px; height: 52px; box-sizing: border-box; border-radius: 16px; background: #1C1C1E; color: #F5F5F7; display: flex; align-items: center; gap: 10px; padding: 0 14px">
+        <span style="width: 24px; height: 24px; border-radius: 12px; background: #FF6B5E; color: #2A0B07; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 800">!</span>
+        <span style="flex: 1; font-size: 15px; font-weight: 500">Algo correu mal. Tenta outra vez.</span>
+      </div>
+      <div role="status" style="width: 358px; box-sizing: border-box; display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 14px; background: #FFF1D6; color: #7A4A00; font-size: 15px; font-weight: 500">Sem ligação. Só podes consultar.</div>
+    </section>
+
+    <section style="display: flex; flex-direction: column; gap: 14px">
+      <h2 style="margin: 0; font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: #6B6B76">Barra de separadores</h2>
+      <div style="width: 390px; height: 100px; border-radius: 16px; overflow: hidden; background: #F2F2F7">
+        <dc-import name="TabBar" active="inicio" hint-size="390px,100px"></dc-import>
+      </div>
+      <div style="width: 390px; height: 100px; border-radius: 16px; overflow: hidden; background: #000000">
+        <dc-import name="TabBar" active="estatisticas" dark="{{ true }}" hint-size="390px,100px"></dc-import>
+      </div>
+      <p style="margin: 0; font-size: 13px; color: #6B6B76; line-height: 18px; max-width: 390px">A barra fica por cima do indicador inicial (34 px de margem segura). O botão central abre a folha “Nova despesa” em qualquer separador.</p>
+    </section>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1180}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const colors = [
+      ['Fundo', '#F2F2F7', '#000000'], ['Superfície', '#FFFFFF', '#1C1C1E'], ['Texto', '#111114', '#F5F5F7'],
+      ['Texto secundário', '#6B6B76', '#A1A1AA'], ['Separador', '#E6E6EC', '#38383A'], ['Acento', '#6847F0', '#7B5CFA'],
+      ['Acento (texto)', '#5B3FD9', '#A893FF'], ['Acento suave', '#EFEAFE', '#2A2342'], ['Recebes (deve-te)', '#0B7A5C', '#3DD6A3'],
+      ['Deves', '#B93D0B', '#FF9A5C'], ['Erro / destrutivo', '#C42B1C', '#FF6B5E'], ['Miguel', '#2563EB', '#2563EB'], ['Mara', '#C0367A', '#C0367A']
+    ].map(([name, light, dark]) => ({ name, light, dark }));
+    const spaces = [4, 8, 12, 16, 20, 24, 32].map((v) => ({ v: String(v), px: v + 'px' }));
+    const radii = [['8', '8px'], ['10', '10px'], ['14', '14px'], ['20', '20px'], ['pílula', '999px']].map(([label, px]) => ({ label, px }));
+    return { colors, spaces, radii };
+  }
+}
+</script>
+</body>
+</html>

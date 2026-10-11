@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="pt-PT">
+<head>
+<meta charset="utf-8">
+<title>Despesas recorrentes</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; position: relative; overflow: hidden; background: #F2F2F7; color: #111114; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', sans-serif">
+  <div style="position: absolute; inset: 0; padding: 54px 16px 120px; box-sizing: border-box; display: flex; flex-direction: column; gap: 12px">
+    <div style="height: 44px; display: flex; align-items: center; justify-content: space-between; margin: 0 -8px">
+      <a href="Definicoes.dc.html" style="height: 44px; display: flex; align-items: center; gap: 2px; padding-right: 8px; color: #5B3FD9; text-decoration: none; font-size: 17px">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 5-7 7 7 7"></path></svg>
+        Definições
+      </a>
+      <a href="DespesaRecorrente.dc.html" aria-label="Nova despesa recorrente" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center">
+        <span style="width: 34px; height: 34px; border-radius: 17px; background: #6847F0; color: #FFFFFF; display: flex; align-items: center; justify-content: center">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>
+        </span>
+      </a>
+    </div>
+    <h1 style="margin: 0; font-size: 30px; line-height: 36px; font-weight: 700">Despesas recorrentes</h1>
+
+    <sc-if value="{{empty}}" hint-placeholder-val="{{ false }}">
+      <div style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; text-align: center; padding-bottom: 60px">
+        <div style="width: 104px; height: 104px; border-radius: 52px; background: #EFEAFE; display: flex; align-items: center; justify-content: center; color: #6847F0">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 2l4 4-4 4M3 11V9a3 3 0 0 1 3-3h15M7 22l-4-4 4-4M21 13v2a3 3 0 0 1-3 3H3"></path></svg>
+        </div>
+        <p style="margin: 0; font-size: 17px; font-weight: 600">Ainda não tens despesas recorrentes.</p>
+        <p style="margin: 0; font-size: 15px; color: #6B6B76; max-width: 280px; line-height: 21px">A renda, as contas e as subscrições são criadas automaticamente na data certa.</p>
+        <a href="DespesaRecorrente.dc.html" style="height: 48px; padding: 0 20px; border-radius: 14px; background: #6847F0; color: #FFFFFF; font-size: 17px; font-weight: 600; display: flex; align-items: center; text-decoration: none">Nova despesa recorrente</a>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{notEmpty}}" hint-placeholder-val="{{ true }}">
+      <div style="border-radius: 20px; background: #FFFFFF; overflow: hidden">
+        <sc-for list="{{rules}}" as="r" hint-placeholder-count="5">
+          <a href="DespesaRecorrente.dc.html" style="text-decoration: none; color: inherit; padding: 12px 14px; display: flex; align-items: center; gap: 12px; border-top: {{r.border}}">
+            <span style="width: 42px; height: 42px; border-radius: 12px; background: #F2F2F7; display: flex; align-items: center; justify-content: center; font-size: 21px; opacity: {{r.op}}; flex: none">{{r.icon}}</span>
+            <span style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px">
+              <span style="font-size: 16px; font-weight: 600; color: {{r.titleColor}}">{{r.name}}</span>
+              <span style="font-size: 13px; color: #6B6B76">{{r.freq}} · {{r.list}}</span>
+              <sc-if value="{{r.paused}}" hint-placeholder-val="{{ false }}">
+                <span style="align-self: flex-start; margin-top: 2px; display: inline-flex; align-items: center; gap: 4px; font-size: 12px; font-weight: 600; color: #7A4A00; background: #FFF1D6; padding: 2px 8px; border-radius: 999px">
+                  <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="5" y="4" width="5" height="16" rx="1"></rect><rect x="14" y="4" width="5" height="16" rx="1"></rect></svg>
+                  Em pausa
+                </span>
+              </sc-if>
+              <sc-if value="{{r.active}}" hint-placeholder-val="{{ true }}">
+                <span style="font-size: 13px; color: #6B6B76">{{r.next}}</span>
+              </sc-if>
+            </span>
+            <span style="display: flex; flex-direction: column; align-items: flex-end; gap: 6px">
+              <span style="font-size: 16px; font-weight: 600; color: {{r.titleColor}}; font-variant-numeric: tabular-nums">{{r.amount}}</span>
+              <sc-if value="{{r.paused}}" hint-placeholder-val="{{ false }}">
+                <span style="font-size: 15px; font-weight: 600; color: #5B3FD9">Retomar</span>
+              </sc-if>
+            </span>
+          </a>
+        </sc-for>
+      </div>
+      <p style="margin: 0; padding: 0 4px; font-size: 13px; color: #6B6B76; line-height: 18px">Cada regra cria a despesa na data indicada, com a divisão predefinida da lista.</p>
+    </sc-if>
+  </div>
+  <div style="position: absolute; left: 0; bottom: 0; width: 390px; height: 100px">
+    <dc-import name="TabBar" active="definicoes" hint-size="390px,100px"></dc-import>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"empty":{"editor":"boolean","default":false},"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const empty = !!this.props.empty;
+    const raw = [
+      ['🏠', 'Renda', '1.150,00 €', 'Mensal', '01/11/2026', false],
+      ['🚗', 'Passe Navegante', '40,00 €', 'Mensal', '01/11/2026', false],
+      ['💡', 'Internet MEO', '39,99 €', 'Mensal', '15/10/2026', false],
+      ['🎉', 'Netflix', '13,99 €', 'Mensal', '', true],
+      ['🏠', 'Seguro da casa', '186,40 €', 'Anual', '03/03/2027', false]
+    ];
+    const rules = raw.map(([icon, name, amount, freq, next, paused], i) => ({
+      icon, name, amount, freq, list: '🏠 Casa', next: 'Próxima: ' + next, paused, active: !paused,
+      op: paused ? 0.5 : 1, titleColor: paused ? '#6B6B76' : '#111114',
+      border: i === 0 ? 'none' : '0.5px solid #E6E6EC'
+    }));
+    return { empty, notEmpty: !empty, rules };
+  }
+}
+</script>
+</body>
+</html>
