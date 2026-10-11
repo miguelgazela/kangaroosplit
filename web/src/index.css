@@ -1,36 +1,56 @@
 @import 'tailwindcss';
 @import '../../design/tokens.css';
 
-/* Values the mockups use that tokens.css does not name. */
+/* Accent colours follow the signed-in person's chosen colour (--ks-brand, set
+   from their profile; see lib/brand.ts). Everything accent-tinted is derived
+   from that one value, which replaces the fixed violet in tokens.css. */
 :root {
-  --ks-hero: #6847f0;
-  --ks-hero-button-text: #4b2fd0;
-  --ks-main-ring: #dcd3fd;
+  --ks-brand: #6847f0;
+
+  --ks-accent: var(--ks-brand);
+  --ks-accent-text: color-mix(in oklab, var(--ks-brand) 86%, black);
+  --ks-accent-soft: color-mix(in oklab, var(--ks-brand) 12%, white);
+  --ks-settle-bg: color-mix(in oklab, var(--ks-brand) 6%, white);
+  --ks-hero: var(--ks-brand);
+  --ks-hero-button-text: color-mix(in oklab, var(--ks-brand) 80%, black);
+  --ks-main-ring: color-mix(in oklab, var(--ks-brand) 26%, white);
+  --ks-fab-shadow: 0 6px 18px color-mix(in srgb, var(--ks-brand) 35%, transparent);
+  /* For accent text on the always-dark toast. */
+  --ks-accent-on-dark: color-mix(in oklab, var(--ks-brand) 45%, white);
+
+  /* Values the mockups use that tokens.css does not name. */
   --ks-tab-off: #6b6b76;
   --ks-disabled: #c7c7ce;
-  --ks-fab-shadow: 0 6px 18px rgba(104, 71, 240, 0.35);
   --ks-segment-on: #ffffff;
 }
 
 @media (prefers-color-scheme: dark) {
   :root:not(.light) {
-    --ks-hero: #4a34b8;
-    --ks-hero-button-text: #3b2799;
-    --ks-main-ring: #3a2f66;
+    --ks-accent: color-mix(in oklab, var(--ks-brand) 88%, white);
+    --ks-accent-text: color-mix(in oklab, var(--ks-brand) 50%, white);
+    --ks-accent-soft: color-mix(in oklab, var(--ks-brand) 26%, black);
+    --ks-settle-bg: color-mix(in oklab, var(--ks-brand) 18%, black);
+    --ks-hero: color-mix(in oklab, var(--ks-brand) 74%, black);
+    --ks-hero-button-text: color-mix(in oklab, var(--ks-brand) 62%, black);
+    --ks-main-ring: color-mix(in oklab, var(--ks-brand) 42%, black);
+    --ks-fab-shadow: 0 6px 18px color-mix(in srgb, var(--ks-brand) 45%, transparent);
     --ks-tab-off: #9a9aa3;
     --ks-disabled: #3a3a3d;
-    --ks-fab-shadow: 0 6px 18px rgba(123, 92, 250, 0.45);
     --ks-segment-on: #636366;
   }
 }
 
 :root.dark {
-  --ks-hero: #4a34b8;
-  --ks-hero-button-text: #3b2799;
-  --ks-main-ring: #3a2f66;
+  --ks-accent: color-mix(in oklab, var(--ks-brand) 88%, white);
+  --ks-accent-text: color-mix(in oklab, var(--ks-brand) 50%, white);
+  --ks-accent-soft: color-mix(in oklab, var(--ks-brand) 26%, black);
+  --ks-settle-bg: color-mix(in oklab, var(--ks-brand) 18%, black);
+  --ks-hero: color-mix(in oklab, var(--ks-brand) 74%, black);
+  --ks-hero-button-text: color-mix(in oklab, var(--ks-brand) 62%, black);
+  --ks-main-ring: color-mix(in oklab, var(--ks-brand) 42%, black);
+  --ks-fab-shadow: 0 6px 18px color-mix(in srgb, var(--ks-brand) 45%, transparent);
   --ks-tab-off: #9a9aa3;
   --ks-disabled: #3a3a3d;
-  --ks-fab-shadow: 0 6px 18px rgba(123, 92, 250, 0.45);
   --ks-segment-on: #636366;
 }
 

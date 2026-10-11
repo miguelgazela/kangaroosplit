@@ -1,9 +1,11 @@
+import { useEffect } from 'react'
 import { BrowserRouter, Outlet, Route, Routes } from 'react-router-dom'
 import { useAuth } from './auth/AuthContext'
 import { InstallHint } from './components/InstallHint'
 import { NotificationPrompt } from './components/NotificationPrompt'
 import { TabBar } from './components/TabBar'
 import { ToastProvider } from './components/Toast'
+import { applyBrand } from './lib/brand'
 import { useOnline } from './lib/online'
 import { useCurrentMember } from './query/hooks'
 import { Activity } from './screens/Activity'
@@ -48,7 +50,14 @@ function ListRoute() {
 
 function App() {
   const { loading, session } = useAuth()
-  const { status } = useCurrentMember()
+  const { status, me } = useCurrentMember()
+
+  // Accents take the signed-in person's colour; signing out restores the default.
+  const brand = session ? me?.color : null
+  useEffect(() => {
+    // Undefined: signed in but profile not loaded yet, so keep the cached colour.
+    if (brand !== undefined) applyBrand(brand)
+  }, [brand])
 
   if (loading) return null
   if (!session) {

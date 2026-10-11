@@ -42,7 +42,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
                 toast.action?.onClick()
                 setToast(null)
               }}
-              className="h-11 px-3 text-subhead font-semibold text-[#B9A8FF]"
+              className="h-11 px-3 text-subhead font-semibold text-(--ks-accent-on-dark)"
             >
               {toast.action.label}
             </button>
