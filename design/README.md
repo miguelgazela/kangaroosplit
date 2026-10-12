@@ -36,6 +36,7 @@ Several files are small wrappers that show a variant of a main file. The variant
 | 10 Definições | `Definicoes.dc.html` | — (includes the profile photo upload) |
 | 11 System states | `Notificacoes`, `Instalar`, `ConfirmarApagar` (iOS action sheet), `Toast` | offline and loading: see Início |
 | Shared | `TabBar.dc.html` (tab bar + raised "+"), `Componentes.dc.html` (component sheet), `Icone.dc.html` (app icon) | |
+| Mascot | `Guru.dc.html` (the mascot component, prop `pose` = `normal` / `ola` / `vazio` / `sucesso` / `dormir`, prop `crop` for a head-only avatar), `Mascote.dc.html` (mascot sheet) | |
 
 ## Decisions (these override DESIGN_BRIEF.md)
 
@@ -63,6 +64,24 @@ Several files are small wrappers that show a variant of a main file. The variant
 
 ### Statistics
 - The six-month trend is a small bar chart inside the "Total do mês" card. The category breakdown is a stacked bar and a ranked list. Category colours are fixed (`--ks-cat-1…6` in `tokens.css`) and must not change when a filter changes.
+
+## Mascot — Guru
+
+Guru is a kangaroo with a pouch full of coins. The name comes from "canGURU". The pouch and coins match the app icon.
+
+- Build it as one React component, `<Guru pose="..." size={...} crop? />`, from the inline SVG in `screens/Guru.dc.html`. Keep it as inline SVG (no image files), so it stays sharp at all sizes.
+- Each `<sc-if>` in that file shows or hides one part of the drawing (arms, eyes, mouth, coins, "zzz"). `renderVals()` lists which parts each pose uses.
+- The colours are fixed and the same in light and dark mode: fur `#E3A465`, darker fur `#C98448`, belly `#F7DEC2`, coins `#FFC94A`, bandana = accent `#6847F0`.
+- Give the SVG a pt-PT `aria-label` (the labels are in `renderVals()`), or `aria-hidden="true"` when it is only decoration next to text.
+- Use Guru only in these places. Never use it on work screens (lists, forms, statistics):
+
+| Pose | Where | Screen file |
+|---|---|---|
+| `vazio` | Empty list, empty recurring expenses | `Lista.dc.html` (`variant="vazia"`), `Recorrentes.dc.html` (`empty`) |
+| `sucesso` | "Contas acertadas!" after a settlement | `Acerto.dc.html` (`variant="sucesso"`) |
+| `ola` | Login, "Ativar notificações" prompt | `Login.dc.html`, `Notificacoes.dc.html` |
+| `dormir` (`crop`) | Offline banner | `Main.dc.html` (`offline`) |
+| `dormir` | Month with no expenses in Estatísticas (not drawn) | — |
 
 ## Not shown in the mockups
 

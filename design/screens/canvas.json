@@ -45,7 +45,10 @@
 
     "Componentes.dc.html": {"x": 0, "y": 6100, "w": 1440, "h": 1180, "title": "Componentes"},
     "Icone.dc.html": {"x": 1520, "y": 6100, "w": 720, "h": 720, "title": "Ícone da app"},
-    "TabBar.dc.html": {"x": 2320, "y": 6100, "w": 390, "h": 100, "title": "Barra de separadores"}
+    "TabBar.dc.html": {"x": 2320, "y": 6100, "w": 390, "h": 100, "title": "Barra de separadores"},
+
+    "Mascote.dc.html": {"x": 0, "y": 7660, "w": 1280, "h": 1000, "title": "Mascote — Guru"},
+    "Guru.dc.html": {"x": 1360, "y": 7660, "w": 200, "h": 240, "title": "Guru (componente)"}
   },
   "order": [
     "Main.dc.html", "Lista.dc.html", "Despesa.dc.html", "Acerto.dc.html", "Atividade.dc.html", "Estatisticas.dc.html", "Definicoes.dc.html",
@@ -53,7 +56,8 @@
     "ListaVazia.dc.html", "ListaArquivada.dc.html", "NovaLista.dc.html", "EditarLista.dc.html", "AcertarTudo.dc.html", "AcertoSucesso.dc.html", "Recorrentes.dc.html", "RecorrentesVazio.dc.html",
     "Login.dc.html", "LoginErro.dc.html", "InicioOffline.dc.html", "InicioLoading.dc.html", "Notificacoes.dc.html", "Instalar.dc.html", "ConfirmarApagar.dc.html", "Toast.dc.html",
     "InicioEscuro.dc.html", "ListaEscuro.dc.html", "DespesaEscuro.dc.html",
-    "Componentes.dc.html", "Icone.dc.html", "TabBar.dc.html"
+    "Componentes.dc.html", "Icone.dc.html", "TabBar.dc.html",
+    "Mascote.dc.html", "Guru.dc.html"
   ],
   "notes": {
     "r1": {"x": 0, "y": -260, "text": "Ecrãs principais", "kind": "title1", "maxW": 3210},
@@ -61,7 +65,8 @@
     "r3": {"x": 0, "y": 2180, "text": "Listas, acertos e recorrentes", "kind": "title1", "maxW": 3680},
     "r4": {"x": 0, "y": 3400, "text": "Sessão e estados do sistema", "kind": "title1", "maxW": 3680},
     "r5": {"x": 0, "y": 4620, "text": "Modo escuro", "kind": "title1", "maxW": 1330},
-    "r6": {"x": 0, "y": 5840, "text": "Componentes e ícone", "kind": "title1", "maxW": 2710}
+    "r6": {"x": 0, "y": 5840, "text": "Componentes e ícone", "kind": "title1", "maxW": 2710},
+    "r7": {"x": 0, "y": 7400, "text": "Mascote", "kind": "title1", "maxW": 1560}
   },
   "designSystems": []
 }

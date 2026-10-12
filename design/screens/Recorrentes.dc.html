@@ -29,9 +29,7 @@ body{margin:0}
 
     <sc-if value="{{empty}}" hint-placeholder-val="{{ false }}">
       <div style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; text-align: center; padding-bottom: 60px">
-        <div style="width: 104px; height: 104px; border-radius: 52px; background: #EFEAFE; display: flex; align-items: center; justify-content: center; color: #6847F0">
-          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 2l4 4-4 4M3 11V9a3 3 0 0 1 3-3h15M7 22l-4-4 4-4M21 13v2a3 3 0 0 1-3 3H3"></path></svg>
-        </div>
+        <dc-import name="Guru" pose="vazio" size="{{ 150 }}" hint-size="150px,180px"></dc-import>
         <p style="margin: 0; font-size: 17px; font-weight: 600">Ainda não tens despesas recorrentes.</p>
         <p style="margin: 0; font-size: 15px; color: #6B6B76; max-width: 280px; line-height: 21px">A renda, as contas e as subscrições são criadas automaticamente na data certa.</p>
         <a href="DespesaRecorrente.dc.html" style="height: 48px; padding: 0 20px; border-radius: 14px; background: #6847F0; color: #FFFFFF; font-size: 17px; font-weight: 600; display: flex; align-items: center; text-decoration: none">Nova despesa recorrente</a>

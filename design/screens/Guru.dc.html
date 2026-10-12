@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="pt-PT">
+<head>
+<meta charset="utf-8">
+<title>Guru — mascote</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div style="width: {{w}}; height: {{h}}; display: flex; align-items: center; justify-content: center; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', sans-serif; color: #111114">
+  <svg width="{{w}}" height="{{h}}" viewBox="{{viewBox}}" role="img" aria-label="{{label}}">
+    <sc-if value="{{flying}}" hint-placeholder-val="{{ false }}">
+      <g>
+        <circle cx="34" cy="46" r="9" fill="#FFC94A"></circle><circle cx="34" cy="46" r="5.5" fill="none" stroke="#E0A21A" stroke-width="1.8"></circle>
+        <circle cx="166" cy="34" r="10" fill="#FFC94A"></circle><circle cx="166" cy="34" r="6.2" fill="none" stroke="#E0A21A" stroke-width="1.8"></circle>
+        <circle cx="160" cy="80" r="7" fill="#FFC94A"></circle><circle cx="160" cy="80" r="4.2" fill="none" stroke="#E0A21A" stroke-width="1.6"></circle>
+        <path d="M46 18v10M41 23h10M178 62v8M174 66h8M24 84v7M20.5 87.5h7" stroke="#6847F0" stroke-width="2.4" stroke-linecap="round"></path>
+      </g>
+    </sc-if>
+    <sc-if value="{{zzz}}" hint-placeholder-val="{{ false }}">
+      <g fill="#6847F0" font-family="-apple-system, sans-serif" font-weight="700">
+        <text x="146" y="44" font-size="18">z</text>
+        <text x="160" y="26" font-size="13">z</text>
+        <text x="171" y="12" font-size="10">z</text>
+      </g>
+    </sc-if>
+
+    <path d="M62 196C22 206 6 176 16 144C20 130 34 132 33 146C30 170 46 186 72 182Z" fill="{{c.furDark}}"></path>
+    <ellipse cx="78" cy="224" rx="25" ry="9" fill="{{c.furDark}}"></ellipse>
+    <ellipse cx="124" cy="224" rx="25" ry="9" fill="{{c.furDark}}"></ellipse>
+    <ellipse cx="72" cy="194" rx="22" ry="26" fill="{{c.fur}}"></ellipse>
+    <ellipse cx="128" cy="194" rx="22" ry="26" fill="{{c.fur}}"></ellipse>
+    <ellipse cx="100" cy="162" rx="46" ry="54" fill="{{c.fur}}"></ellipse>
+    <ellipse cx="100" cy="170" rx="32" ry="42" fill="{{c.belly}}"></ellipse>
+
+    <sc-if value="{{coins}}" hint-placeholder-val="{{ true }}">
+      <g>
+        <circle cx="100" cy="160" r="9.5" fill="#FFC94A"></circle><circle cx="100" cy="160" r="5.8" fill="none" stroke="#E0A21A" stroke-width="1.8"></circle>
+        <circle cx="88" cy="168" r="10" fill="#FFC94A"></circle><circle cx="88" cy="168" r="6.2" fill="none" stroke="#E0A21A" stroke-width="1.8"></circle>
+        <circle cx="112" cy="167" r="10" fill="#FFC94A"></circle><circle cx="112" cy="167" r="6.2" fill="none" stroke="#E0A21A" stroke-width="1.8"></circle>
+      </g>
+    </sc-if>
+    <path d="M69 174h62v6c0 18-13.5 30-31 30s-31-12-31-30z" fill="{{c.pouch}}" stroke="{{c.pouchEdge}}" stroke-width="1.6"></path>
+    <path d="M76 183h48" stroke="#B9A8F5" stroke-width="2.2" stroke-dasharray="4 4" stroke-linecap="round"></path>
+
+    <sc-if value="{{leftHold}}" hint-placeholder-val="{{ true }}">
+      <ellipse cx="68" cy="166" rx="9" ry="15" transform="rotate(-28 68 166)" fill="{{c.furDark}}"></ellipse>
+    </sc-if>
+    <sc-if value="{{leftUp}}" hint-placeholder-val="{{ false }}">
+      <ellipse cx="52" cy="104" rx="9" ry="20" transform="rotate(-32 52 104)" fill="{{c.furDark}}"></ellipse>
+    </sc-if>
+    <sc-if value="{{rightHold}}" hint-placeholder-val="{{ true }}">
+      <ellipse cx="132" cy="166" rx="9" ry="15" transform="rotate(28 132 166)" fill="{{c.furDark}}"></ellipse>
+    </sc-if>
+    <sc-if value="{{rightUp}}" hint-placeholder-val="{{ false }}">
+      <ellipse cx="148" cy="104" rx="9" ry="20" transform="rotate(32 148 104)" fill="{{c.furDark}}"></ellipse>
+    </sc-if>
+
+    <path d="M74 110Q100 124 126 110L112 122L100 138L88 122Z" fill="#6847F0"></path>
+
+    <g transform="{{headTilt}}">
+      <ellipse cx="75" cy="40" rx="12" ry="28" transform="rotate(-20 75 40)" fill="{{c.fur}}"></ellipse>
+      <ellipse cx="75" cy="43" rx="6" ry="18" transform="rotate(-20 75 43)" fill="{{c.earInner}}"></ellipse>
+      <ellipse cx="125" cy="40" rx="12" ry="28" transform="rotate(20 125 40)" fill="{{c.fur}}"></ellipse>
+      <ellipse cx="125" cy="43" rx="6" ry="18" transform="rotate(20 125 43)" fill="{{c.earInner}}"></ellipse>
+      <ellipse cx="100" cy="80" rx="40" ry="36" fill="{{c.fur}}"></ellipse>
+      <ellipse cx="100" cy="96" rx="20" ry="14" fill="{{c.belly}}"></ellipse>
+      <circle cx="73" cy="91" r="6" fill="#F49C9C" opacity="0.55"></circle>
+      <circle cx="127" cy="91" r="6" fill="#F49C9C" opacity="0.55"></circle>
+      <ellipse cx="100" cy="89" rx="6.5" ry="4.5" fill="#3A2A22"></ellipse>
+
+      <sc-if value="{{eyesOpen}}" hint-placeholder-val="{{ true }}">
+        <g>
+          <circle cx="84" cy="{{pupilY}}" r="5.5" fill="#3A2A22"></circle>
+          <circle cx="116" cy="{{pupilY}}" r="5.5" fill="#3A2A22"></circle>
+          <circle cx="86" cy="{{glintY}}" r="1.8" fill="#FFFFFF"></circle>
+          <circle cx="118" cy="{{glintY}}" r="1.8" fill="#FFFFFF"></circle>
+        </g>
+      </sc-if>
+      <sc-if value="{{eyesHappy}}" hint-placeholder-val="{{ false }}">
+        <path d="M78 78Q84 70 90 78M110 78Q116 70 122 78" stroke="#3A2A22" stroke-width="2.8" stroke-linecap="round" fill="none"></path>
+      </sc-if>
+      <sc-if value="{{eyesClosed}}" hint-placeholder-val="{{ false }}">
+        <path d="M78 76Q84 82 90 76M110 76Q116 82 122 76" stroke="#3A2A22" stroke-width="2.6" stroke-linecap="round" fill="none"></path>
+      </sc-if>
+
+      <sc-if value="{{smile}}" hint-placeholder-val="{{ true }}">
+        <path d="M93 98Q100 105 107 98" stroke="#3A2A22" stroke-width="2.2" stroke-linecap="round" fill="none"></path>
+      </sc-if>
+      <sc-if value="{{bigSmile}}" hint-placeholder-val="{{ false }}">
+        <path d="M92 97Q100 108 108 97Z" fill="#3A2A22"></path>
+      </sc-if>
+      <sc-if value="{{oMouth}}" hint-placeholder-val="{{ false }}">
+        <ellipse cx="100" cy="100" rx="3" ry="3.6" fill="#3A2A22"></ellipse>
+      </sc-if>
+    </g>
+
+    <sc-if value="{{jump}}" hint-placeholder-val="{{ false }}">
+      <path d="M62 238h18M120 238h18" stroke="{{c.furDark}}" stroke-width="2.4" stroke-linecap="round" opacity="0.5"></path>
+    </sc-if>
+  </svg>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"pose":{"editor":"enum","options":["normal","ola","vazio","sucesso","dormir"],"default":"normal"},"size":{"editor":"int","min":40,"max":800,"default":200},"crop":{"editor":"boolean","default":false},"$preview":{"width":200,"height":240}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const pose = this.props.pose ?? 'normal';
+    const size = Number(this.props.size ?? 200);
+    const crop = !!this.props.crop;
+    const c = {
+      fur: '#E3A465', furDark: '#C98448', belly: '#F7DEC2', earInner: '#F2AFA6',
+      pouch: '#FFFFFF', pouchEdge: '#E3C7AB'
+    };
+    const P = {
+      normal:  { label: 'Guru, o canguru, com moedas na bolsa', coins: true,  left: 'hold', right: 'hold', eyes: 'open', mouth: 'smile' },
+      ola:     { label: 'Guru a acenar',                       coins: true,  left: 'hold', right: 'up',   eyes: 'open', mouth: 'big' },
+      vazio:   { label: 'Guru a espreitar a bolsa vazia',      coins: false, left: 'hold', right: 'hold', eyes: 'down', mouth: 'o', tilt: true },
+      sucesso: { label: 'Guru a saltar de alegria',            coins: true,  left: 'up',   right: 'up',   eyes: 'happy', mouth: 'big', flying: true, jump: true },
+      dormir:  { label: 'Guru a dormir',                       coins: true,  left: 'hold', right: 'hold', eyes: 'closed', mouth: 'smile', zzz: true, tilt: true }
+    }[pose] || {};
+    const viewBox = crop ? '46 6 108 116' : '0 0 200 240';
+    const w = size;
+    const h = crop ? Math.round(size * 116 / 108) : Math.round(size * 1.2);
+    return {
+      c, w: w + 'px', h: h + 'px', viewBox, label: P.label,
+      coins: !!P.coins, flying: !!P.flying, zzz: !!P.zzz, jump: !!P.jump,
+      leftHold: P.left === 'hold', leftUp: P.left === 'up',
+      rightHold: P.right === 'hold', rightUp: P.right === 'up',
+      eyesOpen: P.eyes === 'open' || P.eyes === 'down',
+      eyesHappy: P.eyes === 'happy', eyesClosed: P.eyes === 'closed',
+      pupilY: P.eyes === 'down' ? 80 : 76, glintY: P.eyes === 'down' ? 78 : 74,
+      smile: P.mouth === 'smile', bigSmile: P.mouth === 'big', oMouth: P.mouth === 'o',
+      headTilt: P.tilt ? 'rotate(-6 100 80)' : ''
+    };
+  }
+}
+</script>
+</body>
+</html>

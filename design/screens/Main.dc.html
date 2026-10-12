@@ -17,8 +17,10 @@ body{margin:0}
   <div style="position: absolute; inset: 0; overflow: hidden; padding: 54px 16px 120px; box-sizing: border-box; display: flex; flex-direction: column; gap: 16px">
 
     <sc-if value="{{offline}}" hint-placeholder-val="{{ false }}">
-      <div role="status" style="display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 14px; background: {{c.warnSoft}}; color: {{c.warnText}}; font-size: 15px; font-weight: 500">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 8.8a15 15 0 0 1 4.2-2.6M22 8.8A15 15 0 0 0 10.5 5.1M5 12.6a10 10 0 0 1 5.2-2.6M19 12.6a10 10 0 0 0-2.3-1.6M8.5 16.4a5 5 0 0 1 7 0M12 20h.01M3 3l18 18"></path></svg>
+      <div role="status" style="display: flex; align-items: center; gap: 10px; padding: 6px 14px 6px 8px; border-radius: 14px; background: {{c.warnSoft}}; color: {{c.warnText}}; font-size: 15px; font-weight: 500">
+        <span aria-hidden="true" style="width: 40px; height: 40px; border-radius: 20px; background: #FFFFFF; overflow: hidden; display: flex; align-items: flex-end; justify-content: center; flex: none">
+          <dc-import name="Guru" pose="dormir" crop="{{ true }}" size="{{ 36 }}" hint-size="36px,39px"></dc-import>
+        </span>
         <span>Sem ligação. Só podes consultar.</span>
       </div>
     </sc-if>

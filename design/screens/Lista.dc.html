@@ -80,12 +80,7 @@ body{margin:0}
 
     <sc-if value="{{d.empty}}" hint-placeholder-val="{{ false }}">
       <div style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; text-align: center; padding: 0 24px 40px">
-        <svg width="132" height="116" viewBox="0 0 132 116" aria-hidden="true">
-          <circle cx="66" cy="36" r="22" fill="{{c.coin}}" stroke="{{c.accent}}" stroke-width="2.5"></circle>
-          <text x="66" y="44" text-anchor="middle" font-size="22" font-weight="700" fill="{{c.accent}}" font-family="-apple-system, sans-serif">€</text>
-          <path d="M18 54h96v12c0 26.5-21.5 44-48 44S18 92.5 18 66z" fill="{{c.pouch}}" stroke="{{c.accent}}" stroke-width="2.5" stroke-linejoin="round"></path>
-          <path d="M28 64h76" stroke="{{c.accent}}" stroke-width="2" stroke-dasharray="5 5" stroke-linecap="round" opacity="0.6"></path>
-        </svg>
+        <dc-import name="Guru" pose="vazio" size="{{ 150 }}" hint-size="150px,180px"></dc-import>
         <p style="margin: 0; font-size: 17px; font-weight: 600">Ainda não há despesas nesta lista.</p>
         <a href="Despesa.dc.html" style="height: 48px; padding: 0 20px; border-radius: 14px; background: {{c.accent}}; color: #FFFFFF; font-size: 17px; font-weight: 600; display: flex; align-items: center; gap: 8px; text-decoration: none">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>
