@@ -277,6 +277,8 @@ export const t = {
     clearDate: 'Remover data',
     defaultSplit: 'Divisão predefinida',
     percentOf: (of: string) => `Percentagem ${of}`,
+    less: (to: string) => `Menos 1 % ${to}`,
+    more: (to: string) => `Mais 1 % ${to}`,
     archive: 'Arquivar lista',
     unarchive: 'Desarquivar lista',
     delete: 'Apagar lista',

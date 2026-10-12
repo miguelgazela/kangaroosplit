@@ -65,7 +65,6 @@ export function CategorySheet({ category, onClose }: { category?: Category; onCl
               type="text"
               value={name}
               maxLength={30}
-              autoFocus={!category}
               onChange={(event) => setName(event.target.value)}
               className="min-w-0 bg-transparent p-0 text-xl font-semibold text-text outline-none"
             />

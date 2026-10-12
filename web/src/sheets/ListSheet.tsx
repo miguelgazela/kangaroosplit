@@ -143,7 +143,6 @@ function ListForm({
               type="text"
               value={name}
               maxLength={40}
-              autoFocus={!list}
               onChange={(event) => setName(event.target.value)}
               className="min-w-0 bg-transparent p-0 text-xl font-semibold text-text outline-none"
             />
@@ -185,11 +184,32 @@ function ListForm({
         {datesInvalid && <p className="-mt-1 px-1 text-footnote text-danger">{t.listEditor.datesInvalid}</p>}
 
         <div className="flex flex-none flex-col gap-2.5 rounded-card bg-surface px-4 pt-3 pb-3.5">
-          <div className="flex items-center justify-between">
+          <div className="-my-1.5 flex items-center justify-between">
             <span className="text-body">{t.listEditor.defaultSplit}</span>
-            <span className="text-body font-semibold tabular-nums">
-              {percent} / {100 - percent}
-            </span>
+            {/* The slider gets close; the steppers land on an exact number like 68. */}
+            <div className="-mr-2 flex items-center">
+              <button
+                type="button"
+                aria-label={t.listEditor.less(nameForms(members[0]).to)}
+                disabled={percent <= 0}
+                onClick={() => setPercent(percent - 1)}
+                className="flex size-11 items-center justify-center text-[22px] text-accent-text disabled:text-disabled"
+              >
+                −
+              </button>
+              <span className="min-w-[68px] text-center text-body font-semibold tabular-nums">
+                {percent} / {100 - percent}
+              </span>
+              <button
+                type="button"
+                aria-label={t.listEditor.more(nameForms(members[0]).to)}
+                disabled={percent >= 100}
+                onClick={() => setPercent(percent + 1)}
+                className="flex size-11 items-center justify-center text-[22px] text-accent-text disabled:text-disabled"
+              >
+                +
+              </button>
+            </div>
           </div>
           <div className="flex items-center gap-2.5">
             <Avatar member={members[0]} size={28} />
@@ -197,7 +217,7 @@ function ListForm({
               type="range"
               min={0}
               max={100}
-              step={5}
+              step={1}
               value={percent}
               aria-label={t.listEditor.percentOf(nameForms(members[0]).of)}
               onChange={(event) => setPercent(Number(event.target.value))}
