@@ -1,6 +1,7 @@
 import { useState, type FormEvent } from 'react'
 import { useAuth, InvalidCredentialsError } from '../auth/AuthContext'
 import { AppIcon } from '../components/AppIcon'
+import { Guru } from '../components/Guru'
 import { Icon } from '../components/Icon'
 import { t } from '../i18n/pt'
 
@@ -24,10 +25,13 @@ export function Login() {
   }
 
   return (
-    <div className="flex h-full flex-col gap-7 overflow-y-auto px-6 pt-[calc(env(safe-area-inset-top)+63px)] pb-[calc(env(safe-area-inset-bottom)+16px)]">
-      <div className="flex flex-col items-center gap-3.5">
-        <AppIcon size={96} className="rounded-[22px] shadow-[0_10px_30px_rgba(104,71,240,0.28)]" />
-        <span className="text-[28px] font-bold tracking-[-0.2px]">{t.appName}</span>
+    <div className="flex h-full flex-col gap-6 overflow-y-auto px-6 pt-[calc(env(safe-area-inset-top)+23px)] pb-[calc(env(safe-area-inset-bottom)+16px)]">
+      <div className="flex flex-col items-center gap-2.5">
+        <Guru pose="ola" size={150} />
+        <div className="flex items-center gap-2.5">
+          <AppIcon size={40} className="rounded-[10px]" />
+          <span className="text-[28px] font-bold tracking-[-0.2px]">{t.appName}</span>
+        </div>
       </div>
 
       <form onSubmit={onSubmit} className="flex flex-col gap-3.5" aria-labelledby="login-title">

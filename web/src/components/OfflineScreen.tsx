@@ -1,4 +1,5 @@
 import { t } from '../i18n/pt'
+import { Guru } from './Guru'
 import { Icon } from './Icon'
 
 // Covers the whole app while there is no connection. Nothing works offline,
@@ -10,10 +11,11 @@ export function OfflineScreen() {
       className="fixed inset-0 z-[80] flex flex-col items-center justify-center gap-3 bg-bg px-8 text-center"
       style={{ animation: 'ks-fade-in 0.2s ease-out' }}
     >
-      <div className="flex size-[104px] items-center justify-center rounded-full bg-warn-soft text-warn">
-        <Icon name="offline" size={44} strokeWidth={1.8} />
-      </div>
-      <h1 className="mt-2 text-title2 font-bold">{t.system.offlineTitle}</h1>
+      <Guru pose="dormir" size={170} />
+      <h1 className="mt-2 flex items-center gap-2 text-title2 font-bold">
+        <Icon name="offline" size={22} className="text-warn" />
+        {t.system.offlineTitle}
+      </h1>
       <p className="max-w-[300px] text-body leading-[23px] text-text-2">{t.system.offlineBody}</p>
     </div>
   )

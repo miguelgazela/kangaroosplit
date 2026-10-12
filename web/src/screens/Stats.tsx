@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { Avatar } from '../components/Avatar'
+import { Guru } from '../components/Guru'
 import { Icon } from '../components/Icon'
 import { OptionSheet } from '../components/OptionSheet'
 import { Screen } from '../components/Screen'
@@ -178,7 +179,10 @@ export function Stats() {
       </section>
 
       {total === 0 ? (
-        <p className="py-10 text-center text-body text-text-2">{yearly ? t.stats.emptyYear : t.stats.empty}</p>
+        <div className="flex flex-col items-center gap-2 py-6">
+          <Guru pose="dormir" size={130} decorative />
+          <p className="text-center text-body text-text-2">{yearly ? t.stats.emptyYear : t.stats.empty}</p>
+        </div>
       ) : (
         <section className="flex flex-col gap-3 rounded-card bg-surface px-4 pt-4 pb-1 shadow-card">
           <div className="flex items-baseline justify-between">

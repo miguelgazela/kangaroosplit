@@ -1,4 +1,5 @@
 import { BackLink } from '../components/BackLink'
+import { Guru } from '../components/Guru'
 import { Icon } from '../components/Icon'
 import { Screen } from '../components/Screen'
 import { useToast } from '../components/ToastContext'
@@ -49,9 +50,7 @@ export function Recurring() {
 
       {rules && lists && categories && rules.length === 0 && (
         <div className="flex flex-1 flex-col items-center justify-center gap-3.5 pb-[60px] text-center">
-          <div className="flex size-[104px] items-center justify-center rounded-full bg-accent-soft text-accent">
-            <Icon name="repeat" size={44} strokeWidth={1.8} />
-          </div>
+          <Guru pose="vazio" size={150} />
           <p className="text-headline font-semibold">{t.recurring.empty}</p>
           <p className="max-w-[280px] text-subhead text-text-2">{t.recurring.emptyHint}</p>
           <button

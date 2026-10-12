@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Avatar } from '../components/Avatar'
 import { DateRow } from '../components/DateRow'
+import { Guru } from '../components/Guru'
 import { Icon } from '../components/Icon'
 import { Sheet } from '../components/Sheet'
 import { useToast } from '../components/ToastContext'
@@ -92,12 +93,13 @@ function SettleForm({
       <Sheet title="" onCancel={onClose} hideCancel>
         <div className="flex flex-1 flex-col items-center px-6 pb-[calc(env(safe-area-inset-bottom)+16px)] text-center">
           <div className="flex flex-1 flex-col items-center justify-center gap-3.5">
-            <div className="flex size-28 items-center justify-center rounded-full bg-pos-soft">
-              <div className="flex size-[76px] items-center justify-center rounded-full bg-pos text-surface">
-                <Icon name="check" size={40} strokeWidth={2.6} />
-              </div>
-            </div>
-            <p className="mt-1.5 text-[28px] font-bold">{settled ? t.settlement.doneTitle : t.settlement.partialTitle}</p>
+            <Guru pose="sucesso" size={220} />
+            <p className="mt-1.5 flex items-center gap-2 text-[28px] font-bold">
+              <span className="flex size-7 flex-none items-center justify-center rounded-full bg-pos text-surface">
+                <Icon name="check" size={16} strokeWidth={3} />
+              </span>
+              {settled ? t.settlement.doneTitle : t.settlement.partialTitle}
+            </p>
             <p className="text-body leading-6 text-text-2">
               {partnerPays
                 ? t.settlement.donePaidYou(names.subject, formatMoney(paid))

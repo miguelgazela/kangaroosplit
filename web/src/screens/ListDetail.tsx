@@ -4,6 +4,7 @@ import { FilterSheet, type ListFilter } from '../sheets/FilterSheet'
 import { ActionSheet } from '../components/ActionSheet'
 import { BackLink } from '../components/BackLink'
 import { BalanceAmount } from '../components/Balance'
+import { Guru } from '../components/Guru'
 import { Icon } from '../components/Icon'
 import { Screen } from '../components/Screen'
 import { useToast } from '../components/ToastContext'
@@ -114,20 +115,7 @@ function SettlementRow({
 function EmptyList({ onAdd, disabled }: { onAdd: () => void; disabled: boolean }) {
   return (
     <div className="flex flex-1 flex-col items-center justify-center gap-3 px-6 pb-10 text-center">
-      <svg width="132" height="116" viewBox="0 0 132 116" aria-hidden="true" className="text-accent">
-        <circle cx="66" cy="36" r="22" className="fill-surface" stroke="currentColor" strokeWidth="2.5" />
-        <text x="66" y="44" textAnchor="middle" fontSize="22" fontWeight="700" fill="currentColor">
-          €
-        </text>
-        <path
-          d="M18 54h96v12c0 26.5-21.5 44-48 44S18 92.5 18 66z"
-          className="fill-accent-soft"
-          stroke="currentColor"
-          strokeWidth="2.5"
-          strokeLinejoin="round"
-        />
-        <path d="M28 64h76" stroke="currentColor" strokeWidth="2" strokeDasharray="5 5" strokeLinecap="round" opacity="0.6" />
-      </svg>
+      <Guru pose="vazio" size={150} />
       <p className="text-headline font-semibold">{t.lists.empty}</p>
       <button
         type="button"

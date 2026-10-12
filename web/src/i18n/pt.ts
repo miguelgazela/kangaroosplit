@@ -165,7 +165,7 @@ export const t = {
     delete: 'Apagar',
     deleteConfirm: 'Apagar esta despesa recorrente? As despesas já criadas mantêm-se.',
     empty: 'Ainda não tens despesas recorrentes.',
-    emptyHint: 'Renda, contas e subscrições são criadas sozinhas na data certa.',
+    emptyHint: 'A renda, as contas e as subscrições são criadas automaticamente na data certa.',
     footnote: 'Cada regra cria a despesa sozinha na data indicada.',
     saved: 'Despesa recorrente guardada',
     deleted: 'Despesa recorrente apagada',

@@ -5,7 +5,7 @@ import { nameForms } from '../lib/people'
 import { isStandalone, readFlag, writeFlag } from '../lib/platform'
 import { usePush } from '../lib/usePush'
 import { useCurrentMember } from '../query/hooks'
-import { Avatar } from './Avatar'
+import { Guru } from './Guru'
 import { Icon } from './Icon'
 import { useToast } from './ToastContext'
 
@@ -48,9 +48,11 @@ export function NotificationPrompt() {
         className="absolute inset-x-2 bottom-[calc(env(safe-area-inset-bottom)+8px)] flex flex-col items-center gap-3 rounded-[32px] bg-surface px-[22px] pt-7 pb-[22px] text-center"
         style={{ animation: 'ks-sheet-in 0.28s cubic-bezier(0.2, 0.8, 0.2, 1)' }}
       >
-        <div className="relative flex size-[72px] items-center justify-center rounded-full bg-accent-soft text-accent-text">
-          <Icon name="bell" size={34} strokeWidth={1.9} />
-          <Avatar member={partner} size={24} className="absolute top-0.5 right-0.5 border-[3px] border-surface" />
+        <div className="relative -mt-2 flex h-40 w-[150px] items-end justify-center">
+          <Guru pose="ola" size={132} decorative />
+          <span className="absolute top-[18px] right-0.5 flex size-10 items-center justify-center rounded-full border-[3px] border-surface bg-accent text-white">
+            <Icon name="bell" size={20} strokeWidth={2.2} />
+          </span>
         </div>
         <h2 id="notifications-title" className="mt-1 text-title2 font-bold">
           {t.notifications.promptTitle}
