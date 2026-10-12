@@ -8,9 +8,20 @@ import { Icon } from '../components/Icon'
 import { Screen } from '../components/Screen'
 import { useToast } from '../components/ToastContext'
 import { t } from '../i18n/pt'
+import { todayISO } from '../lib/dates'
+import { buildCsv, saveCsv } from '../lib/export'
 import { OfflineError, useOnline } from '../lib/online'
 import { usePush } from '../lib/usePush'
-import { useCategories, useCurrentMember, useRecurring, useUpdateProfile } from '../query/hooks'
+import {
+  useCategories,
+  useCurrentMember,
+  useExpenses,
+  useLists,
+  useMembers,
+  useRecurring,
+  useSettlements,
+  useUpdateProfile,
+} from '../query/hooks'
 
 const VERSION = '1.0.0'
 
@@ -25,6 +36,17 @@ export function Settings() {
   const [name, setName] = useState<string | null>(null)
   const [confirmingSignOut, setConfirmingSignOut] = useState(false)
   const push = usePush()
+  const { data: members } = useMembers()
+  const { data: lists } = useLists()
+  const { data: expenses } = useExpenses()
+  const { data: settlements } = useSettlements()
+  const exportable = members && lists && categories && expenses && settlements
+
+  const exportData = () => {
+    if (!exportable) return
+    const csv = buildCsv({ members, lists, categories, expenses, settlements })
+    saveCsv(csv, `kangaroosplit-${todayISO()}.csv`).catch(fail)
+  }
 
   const fail = (error: unknown) =>
     toast({ kind: 'error', message: error instanceof OfflineError ? t.system.offline : t.system.error })
@@ -150,6 +172,21 @@ export function Settings() {
           </button>
         </div>
       </div>
+
+      <button
+        type="button"
+        disabled={!exportable}
+        onClick={exportData}
+        className="mt-1 flex min-h-[52px] items-center gap-3 rounded-card bg-surface px-3.5 py-2 text-left shadow-card"
+      >
+        <span className="flex size-8 flex-none items-center justify-center rounded-lg bg-fill text-text-2">
+          <Icon name="share" size={18} />
+        </span>
+        <span className="flex min-w-0 flex-1 flex-col">
+          <span className="text-body">{t.settings.exportData}</span>
+          <span className="text-footnote text-text-2">{t.settings.exportHint}</span>
+        </span>
+      </button>
 
       <button
         type="button"

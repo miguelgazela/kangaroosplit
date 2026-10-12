@@ -1,5 +1,5 @@
 import { useQueryClient } from '@tanstack/react-query'
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { ActionSheet } from '../components/ActionSheet'
 import { Avatar } from '../components/Avatar'
 import { DateRow } from '../components/DateRow'
@@ -24,6 +24,7 @@ import { todayISO } from '../lib/dates'
 import { formatAmountInput, formatDate, parseMoney, splitMoney } from '../lib/format'
 import { OfflineError } from '../lib/online'
 import { ruleStatus } from '../lib/ruleStatus'
+import { descriptionHistory, knownCategory, suggestDescriptions, type Suggestion } from '../lib/suggest'
 import { nameForms } from '../lib/people'
 import {
   resolveSplit,
@@ -41,6 +42,7 @@ import {
   useLists,
   useMembers,
   useDeleteRecurring,
+  useExpenses,
   useSaveExpense,
   useSetExpenseDeleted,
   useSetRecurringPaused,
@@ -83,6 +85,10 @@ export type ExpenseSheetProps = {
   listId?: string
   // Present when editing.
   expense?: ExpenseWithShares
+  // Starts a new expense as a copy of this one, dated today.
+  copyFrom?: ExpenseWithShares
+  // Asked for from the edit form; the host swaps this sheet for a copy.
+  onDuplicate?: (expense: ExpenseWithShares) => void
   // Set to edit a recurring rule instead of a single expense: the same form,
   // with a schedule in place of the date. `rule` is present when editing one.
   recurring?: { rule?: RecurringExpense }
@@ -101,6 +107,8 @@ export function ExpenseSheet(props: ExpenseSheetProps) {
   const { data: lists } = useLists()
   const { data: categories } = useCategories()
   const { data: defaultShares } = useDefaultShares()
+  const { data: expenses } = useExpenses()
+  const history = useMemo(() => descriptionHistory(expenses ?? []), [expenses])
 
   if (!me || !partner || !members || !lists || !categories || !defaultShares) return null
   return (
@@ -112,6 +120,7 @@ export function ExpenseSheet(props: ExpenseSheetProps) {
       lists={lists}
       categories={categories}
       defaultShares={defaultShares}
+      history={history}
     />
   )
 }
@@ -119,6 +128,8 @@ export function ExpenseSheet(props: ExpenseSheetProps) {
 function ExpenseForm({
   listId,
   expense,
+  copyFrom,
+  onDuplicate,
   recurring,
   onClose,
   me,
@@ -127,6 +138,7 @@ function ExpenseForm({
   lists,
   categories,
   defaultShares,
+  history,
 }: ExpenseSheetProps & {
   me: Member
   partner: Member
@@ -134,6 +146,7 @@ function ExpenseForm({
   lists: List[]
   categories: Category[]
   defaultShares: ListDefaultShare[]
+  history: Suggestion[]
 }) {
   const queryClient = useQueryClient()
   const toast = useToast()
@@ -146,7 +159,7 @@ function ExpenseForm({
 
   const rule = recurring?.rule
   // What the form starts from when editing.
-  const template = expense ?? rule
+  const template = expense ?? rule ?? copyFrom
 
   const selectableLists = lists.filter((list) => !list.archived_at || list.id === template?.list_id)
   const selectableCategories = categories.filter(
@@ -173,8 +186,8 @@ function ExpenseForm({
   const [date, setDate] = useState(expense?.spent_on ?? todayISO())
   const [note, setNote] = useState(template?.note ?? '')
   const [split, setSplit] = useState<SplitForm>(() =>
-    expense
-      ? splitFormFromShares(members, expense.split_mode, expense.expense_shares)
+    (expense ?? copyFrom)
+      ? splitFormFromShares(members, (expense ?? copyFrom)!.split_mode, (expense ?? copyFrom)!.expense_shares)
       : rule
         ? splitFormFromShares(members, rule.split_mode, rule.split_input)
         : splitFormFromDefaults(members, defaultsFor(initialList.id)),
@@ -189,6 +202,9 @@ function ExpenseForm({
   const [keypad, setKeypad] = useState(template === undefined && !recurring)
   const [expanded, setExpanded] = useState(false)
   const [picker, setPicker] = useState<'category' | 'list' | null>(null)
+  // Until the category is chosen by hand, it follows what the description usually gets.
+  const [categoryTouched, setCategoryTouched] = useState(template !== undefined)
+  const [describing, setDescribing] = useState(false)
   const [confirmingDelete, setConfirmingDelete] = useState(false)
 
   const amountCents = parseMoney(amount) ?? 0
@@ -199,6 +215,23 @@ function ExpenseForm({
   const pending =
     save.isPending || setDeleted.isPending || createRule.isPending || updateRule.isPending || setRulePaused.isPending || deleteRule.isPending
   const canSave = amountCents > 0 && description.trim() !== '' && result.ok && !scheduleInvalid && !pending
+
+  const suggestions = describing ? suggestDescriptions(history, description) : []
+  const isSelectable = (id: string) => selectableCategories.some((candidate) => candidate.id === id)
+
+  const changeDescription = (value: string) => {
+    setDescription(value)
+    // Picking a suggestion hides them; typing on brings them back.
+    setDescribing(true)
+    const usual = categoryTouched ? null : knownCategory(history, value)
+    if (usual && isSelectable(usual)) setCategoryId(usual)
+  }
+
+  const pickSuggestion = (suggestion: Suggestion) => {
+    setDescription(suggestion.description)
+    if (!categoryTouched && isSelectable(suggestion.categoryId)) setCategoryId(suggestion.categoryId)
+    setDescribing(false)
+  }
 
   const fail = (error: unknown) =>
     toast({ kind: 'error', message: error instanceof OfflineError ? t.system.offline : t.system.error })
@@ -357,10 +390,37 @@ function ExpenseForm({
               value={description}
               maxLength={80}
               enterKeyHint="done"
-              onChange={(event) => setDescription(event.target.value)}
+              onChange={(event) => changeDescription(event.target.value)}
+              onFocus={() => setDescribing(true)}
+              onBlur={() => setDescribing(false)}
               className="min-w-0 flex-1 bg-transparent text-body text-text outline-none placeholder:text-text-2"
             />
           </div>
+          {suggestions.length > 0 && (
+            <div
+              role="listbox"
+              aria-label={t.expense.suggestions}
+              className="flex gap-2 overflow-x-auto border-t-[0.5px] border-separator px-4 py-2.5"
+            >
+              {suggestions.map((suggestion) => {
+                const usual = categories.find((candidate) => candidate.id === suggestion.categoryId)
+                return (
+                  <button
+                    key={suggestion.description}
+                    type="button"
+                    role="option"
+                    aria-selected={false}
+                    // Keeps the field focused, so the tap is not lost to the blur.
+                    onPointerDown={(event) => event.preventDefault()}
+                    onClick={() => pickSuggestion(suggestion)}
+                    className="h-9 flex-none rounded-full bg-fill px-3 text-subhead whitespace-nowrap"
+                  >
+                    {usual?.icon} {suggestion.description}
+                  </button>
+                )
+              })}
+            </div>
+          )}
         </div>
 
         {keypad ? (
@@ -492,14 +552,26 @@ function ExpenseForm({
                     <span>{author(expense.updated_by, t.expense.editedByYou, t.expense.editedBy, expense.updated_at)}</span>
                   )}
                 </div>
-                <button
-                  type="button"
-                  disabled={pending}
-                  onClick={() => setConfirmingDelete(true)}
-                  className="h-[50px] rounded-cta bg-surface text-body font-semibold text-danger"
-                >
-                  {t.expense.delete}
-                </button>
+                <div className="flex gap-2.5">
+                  {onDuplicate && (
+                    <button
+                      type="button"
+                      disabled={pending}
+                      onClick={() => onDuplicate(expense)}
+                      className="h-[50px] flex-1 rounded-cta bg-surface text-body font-semibold text-accent-text"
+                    >
+                      {t.expense.duplicate}
+                    </button>
+                  )}
+                  <button
+                    type="button"
+                    disabled={pending}
+                    onClick={() => setConfirmingDelete(true)}
+                    className="h-[50px] flex-1 rounded-cta bg-surface text-body font-semibold text-danger"
+                  >
+                    {t.expense.delete}
+                  </button>
+                </div>
               </div>
             )}
 
@@ -540,6 +612,7 @@ function ExpenseForm({
           selected={categoryId}
           onPick={(id) => {
             setCategoryId(id)
+            setCategoryTouched(true)
             setPicker(null)
           }}
           onClose={() => setPicker(null)}

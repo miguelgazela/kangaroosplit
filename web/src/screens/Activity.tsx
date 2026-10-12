@@ -8,7 +8,15 @@ import { addDays, todayISO } from '../lib/dates'
 import { formatMoney, formatTime, formatWeekday } from '../lib/format'
 import { OfflineError, useOnline } from '../lib/online'
 import { nameForms } from '../lib/people'
-import { useActivity, useCurrentMember, useLists, useSetExpenseDeleted } from '../query/hooks'
+import { useIncremental } from '../lib/useIncremental'
+import {
+  useActivity,
+  useCurrentMember,
+  useLists,
+  useSetExpenseDeleted,
+  useSetSettlementDeleted,
+  useSettlements,
+} from '../query/hooks'
 
 const BADGES: Record<ActivityAction, { icon: IconName; tone: string }> = {
   expense_created: { icon: 'plus', tone: 'bg-pos' },
@@ -70,6 +78,8 @@ export function Activity() {
   const { data: entries } = useActivity()
   const { data: lists } = useLists()
   const setDeleted = useSetExpenseDeleted()
+  const setSettlementDeleted = useSetSettlementDeleted()
+  const { data: settlements } = useSettlements()
 
   const ready = me && partner && entries && lists
 
@@ -79,17 +89,23 @@ export function Activity() {
     if (!latestByEntity.has(entry.entity_id)) latestByEntity.set(entry.entity_id, entry.id)
   }
 
+  // Newest entries first; older days are drawn on scrolling.
+  const { count, hasMore, sentinel } = useIncremental(entries?.length ?? 0, 'activity')
   const days = new Map<string, ActivityEntry[]>()
-  for (const entry of entries ?? []) {
+  for (const entry of (entries ?? []).slice(0, count)) {
     const day = localDay(entry.created_at)
     days.set(day, [...(days.get(day) ?? []), entry])
   }
 
-  const restore = (expenseId: string) =>
-    setDeleted.mutate(
-      { id: expenseId, deleted: false },
+  // Restoring a payment is not logged, so check whether it is still gone.
+  const liveSettlements = new Set((settlements ?? []).map((settlement) => settlement.id))
+
+  const restore = (entry: ActivityEntry) =>
+    (entry.action === 'settlement_deleted' ? setSettlementDeleted : setDeleted).mutate(
+      { id: entry.entity_id, deleted: false },
       {
-        onSuccess: () => toast({ message: t.activity.restored }),
+        onSuccess: () =>
+          toast({ message: entry.action === 'settlement_deleted' ? t.settlement.restored : t.activity.restored }),
         onError: (error) =>
           toast({ kind: 'error', message: error instanceof OfflineError ? t.system.offline : t.system.error }),
       },
@@ -116,7 +132,10 @@ export function Activity() {
                 const actor = actorId === me.user_id ? me : partner
                 const list = lists.find((candidate) => candidate.id === entry.list_id)
                 const badge = BADGES[entry.action]
-                const canRestore = entry.action === 'expense_deleted' && latestByEntity.get(entry.entity_id) === entry.id
+                const canRestore =
+                  latestByEntity.get(entry.entity_id) === entry.id &&
+                  (entry.action === 'expense_deleted' ||
+                    (entry.action === 'settlement_deleted' && settlements !== undefined && !liveSettlements.has(entry.entity_id)))
                 return (
                   <div
                     key={entry.id}
@@ -142,8 +161,8 @@ export function Activity() {
                     {canRestore && (
                       <button
                         type="button"
-                        disabled={!online || setDeleted.isPending}
-                        onClick={() => restore(entry.entity_id)}
+                        disabled={!online || setDeleted.isPending || setSettlementDeleted.isPending}
+                        onClick={() => restore(entry)}
                         className="h-9 flex-none rounded-full bg-accent-soft px-3.5 text-subhead font-semibold text-accent-text disabled:text-disabled"
                       >
                         {t.activity.restore}
@@ -155,6 +174,8 @@ export function Activity() {
             </div>
           </section>
         ))}
+
+      {hasMore && <div ref={sentinel} aria-hidden="true" className="h-px" />}
     </Screen>
   )
 }

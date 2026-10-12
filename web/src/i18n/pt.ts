@@ -85,6 +85,8 @@ export const t = {
     editedByYou: (date: string) => `Editada por ti a ${date}`,
     editedBy: (by: string, date: string) => `Editada ${by} a ${date}`,
     moreOptions: 'Data e mais',
+    duplicate: 'Duplicar',
+    suggestions: 'Sugestões',
     deleteDigit: 'Apagar dígito',
     decimalComma: 'Vírgula decimal',
   },
@@ -218,6 +220,8 @@ export const t = {
     version: (version: string) => `Versão ${version}`,
     signOutConfirm: 'Terminar sessão neste dispositivo?',
     profileSaved: 'Perfil guardado',
+    exportData: 'Exportar dados',
+    exportHint: 'Todas as despesas e pagamentos, em CSV.',
   },
 
   categories: {
@@ -247,6 +251,10 @@ export const t = {
     youPaid: (to: string) => `Pagaste ${to}`,
     paysYou: (subject: string) => `${subject} paga-te`,
     youPay: (to: string) => `Pagas ${to}`,
+    delete: 'Apagar pagamento',
+    deleteConfirm: (what: string) => `Apagar este pagamento? ${what}`,
+    deleted: 'Pagamento apagado',
+    restored: 'Pagamento restaurado',
     scopeList: (name: string) => `Lista ${name}`,
     scopeAll: 'Todas as listas ativas',
     amount: 'Valor',

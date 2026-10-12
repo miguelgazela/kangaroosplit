@@ -1,17 +1,20 @@
 import { useMemo, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { FilterSheet, type ListFilter } from '../sheets/FilterSheet'
+import { ActionSheet } from '../components/ActionSheet'
 import { BackLink } from '../components/BackLink'
 import { BalanceAmount } from '../components/Balance'
 import { Icon } from '../components/Icon'
 import { Screen } from '../components/Screen'
+import { useToast } from '../components/ToastContext'
 import { t } from '../i18n/pt'
 import type { Category, ExpenseWithShares, List, Member, Settlement } from '../lib/database.types'
 import { monthKey } from '../lib/dates'
 import { formatDateRange, formatDayMonth, formatMoney, formatMonthYear } from '../lib/format'
-import { useOnline } from '../lib/online'
+import { OfflineError, useOnline } from '../lib/online'
 import { nameForms, ratio } from '../lib/people'
 import { expensePosition, filterExpenses, listBalance, totalCents } from '../lib/stats'
+import { useIncremental } from '../lib/useIncremental'
 import {
   useBalances,
   useCategories,
@@ -21,6 +24,7 @@ import {
   useLists,
   useMembers,
   useSetListArchived,
+  useSetSettlementDeleted,
   useSettlements,
 } from '../query/hooks'
 
@@ -75,10 +79,20 @@ function ExpenseRow({
   )
 }
 
-function SettlementRow({ settlement, me, partner }: { settlement: Settlement; me: Member; partner: Member }) {
+function SettlementRow({
+  settlement,
+  me,
+  partner,
+  onOpen,
+}: {
+  settlement: Settlement
+  me: Member
+  partner: Member
+  onOpen: () => void
+}) {
   const names = nameForms(partner)
   return (
-    <div className="flex min-h-14 items-center gap-3 bg-settle px-3.5 py-2.5">
+    <button type="button" onClick={onOpen} className="flex min-h-14 w-full items-center gap-3 bg-settle px-3.5 py-2.5 text-left">
       <span className="flex size-[42px] flex-none items-center justify-center rounded-full border-[1.5px] border-dashed border-accent text-accent-text">
         <Icon name="settle" size={20} strokeWidth={2.2} />
       </span>
@@ -93,7 +107,7 @@ function SettlementRow({ settlement, me, partner }: { settlement: Settlement; me
       <span className="flex-none text-base font-semibold text-accent-text tabular-nums">
         {formatMoney(settlement.amount_cents)}
       </span>
-    </div>
+    </button>
   )
 }
 
@@ -153,6 +167,9 @@ export function ListDetail({
   const [search, setSearch] = useState('')
   const [filter, setFilter] = useState<ListFilter>({})
   const [filtering, setFiltering] = useState(false)
+  const [removing, setRemoving] = useState<Settlement | null>(null)
+  const toast = useToast()
+  const setSettlementDeleted = useSetSettlementDeleted()
 
   const list = lists?.find((candidate) => candidate.id === id)
   const filterCount = Object.values(filter).filter(Boolean).length
@@ -186,6 +203,18 @@ export function ListDetail({
       total: totalCents(monthRows.flatMap((row) => (row.kind === 'expense' ? [row.expense] : []))),
     }))
   }, [id, expenses, settlements, search, filter, searching])
+
+  // Only the newest rows are drawn at first; older months appear on scrolling.
+  // Month totals always cover the whole month, drawn or not.
+  const rowCount = months.reduce((sum, month) => sum + month.rows.length, 0)
+  const { count, hasMore, sentinel } = useIncremental(rowCount, `${id}|${search}|${JSON.stringify(filter)}`)
+  let budget = count
+  const visibleMonths = months.flatMap((month) => {
+    if (budget <= 0) return []
+    const rows = month.rows.slice(0, budget)
+    budget -= rows.length
+    return [{ ...month, rows }]
+  })
 
   if (!me || !partner || !members || !lists || !balances || !defaultShares || !expenses || !settlements) {
     return <Screen gap={14}>{null}</Screen>
@@ -325,7 +354,7 @@ export function ListDetail({
         <p className="py-10 text-center text-body text-text-2">{t.lists.noResults}</p>
       )}
 
-      {months.map(({ month, rows, total }) => (
+      {visibleMonths.map(({ month, rows, total }) => (
         <section key={month} className="flex flex-col gap-2">
           <div className="flex justify-between px-1 pt-1 text-footnote font-semibold text-text-2">
             <span className="tracking-[0.4px] uppercase">{formatMonthYear(month)}</span>
@@ -343,7 +372,12 @@ export function ListDetail({
                     onOpen={() => !readOnly && onEditExpense(row.expense)}
                   />
                 ) : (
-                  <SettlementRow settlement={row.settlement} me={me} partner={partner} />
+                  <SettlementRow
+                    settlement={row.settlement}
+                    me={me}
+                    partner={partner}
+                    onOpen={() => !readOnly && setRemoving(row.settlement)}
+                  />
                 )}
               </div>
             ))}
@@ -351,6 +385,37 @@ export function ListDetail({
         </section>
       ))}
 
+      {hasMore && <div ref={sentinel} aria-hidden="true" className="h-px" />}
+
+      {removing && (
+        <ActionSheet
+          message={t.settlement.deleteConfirm(
+            `${removing.to_user === me.user_id ? t.settlement.paidYou(names.subject) : t.settlement.youPaid(names.to)} ${formatMoney(removing.amount_cents)}.`,
+          )}
+          confirmLabel={t.settlement.delete}
+          onCancel={() => setRemoving(null)}
+          onConfirm={() => {
+            const { id } = removing
+            const fail = (error: unknown) =>
+              toast({ kind: 'error', message: error instanceof OfflineError ? t.system.offline : t.system.error })
+            setRemoving(null)
+            setSettlementDeleted.mutate(
+              { id, deleted: true },
+              {
+                onSuccess: () =>
+                  toast({
+                    message: t.settlement.deleted,
+                    action: {
+                      label: t.actions.undo,
+                      onClick: () => setSettlementDeleted.mutate({ id, deleted: false }, { onError: fail }),
+                    },
+                  }),
+                onError: fail,
+              },
+            )
+          }}
+        />
+      )}
       {filtering && (
         <FilterSheet
           filter={filter}

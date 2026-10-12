@@ -7,7 +7,7 @@ import { SettleSheet } from './SettleSheet'
 import { SheetContext, type SheetActions } from './SheetContext'
 
 type Open = { key: number } & (
-  | { kind: 'expense'; listId?: string; expense?: ExpenseWithShares }
+  | { kind: 'expense'; listId?: string; expense?: ExpenseWithShares; copyFrom?: ExpenseWithShares }
   | { kind: 'settle'; listId?: string }
   | { kind: 'list'; list?: List }
   | { kind: 'recurring'; rule?: RecurringExpense }
@@ -36,7 +36,14 @@ export function SheetHost({ children }: { children: ReactNode }) {
     <SheetContext value={actions}>
       {children}
       {open?.kind === 'expense' && (
-        <ExpenseSheet key={open.key} listId={open.listId} expense={open.expense} onClose={close} />
+        <ExpenseSheet
+          key={open.key}
+          listId={open.listId}
+          expense={open.expense}
+          copyFrom={open.copyFrom}
+          onDuplicate={(copyFrom) => setOpen({ kind: 'expense', key: Date.now(), copyFrom })}
+          onClose={close}
+        />
       )}
       {open?.kind === 'settle' && <SettleSheet key={open.key} listId={open.listId} onClose={close} />}
       {open?.kind === 'list' && <ListSheet key={open.key} list={open.list} onClose={close} />}

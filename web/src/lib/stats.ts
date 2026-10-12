@@ -13,7 +13,7 @@ export type ExpenseFilter = {
 }
 
 // Case- and accent-insensitive, so "farmacia" finds "Farmácia".
-function normalize(text: string): string {
+export function normalize(text: string): string {
   return text
     .normalize('NFD')
     .replace(/\p{Diacritic}/gu, '')
