@@ -37,6 +37,11 @@ export function expensesInMonth(expenses: ExpenseWithShares[], month: string): E
   return expenses.filter((expense) => monthKey(expense.spent_on) === month)
 }
 
+// A period is a month ('2026-10') or a whole year ('2026').
+export function expensesInPeriod(expenses: ExpenseWithShares[], period: string): ExpenseWithShares[] {
+  return expenses.filter((expense) => expense.spent_on.startsWith(period))
+}
+
 export function totalCents(expenses: ExpenseWithShares[]): number {
   return expenses.reduce((sum, expense) => sum + expense.amount_cents, 0)
 }

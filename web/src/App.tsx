@@ -3,6 +3,7 @@ import { BrowserRouter, Outlet, Route, Routes } from 'react-router-dom'
 import { useAuth } from './auth/AuthContext'
 import { InstallHint } from './components/InstallHint'
 import { NotificationPrompt } from './components/NotificationPrompt'
+import { OfflineScreen } from './components/OfflineScreen'
 import { TabBar } from './components/TabBar'
 import { ToastProvider } from './components/Toast'
 import { applyBrand } from './lib/brand'
@@ -10,6 +11,7 @@ import { useOnline } from './lib/online'
 import { useCurrentMember } from './query/hooks'
 import { Activity } from './screens/Activity'
 import { Categories } from './screens/Categories'
+import { CategoryStats } from './screens/CategoryStats'
 import { Home } from './screens/Home'
 import { ListDetail } from './screens/ListDetail'
 import { Login } from './screens/Login'
@@ -48,7 +50,7 @@ function ListRoute() {
   )
 }
 
-function App() {
+function Content() {
   const { loading, session } = useAuth()
   const { status, me } = useCurrentMember()
 
@@ -80,6 +82,7 @@ function App() {
           <Route path="lista/:id" element={<ListRoute />} />
           <Route path="atividade" element={<Activity />} />
           <Route path="estatisticas" element={<Stats />} />
+          <Route path="estatisticas/categoria/:categoryId" element={<CategoryStats />} />
           <Route path="definicoes" element={<Settings />} />
           <Route path="recorrentes" element={<Recurring />} />
           <Route path="categorias" element={<Categories />} />
@@ -89,6 +92,16 @@ function App() {
         </SheetHost>
       </BrowserRouter>
     </ToastProvider>
+  )
+}
+
+function App() {
+  const online = useOnline()
+  return (
+    <>
+      <Content />
+      {!online && <OfflineScreen />}
+    </>
   )
 }
 

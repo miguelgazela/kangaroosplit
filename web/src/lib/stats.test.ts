@@ -3,6 +3,7 @@ import type { ExpenseWithShares, List, ListBalance } from './database.types'
 import {
   expensePosition,
   expensesInMonth,
+  expensesInPeriod,
   filterExpenses,
   listBalance,
   monthlyTrend,
@@ -99,6 +100,14 @@ describe('monthly stats', () => {
       { month: '2026-09', totalCents: 100000 },
       { month: '2026-10', totalCents: 10000 },
     ])
+  })
+})
+
+describe('expensesInPeriod', () => {
+  it('takes a month or a whole year', () => {
+    expect(expensesInPeriod(expenses, '2026-10').map((e) => e.id)).toEqual(['Continente', 'Farmácia'])
+    expect(expensesInPeriod(expenses, '2026')).toHaveLength(4)
+    expect(expensesInPeriod(expenses, '2025')).toEqual([])
   })
 })
 

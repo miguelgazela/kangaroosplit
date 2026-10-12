@@ -1,8 +1,6 @@
 import { useQueryClient } from '@tanstack/react-query'
 import { useEffect, useRef, useState, type ReactNode } from 'react'
-import { t } from '../i18n/pt'
 import { useOnline } from '../lib/online'
-import { Icon } from './Icon'
 
 const PULL_THRESHOLD = 64
 const PULL_MAX = 96
@@ -76,20 +74,7 @@ function usePullToRefresh(scroller: React.RefObject<HTMLDivElement | null>, enab
   return { pull, refreshing }
 }
 
-export function OfflineBanner() {
-  return (
-    <div
-      role="status"
-      className="flex items-center gap-2.5 rounded-[14px] bg-warn-soft px-3.5 py-2.5 text-subhead font-medium text-warn"
-    >
-      <Icon name="offline" size={20} />
-      <span>{t.system.offline}</span>
-    </div>
-  )
-}
-
-// Scrollable page body: safe areas, room for the tab bar, offline banner and
-// pull-to-refresh.
+// Scrollable page body: safe areas, room for the tab bar and pull-to-refresh.
 export function Screen({ children, gap = 16 }: { children: ReactNode; gap?: number }) {
   const scroller = useRef<HTMLDivElement>(null)
   const online = useOnline()
@@ -124,7 +109,6 @@ export function Screen({ children, gap = 16 }: { children: ReactNode; gap?: numb
           transition: pull === 0 || refreshing ? 'transform 0.2s ease-out' : undefined,
         }}
       >
-        {!online && <OfflineBanner />}
         {children}
       </div>
       </div>
