@@ -36,6 +36,15 @@ export function DateRow({
           aria-label={label}
           value={value ?? ''}
           onChange={(event) => onChange(event.target.value || null)}
+          onClick={(event) => {
+            // Open the picker outright; a tap alone does not always do it for an
+            // invisible field.
+            try {
+              event.currentTarget.showPicker()
+            } catch {
+              // Not supported or not allowed here: the tap's default still applies.
+            }
+          }}
           className="absolute inset-0 size-full opacity-0"
         />
       </label>

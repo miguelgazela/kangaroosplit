@@ -184,7 +184,9 @@ function ExpenseForm({
   const [endOn, setEndOn] = useState(rule?.end_on ?? null)
   // Whether the split is still the list's default, and so should follow the list.
   const [splitTouched, setSplitTouched] = useState(template !== undefined)
-  const [keypad, setKeypad] = useState(template === undefined)
+  // A new expense opens on the keypad: amount, description, save. A recurring
+  // rule opens on the full form, since its schedule is the point of it.
+  const [keypad, setKeypad] = useState(template === undefined && !recurring)
   const [expanded, setExpanded] = useState(false)
   const [picker, setPicker] = useState<'category' | 'list' | null>(null)
   const [confirmingDelete, setConfirmingDelete] = useState(false)
@@ -386,6 +388,10 @@ function ExpenseForm({
                 className={`${chip} tabular-nums`}
               >
                 {splitChip(split, result)}
+              </button>
+              <button type="button" onClick={() => setKeypad(false)} className={`${chip} flex items-center gap-1 text-accent-text`}>
+                {recurring ? t.recurring.schedule : t.expense.moreOptions}
+                <Icon name="chevronDown" size={12} strokeWidth={2.8} />
               </button>
             </div>
             <div className="flex-1" />
