@@ -1,7 +1,11 @@
 import type { ListDefaultShare, ShareInput, SplitMode } from './database.types'
 
+// The modes the editor offers. 'shares' stays in the database enum for old
+// rows, which open as exact amounts.
+export type EditableSplitMode = Exclude<SplitMode, 'shares'>
+
 // What the user entered for one person. Meaning of `value` depends on mode:
-// percent -> percentage, exact -> cents, shares -> share count, equal -> ignored.
+// percent -> percentage, exact -> cents, equal -> ignored.
 export type SplitEntry = {
   userId: string
   value: number | null
@@ -12,7 +16,7 @@ export type SplitResult =
   // remaining > 0: still to assign; remaining < 0: over-assigned.
   // Unit is percentage points for 'percent_total' and cents for 'exact_total'.
   | { ok: false; error: 'percent_total' | 'exact_total'; remaining: number }
-  | { ok: false; error: 'no_shares' | 'invalid_value' }
+  | { ok: false; error: 'invalid_value' }
 
 // Weights may carry up to 2 decimals (e.g. 33.33 %); scaled to integers so the
 // arithmetic below stays exact.
@@ -52,7 +56,7 @@ function fromWeights(amountCents: number, entries: SplitEntry[], weights: number
   }
 }
 
-export function computeShares(mode: SplitMode, amountCents: number, entries: SplitEntry[]): SplitResult {
+export function computeShares(mode: EditableSplitMode, amountCents: number, entries: SplitEntry[]): SplitResult {
   if (mode === 'equal') {
     return fromWeights(amountCents, entries, entries.map(() => 1), false)
   }
@@ -87,21 +91,15 @@ export function computeShares(mode: SplitMode, amountCents: number, entries: Spl
         })),
       }
     }
-    case 'shares': {
-      if (values.every((value) => value === 0)) {
-        return { ok: false, error: 'no_shares' }
-      }
-      return fromWeights(amountCents, entries, values, true)
-    }
   }
 }
 
 // Starting point for a new expense, from the list's default ratio.
-// Weights summing to 100 read as percentages (60 / 40), anything else as shares (2 / 1).
+// Weights are read as percentages: 60 / 40 as is, 2 / 1 as 66,67 / 33,33.
 export function defaultSplit(
   memberIds: string[],
   defaults: ListDefaultShare[],
-): { mode: SplitMode; entries: SplitEntry[] } {
+): { mode: EditableSplitMode; entries: SplitEntry[] } {
   const weights = memberIds.map(
     (userId) => defaults.find((share) => share.user_id === userId)?.weight ?? 1,
   )
@@ -110,14 +108,18 @@ export function defaultSplit(
   if (total === 0 || weights.every((weight) => weight === weights[0])) {
     return { mode: 'equal', entries: memberIds.map((userId) => ({ userId, value: null })) }
   }
+  const percents = weights.map((weight) => Math.round((weight * 10000) / total) / 100)
+  // Rounding may leave the total a hair off 100; the last person absorbs it.
+  const others = percents.slice(0, -1).reduce((sum, value) => sum + value, 0)
+  percents[percents.length - 1] = Math.round((100 - others) * 100) / 100
   return {
-    mode: total === 100 ? 'percent' : 'shares',
-    entries: memberIds.map((userId, index) => ({ userId, value: weights[index] })),
+    mode: 'percent',
+    entries: memberIds.map((userId, index) => ({ userId, value: percents[index] })),
   }
 }
 
 // Rebuilds editor entries from stored shares, for editing an existing expense.
-export function entriesFromShares(mode: SplitMode, shares: ShareInput[]): SplitEntry[] {
+export function entriesFromShares(mode: EditableSplitMode, shares: ShareInput[]): SplitEntry[] {
   return shares.map((share) => ({
     userId: share.user_id,
     value: mode === 'exact' ? share.share_cents : mode === 'equal' ? null : share.input_value,

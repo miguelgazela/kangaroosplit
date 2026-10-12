@@ -89,21 +89,12 @@ describe('computeShares', () => {
     })
   })
 
-  it('splits by shares', () => {
-    const result = computeShares('shares', 3000, entries(2, 1))
-    expect(result.ok && result.shares).toEqual([
-      { user_id: A, share_cents: 2000, input_value: 2 },
-      { user_id: B, share_cents: 1000, input_value: 1 },
-    ])
-  })
-
   it('lets one person carry the whole expense', () => {
-    const result = computeShares('shares', 3000, entries(0, 1))
+    const result = computeShares('percent', 3000, entries(0, 100))
     expect(result.ok && result.shares.map((share) => share.share_cents)).toEqual([0, 3000])
   })
 
-  it('rejects all-zero shares and negative values', () => {
-    expect(computeShares('shares', 3000, entries(0, 0))).toEqual({ ok: false, error: 'no_shares' })
+  it('rejects negative values', () => {
     expect(computeShares('percent', 3000, entries(-10, 110))).toEqual({ ok: false, error: 'invalid_value' })
   })
 })
@@ -123,10 +114,10 @@ describe('defaultSplit', () => {
     })
   })
 
-  it('reads other weights as shares', () => {
+  it('turns other weights into percentages summing to 100', () => {
     expect(defaultSplit([A, B], [share(A, 2), share(B, 1)])).toEqual({
-      mode: 'shares',
-      entries: entries(2, 1),
+      mode: 'percent',
+      entries: entries(66.67, 33.33),
     })
   })
 })
@@ -137,7 +128,6 @@ describe('entriesFromShares', () => {
       ['equal', entries(null, null)],
       ['percent', entries(60, 40)],
       ['exact', entries(2500, 1500)],
-      ['shares', entries(2, 1)],
     ] as const
     for (const [mode, input] of cases) {
       const result = computeShares(mode, 4000, [...input])

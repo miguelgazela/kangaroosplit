@@ -47,7 +47,7 @@ Expense-splitting PWA for two people. Splitwise-like, scoped to one couple.
 ### 3.3 Expenses
 
 - FR-15 Add / edit / delete expense: amount, description, date, payer, category, list, optional note
-- FR-16 Split modes: equal, percent, exact amounts, shares
+- FR-16 Split modes: equal, percent, exact amounts
 - FR-17 Split prefilled from list default ratio; overridable per expense
 - FR-18 Show "created by" and "last edited by" with timestamps
 - FR-19 Deletion is soft: row kept and flagged with `deleted_at`, excluded from balances and stats, shown in activity feed as deleted, restorable by either user

@@ -1,16 +1,23 @@
 import { t } from '../i18n/pt'
 import type { ListDefaultShare, Member, ShareInput, SplitMode } from './database.types'
 import { formatAmountInput, formatDecimal, formatMoney, parseDecimal, parseMoney } from './format'
-import { computeShares, defaultSplit, entriesFromShares, type SplitEntry, type SplitResult } from './split'
+import {
+  computeShares,
+  defaultSplit,
+  entriesFromShares,
+  type EditableSplitMode,
+  type SplitEntry,
+  type SplitResult,
+} from './split'
 
 // Editor state for a split: the mode, and what is typed for each member (in
 // member order). Text is kept as typed so partial input like "33," survives.
 export type SplitForm = {
-  mode: SplitMode
+  mode: EditableSplitMode
   texts: string[]
 }
 
-function toTexts(mode: SplitMode, entries: SplitEntry[]): string[] {
+function toTexts(mode: EditableSplitMode, entries: SplitEntry[]): string[] {
   return entries.map(({ value }) => {
     if (mode === 'equal' || value === null) return ''
     return mode === 'exact' ? formatAmountInput(value) : formatDecimal(value)
@@ -38,7 +45,9 @@ export function splitFormFromDefaults(members: Member[], defaults: ListDefaultSh
   return { mode, texts: toTexts(mode, entries) }
 }
 
-export function splitFormFromShares(members: Member[], mode: SplitMode, shares: ShareInput[]): SplitForm {
+export function splitFormFromShares(members: Member[], saved: SplitMode, shares: ShareInput[]): SplitForm {
+  // Splits saved by shares are no longer offered; their amounts carry over as exact.
+  const mode = saved === 'shares' ? 'exact' : saved
   const ordered = members.map(
     (member) =>
       shares.find((share) => share.user_id === member.user_id) ?? {
@@ -57,7 +66,7 @@ export function resolveSplit(form: SplitForm, members: Member[], amountCents: nu
 }
 
 // Switching mode carries the current split over, so nothing jumps.
-export function changeMode(form: SplitForm, mode: SplitMode, members: Member[], amountCents: number): SplitForm {
+export function changeMode(form: SplitForm, mode: EditableSplitMode, members: Member[], amountCents: number): SplitForm {
   if (mode === form.mode) return form
   const current = resolveSplit(form, members, amountCents)
   const cents = current.ok ? current.shares.map((share) => share.share_cents) : null
@@ -78,8 +87,6 @@ export function changeMode(form: SplitForm, mode: SplitMode, members: Member[], 
       percents[percents.length - 1] = Math.round((100 - others) * 100) / 100
       return { mode, texts: percents.map(formatDecimal) }
     }
-    case 'shares':
-      return { mode, texts: members.map(() => '1') }
   }
 }
 
@@ -102,15 +109,13 @@ export function changeText(form: SplitForm, index: number, text: string, amountC
 
 const amounts = (shares: ShareInput[]) => shares.map((share) => formatMoney(share.share_cents)).join(' / ')
 
-// Short form for the quick chip: "60 / 40", "50 / 50", "3 / 2 partes".
+// Short form for the quick chip: "60 / 40", "50 / 50".
 export function splitChip(form: SplitForm, result: SplitResult): string {
   switch (form.mode) {
     case 'equal':
       return form.texts.map(() => formatDecimal(100 / form.texts.length)).join(' / ')
     case 'percent':
       return form.texts.join(' / ')
-    case 'shares':
-      return t.split.sharesSummary(form.texts.join(' / '))
     case 'exact':
       return result.ok ? amounts(result.shares) : t.split.exact
   }
@@ -140,8 +145,6 @@ function splitError(form: SplitForm, result: Extract<SplitResult, { ok: false }>
           : t.split.excess(formatMoney(-result.remaining))
       return short ? gap : `${gap}. ${t.split.mustSum}`
     }
-    case 'no_shares':
-      return t.split.noShares
     case 'invalid_value':
       return t.split.invalid
   }
@@ -157,9 +160,5 @@ export function splitStatus(form: SplitForm, result: SplitResult, amountCents: n
       return t.split.sums100
     case 'exact':
       return t.split.sums(formatMoney(amountCents))
-    case 'shares': {
-      const count = result.shares.reduce((sum, share) => sum + (share.input_value ?? 0), 0)
-      return t.split.sharesOf(count, formatMoney(Math.round(amountCents / count)))
-    }
   }
 }

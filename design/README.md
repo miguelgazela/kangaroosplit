@@ -57,7 +57,7 @@ Several files are small wrappers that show a variant of a main file. The variant
 - iOS sheet header: "Cancelar" (left), title (centre), "Guardar" (right). There is no Save button at the bottom, because the keyboard would hide it. "Guardar" is disabled while the split is invalid.
 - The amount field uses an **in-app numeric keypad** with a "," key (`DespesaTeclado`), not the system keyboard. The iOS decimal keypad shows "," or "." depending on the phone's region setting. Also accept both "," and "." when parsing.
 - On open, the sheet shows amount, description, quick chips (category, list, payer, split) and the keypad, so the user can save after amount, description and one tap. Closing the keypad shows the full form.
-- The split row is collapsed by default ("60 / 40 · 24,00 € / 16,00 €"). Tapping it expands the editor with the four modes.
+- The split row is collapsed by default ("60 / 40 · 24,00 € / 16,00 €"). Tapping it expands the editor with three modes: Igual, Percentagem, Valor exato. The "Partes" mode was removed from the app; ignore `DespesaPartes` and the "Partes" segment in the mockups.
 
 ### Sample data correction
 - With the brief's Casa expenses and a 60 / 40 split, Mara owes 439,55 €. The mockups add a settlement "A Mara pagou-te 354,65 €" on 06/10/2026, so the Casa balance is 84,90 € as the brief says.

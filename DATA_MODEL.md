@@ -61,7 +61,7 @@ Default split ratio per list.
 | paid_by | uuid | FK `members` |
 | category_id | uuid | FK `categories` |
 | note | text null | |
-| split_mode | enum | `equal`, `percent`, `exact`, `shares` |
+| split_mode | enum | `equal`, `percent`, `exact`, `shares` (`shares` is legacy: no longer offered, old rows open as `exact`) |
 | recurring_id | uuid null | FK `recurring_expenses` |
 | occurrence_date | date null | unique with `recurring_id` → no duplicate generation |
 | created_by, created_at | | |
