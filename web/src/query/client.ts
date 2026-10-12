@@ -1,5 +1,5 @@
 import { createSyncStoragePersister } from '@tanstack/query-sync-storage-persister'
-import { QueryClient } from '@tanstack/react-query'
+import { QueryClient, type Query } from '@tanstack/react-query'
 
 const CACHE_MAX_AGE = 1000 * 60 * 60 * 24 * 30
 
@@ -28,6 +28,10 @@ export const persistOptions = {
   maxAge: CACHE_MAX_AGE,
   // Bump when cached shapes change, to discard old caches.
   buster: '1',
+  dehydrateOptions: {
+    // Receipt links expire within the hour; a saved one would be dead on next launch.
+    shouldDehydrateQuery: (query: Query) => query.state.status === 'success' && query.queryKey[0] !== 'receipt',
+  },
 }
 
 // On sign-out: nothing from the previous session stays on the device.

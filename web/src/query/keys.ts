@@ -10,6 +10,7 @@ export const queryKeys = {
   balances: ['balances'],
   recurring: ['recurring'],
   activity: ['activity'],
+  receipt: ['receipt'],
 } as const
 
 type QueryKey = (typeof queryKeys)[keyof typeof queryKeys]

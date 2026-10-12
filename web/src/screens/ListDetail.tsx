@@ -57,6 +57,11 @@ function ExpenseRow({
       <span className="flex min-w-0 flex-1 flex-col gap-0.5">
         <span className="flex items-center gap-1.5 text-base font-semibold">
           <span className="truncate">{expense.description}</span>
+          {expense.receipt_path && (
+            <span role="img" aria-label={t.expense.hasReceipt} className="flex-none text-text-2">
+              <Icon name="paperclip" size={13} strokeWidth={2.4} />
+            </span>
+          )}
           {expense.recurring_id && (
             <span className="inline-flex flex-none items-center gap-[3px] rounded-full bg-accent-soft px-1.5 py-0.5 text-[11px] font-semibold text-accent-text">
               <Icon name="repeat" size={11} strokeWidth={3} />

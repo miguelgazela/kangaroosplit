@@ -13,6 +13,8 @@ export type ExpenseInput = {
   note: string | null
   splitMode: SplitMode
   shares: ShareInput[]
+  // Omit to leave the receipt as it is, '' to remove it, or a storage path to set it.
+  receiptPath?: string
 }
 
 // Supabase caps a single response (1000 rows by default), so page through.
@@ -52,6 +54,8 @@ export async function saveExpense(input: ExpenseInput): Promise<string> {
       p_note: input.note?.trim() || null,
       p_split_mode: input.splitMode,
       p_shares: input.shares,
+      // Sent only when it changes, so plain saves do not depend on migration 0004.
+      ...(input.receiptPath === undefined ? {} : { p_receipt_path: input.receiptPath }),
     }),
   )
 }

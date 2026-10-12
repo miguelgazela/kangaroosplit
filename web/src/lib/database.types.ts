@@ -92,6 +92,8 @@ export type Expense = {
   split_mode: SplitMode
   recurring_id: string | null
   occurrence_date: string | null
+  // Path of the receipt photo in storage. Absent until migration 0004 is applied.
+  receipt_path?: string | null
   created_by: string | null
   created_at: string
   updated_by: string | null
@@ -237,6 +239,7 @@ export type Database = {
           p_note: string | null
           p_split_mode: SplitMode
           p_shares: ShareInput[]
+          p_receipt_path?: string
         }
         Returns: string
       }

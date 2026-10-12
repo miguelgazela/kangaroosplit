@@ -1,10 +1,11 @@
 import { useQueryClient } from '@tanstack/react-query'
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState, type ChangeEvent } from 'react'
 import { ActionSheet } from '../components/ActionSheet'
 import { Avatar } from '../components/Avatar'
 import { DateRow } from '../components/DateRow'
 import { Icon } from '../components/Icon'
 import { OptionSheet } from '../components/OptionSheet'
+import { ReceiptViewer } from '../components/ReceiptViewer'
 import { Segmented } from '../components/Segmented'
 import { Sheet } from '../components/Sheet'
 import { SplitEditor } from '../components/SplitEditor'
@@ -19,6 +20,7 @@ import type {
   ListDefaultShare,
   Member,
   RecurringExpense,
+  ShareInput,
 } from '../lib/database.types'
 import { todayISO } from '../lib/dates'
 import { formatAmountInput, formatDate, parseMoney, splitMoney } from '../lib/format'
@@ -26,6 +28,7 @@ import { OfflineError } from '../lib/online'
 import { ruleStatus } from '../lib/ruleStatus'
 import { descriptionHistory, knownCategory, suggestDescriptions, type Suggestion } from '../lib/suggest'
 import { nameForms } from '../lib/people'
+import { compressPhoto, removeReceipt, uploadReceipt } from '../lib/receipts'
 import {
   resolveSplit,
   splitChip,
@@ -41,6 +44,7 @@ import {
   useDefaultShares,
   useLists,
   useMembers,
+  useReceiptLink,
   useDeleteRecurring,
   useExpenses,
   useSaveExpense,
@@ -207,13 +211,42 @@ function ExpenseForm({
   const [describing, setDescribing] = useState(false)
   const [confirmingDelete, setConfirmingDelete] = useState(false)
 
+  // Receipt photo. `photo` is what this edit does to it: undefined leaves the
+  // saved one alone, null removes it, a Blob replaces it (uploaded on save).
+  const savedReceipt = expense?.receipt_path ?? null
+  const [photo, setPhoto] = useState<Blob | null | undefined>(undefined)
+  const [preview, setPreview] = useState<string | null>(null)
+  const [viewingReceipt, setViewingReceipt] = useState(false)
+  const [uploading, setUploading] = useState(false)
+  const savedLink = useReceiptLink(photo === undefined ? savedReceipt : null)
+  const receiptSrc = photo ? preview : (savedLink.data ?? null)
+  const hasReceipt = photo ? true : photo === undefined && savedReceipt !== null
+
+  useEffect(() => () => {
+    if (preview) URL.revokeObjectURL(preview)
+  }, [preview])
+
+  const pickPhoto = async (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0]
+    // Lets the same file be picked again after removing it.
+    event.target.value = ''
+    if (!file) return
+    try {
+      const compressed = await compressPhoto(file)
+      setPhoto(compressed)
+      setPreview(URL.createObjectURL(compressed))
+    } catch {
+      toast({ kind: 'error', message: t.expense.receiptUnreadable })
+    }
+  }
+
   const amountCents = parseMoney(amount) ?? 0
   const result = resolveSplit(split, members, amountCents)
   const category = selectableCategories.find((candidate) => candidate.id === categoryId)
   const list = selectableLists.find((candidate) => candidate.id === selectedListId)
   const scheduleInvalid = recurring !== undefined && endOn !== null && endOn < startOn
   const pending =
-    save.isPending || setDeleted.isPending || createRule.isPending || updateRule.isPending || setRulePaused.isPending || deleteRule.isPending
+    uploading || save.isPending || setDeleted.isPending || createRule.isPending || updateRule.isPending || setRulePaused.isPending || deleteRule.isPending
   const canSave = amountCents > 0 && description.trim() !== '' && result.ok && !scheduleInvalid && !pending
 
   const suggestions = describing ? suggestDescriptions(history, description) : []
@@ -297,8 +330,23 @@ function ExpenseForm({
       void onSaveRule()
       return
     }
-    save.mutate(
-      {
+    void onSaveExpense(result.shares)
+  }
+
+  const onSaveExpense = async (shares: ShareInput[]) => {
+    let uploaded: string | null = null
+    setUploading(true)
+    try {
+      // The photo goes up first, so the expense never points at a missing file.
+      let receiptPath: string | undefined
+      if (photo) {
+        uploaded = await uploadReceipt(photo)
+        receiptPath = uploaded
+      } else if (photo === null && savedReceipt) {
+        receiptPath = ''
+      }
+
+      await save.mutateAsync({
         id: expense?.id,
         listId: selectedListId,
         description,
@@ -308,18 +356,22 @@ function ExpenseForm({
         categoryId,
         note: note || null,
         splitMode: split.mode,
-        shares: result.shares,
-      },
-      {
-        onSuccess: () => {
-          remember(LAST_LIST_KEY, selectedListId)
-          remember(LAST_CATEGORY_KEY, categoryId)
-          toast({ message: t.expense.saved })
-          onClose()
-        },
-        onError: fail,
-      },
-    )
+        shares,
+        receiptPath,
+      })
+
+      // The photo this one replaced, or that was removed, is no longer needed.
+      if (savedReceipt && receiptPath !== undefined) void removeReceipt(savedReceipt)
+      remember(LAST_LIST_KEY, selectedListId)
+      remember(LAST_CATEGORY_KEY, categoryId)
+      toast({ message: t.expense.saved })
+      onClose()
+    } catch (error) {
+      if (uploaded) void removeReceipt(uploaded)
+      fail(error)
+    } finally {
+      setUploading(false)
+    }
   }
 
   const onDelete = () => {
@@ -544,6 +596,40 @@ function ExpenseForm({
             </div>
             )}
 
+            {!recurring && (
+              <div className="flex min-h-[52px] flex-none items-center gap-3 rounded-card bg-surface py-1 pr-2 pl-4">
+                {hasReceipt ? (
+                  <>
+                    <button
+                      type="button"
+                      aria-label={t.expense.viewReceipt}
+                      disabled={!receiptSrc}
+                      onClick={() => setViewingReceipt(true)}
+                      className="size-11 flex-none overflow-hidden rounded-control bg-fill"
+                    >
+                      {receiptSrc && <img src={receiptSrc} alt="" className="size-full object-cover" />}
+                    </button>
+                    <span className="min-w-0 flex-1 truncate text-body">{t.expense.receipt}</span>
+                    <label className="flex h-11 flex-none items-center px-2 text-body text-accent-text">
+                      {t.expense.replaceReceipt}
+                      <input type="file" accept="image/*" onChange={(event) => void pickPhoto(event)} className="sr-only" />
+                    </label>
+                    <button type="button" onClick={() => setPhoto(null)} className="h-11 flex-none px-2 text-body text-danger">
+                      {t.expense.removeReceipt}
+                    </button>
+                  </>
+                ) : (
+                  <label className="flex h-11 min-w-0 flex-1 items-center gap-3">
+                    <Icon name="camera" size={22} strokeWidth={1.8} className="flex-none text-text-2" />
+                    <span className="min-w-0 flex-1 truncate text-body">{t.expense.receipt}</span>
+                    <span className="flex-none px-2 text-body text-accent-text">{t.expense.addReceipt}</span>
+                    {/* No `capture`: iOS then offers both the camera and the photo library. */}
+                    <input type="file" accept="image/*" onChange={(event) => void pickPhoto(event)} className="sr-only" />
+                  </label>
+                )}
+              </div>
+            )}
+
             {expense && (
               <div className="flex flex-none flex-col gap-3">
                 <div className="flex flex-col gap-0.5 px-1 text-footnote text-text-2">
@@ -630,6 +716,7 @@ function ExpenseForm({
           onClose={() => setPicker(null)}
         />
       )}
+      {viewingReceipt && receiptSrc && <ReceiptViewer src={receiptSrc} onClose={() => setViewingReceipt(false)} />}
       {confirmingDelete && (
         <ActionSheet
           message={rule ? t.recurring.deleteConfirm : t.expense.deleteConfirm}

@@ -1,4 +1,7 @@
 // End-to-end check of the data layer against the real database.
+// CAUTION: every expense and payment it creates sends a real push notification
+// to the other member now that the push webhook exists. Warn them, or switch
+// the webhook off, before running this.
 // Works only inside throwaway lists that are deleted afterwards; the delete
 // cascades to their expenses, settlements, recurring rules and activity.
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'

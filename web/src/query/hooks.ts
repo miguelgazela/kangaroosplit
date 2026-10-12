@@ -39,6 +39,7 @@ import {
 } from '../data/settlements'
 import type { Member } from '../lib/database.types'
 import { isOnline, OfflineError } from '../lib/online'
+import { receiptLink } from '../lib/receipts'
 import { keysByTable, queryKeys } from './keys'
 
 type TableName = keyof typeof keysByTable
@@ -85,6 +86,17 @@ export function useRecurring() {
 
 export function useActivity() {
   return useQuery({ queryKey: queryKeys.activity, queryFn: () => fetchActivity(), enabled: useSignedIn() })
+}
+
+// A temporary link to a receipt photo, refreshed before it expires.
+export function useReceiptLink(path: string | null | undefined) {
+  return useQuery({
+    queryKey: [...queryKeys.receipt, path],
+    queryFn: () => receiptLink(path!),
+    enabled: Boolean(path),
+    staleTime: 1000 * 60 * 45,
+    gcTime: 1000 * 60 * 50,
+  })
 }
 
 export type CurrentMember = {
