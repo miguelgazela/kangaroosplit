@@ -125,6 +125,9 @@ function render(report: Report, recipient: Member): string {
   const listById = byId(lists)
   const memberById = new Map(members.map((m) => [m.user_id, m]))
   const other = members.find((m) => m.user_id !== recipient.user_id)
+  // "A Mara" / "O Miguel", "à Mara" / "ao Miguel".
+  const subject = other ? `${other.gender === 'f' ? 'A' : 'O'} ${other.display_name}` : 'O outro membro'
+  const to = other ? `${other.gender === 'f' ? 'à' : 'ao'} ${other.display_name}` : 'ao outro membro'
 
   // Headline
   let comparison = ''
@@ -223,8 +226,8 @@ function render(report: Report, recipient: Member): string {
       return `
         <tr>
           <td style="padding:6px 0;font-size:15px">${escapeHtml(expense.description)}
-            <div style="font-size:12px;color:${COLORS.text2}">${day} · pagou ${escapeHtml(
-              payer?.user_id === recipient.user_id ? 'tu' : (payer?.display_name ?? ''),
+            <div style="font-size:12px;color:${COLORS.text2}">${day} · pago ${escapeHtml(
+              payer?.user_id === recipient.user_id ? 'por ti' : `${payer?.gender === 'f' ? 'pela' : 'pelo'} ${payer?.display_name ?? ''}`,
             )}</div></td>
           <td style="padding:6px 0;font-size:15px;font-weight:600;text-align:right;vertical-align:top">${money(expense.amount_cents)}</td>
         </tr>`
@@ -248,10 +251,10 @@ function render(report: Report, recipient: Member): string {
   let balanceText = 'Estão quites. Nada a acertar.'
   let balanceColor = COLORS.text
   if (mine > 0) {
-    balanceText = `${escapeHtml(other?.display_name ?? 'O outro membro')} deve-te <strong>${money(mine)}</strong>.`
+    balanceText = `${escapeHtml(subject)} deve-te <strong>${money(mine)}</strong>.`
     balanceColor = COLORS.pos
   } else if (mine < 0) {
-    balanceText = `Deves <strong>${money(mine)}</strong> a ${escapeHtml(other?.display_name ?? 'o outro membro')}.`
+    balanceText = `Deves <strong>${money(mine)}</strong> ${escapeHtml(to)}.`
     balanceColor = COLORS.neg
   }
 
