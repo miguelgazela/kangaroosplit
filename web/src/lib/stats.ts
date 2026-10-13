@@ -116,3 +116,31 @@ export function overallBalance(balances: ListBalance[], lists: List[], userId: s
     .filter((balance) => balance.user_id === userId && active.has(balance.list_id))
     .reduce((sum, balance) => sum + balance.balance_cents, 0)
 }
+
+// Expenses dated after today have not happened yet: they stay out of balances
+// (the database view does the same) and are shown apart as scheduled.
+export function isScheduled(expense: ExpenseWithShares, today: string): boolean {
+  return expense.spent_on > today
+}
+
+export type ScheduledImpact = {
+  count: number
+  // Net effect on the viewer's balance once they all count. Positive: is owed more.
+  cents: number
+  // Date of the last one to start counting: by then, all of them count.
+  until: string
+}
+
+export function scheduledImpact(
+  expenses: ExpenseWithShares[],
+  userId: string,
+  today: string,
+): ScheduledImpact | null {
+  const scheduled = expenses.filter((expense) => isScheduled(expense, today))
+  if (scheduled.length === 0) return null
+  return {
+    count: scheduled.length,
+    cents: scheduled.reduce((sum, expense) => sum + expensePosition(expense, userId), 0),
+    until: scheduled.reduce((last, expense) => (expense.spent_on > last ? expense.spent_on : last), scheduled[0].spent_on),
+  }
+}

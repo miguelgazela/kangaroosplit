@@ -36,6 +36,16 @@ export const t = {
     settleUp: 'Acertar contas',
     settleAll: 'Acertar tudo',
     activeLists: (count: number) => (count === 1 ? '1 lista ativa' : `${count} listas ativas`),
+    // Under the balance: expenses dated in the future do not count yet.
+    // `date` is when the last one starts counting; with several, by then all do.
+    scheduled: (impact: { subject: string; to: string; cents: number; count: number; date: string; money: string }) => {
+      const many = impact.count > 1
+      const when = many ? `Até ${impact.date}` : `A ${impact.date}`
+      const total = many ? ` (${impact.count} despesas agendadas)` : ''
+      if (impact.cents > 0) return `${when}, ${impact.subject} deve-te mais ${impact.money}${total}`
+      if (impact.cents < 0) return `${when}, deves mais ${impact.money} ${impact.to}${total}`
+      return many ? `${impact.count} despesas agendadas até ${impact.date}` : `1 despesa agendada para ${impact.date}`
+    },
   },
 
   lists: {
@@ -56,6 +66,7 @@ export const t = {
     searchLabel: 'Pesquisar despesas',
     filter: 'Filtrar por categoria, quem pagou e datas',
     noResults: 'Nenhuma despesa encontrada.',
+    scheduled: 'Agendadas',
     notFound: 'Lista não encontrada.',
   },
 

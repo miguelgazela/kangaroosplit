@@ -6,11 +6,12 @@ import { Icon } from '../components/Icon'
 import { Screen } from '../components/Screen'
 import { t } from '../i18n/pt'
 import type { List, Member } from '../lib/database.types'
-import { formatDateRange, splitMoney } from '../lib/format'
+import { formatDateRange, formatDayMonth, formatMoney, splitMoney } from '../lib/format'
 import { useOnline } from '../lib/online'
 import { nameForms, ratio } from '../lib/people'
-import { listBalance, overallBalance } from '../lib/stats'
-import { useBalances, useCurrentMember, useDefaultShares, useLists, useMembers } from '../query/hooks'
+import { todayISO } from '../lib/dates'
+import { listBalance, overallBalance, scheduledImpact } from '../lib/stats'
+import { useBalances, useCurrentMember, useDefaultShares, useExpenses, useLists, useMembers } from '../query/hooks'
 
 function HeroBalance({ cents, me, partner }: { cents: number; me: Member; partner: Member }) {
   const { whole, rest } = splitMoney(Math.abs(cents))
@@ -92,6 +93,7 @@ export function Home({ onSettleAll, onNewList }: { onSettleAll: () => void; onNe
   const { data: lists } = useLists()
   const { data: balances } = useBalances()
   const { data: defaultShares } = useDefaultShares()
+  const { data: expenses } = useExpenses()
   const [showArchived, setShowArchived] = useState(false)
 
   const ready = me && partner && members && lists && balances && defaultShares
@@ -100,6 +102,11 @@ export function Home({ onSettleAll, onNewList }: { onSettleAll: () => void; onNe
   const main = active.find((list) => list.is_default)
   const others = active.filter((list) => !list.is_default)
   const total = ready ? overallBalance(balances, lists, me.user_id) : 0
+  const activeIds = new Set(active.map((list) => list.id))
+  const upcoming =
+    ready && expenses
+      ? scheduledImpact(expenses.filter((expense) => activeIds.has(expense.list_id)), me.user_id, todayISO())
+      : null
 
   const subtitle = (list: List) =>
     formatDateRange(list.starts_on, list.ends_on) ??
@@ -135,7 +142,21 @@ export function Home({ onSettleAll, onNewList }: { onSettleAll: () => void; onNe
           )}
         </div>
         {ready ? (
-          <HeroBalance cents={total} me={me} partner={partner} />
+          <>
+            <HeroBalance cents={total} me={me} partner={partner} />
+            {upcoming && (
+              <p className="text-footnote text-white/85">
+                {t.balance.scheduled({
+                  subject: nameForms(partner).subject,
+                  to: nameForms(partner).to,
+                  cents: upcoming.cents,
+                  count: upcoming.count,
+                  date: formatDayMonth(upcoming.until),
+                  money: formatMoney(Math.abs(upcoming.cents)),
+                })}
+              </p>
+            )}
+          </>
         ) : (
           <div className="flex flex-col gap-2.5 pt-1 pb-1.5">
             <div className="h-4 w-[150px] rounded-full bg-white/20" />

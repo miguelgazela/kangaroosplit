@@ -10,11 +10,11 @@ import { Screen } from '../components/Screen'
 import { useToast } from '../components/ToastContext'
 import { t } from '../i18n/pt'
 import type { Category, ExpenseWithShares, List, Member, Settlement } from '../lib/database.types'
-import { monthKey } from '../lib/dates'
+import { monthKey, todayISO } from '../lib/dates'
 import { formatDateRange, formatDayMonth, formatMoney, formatMonthYear } from '../lib/format'
 import { OfflineError, useOnline } from '../lib/online'
 import { nameForms, ratio } from '../lib/people'
-import { expensePosition, filterExpenses, listBalance, totalCents } from '../lib/stats'
+import { expensePosition, filterExpenses, listBalance, scheduledImpact, totalCents } from '../lib/stats'
 import { useIncremental } from '../lib/useIncremental'
 import {
   useBalances,
@@ -169,8 +169,8 @@ export function ListDetail({
   // Settlements are hidden while narrowing down expenses.
   const searching = search.trim() !== '' || filterCount > 0
 
-  const months = useMemo(() => {
-    if (!id || !expenses || !settlements) return []
+  const groups = useMemo(() => {
+    if (!id || !expenses || !settlements) return { scheduled: [] as Row[], monthGroups: [] }
     const rows: Row[] = filterExpenses(expenses, { ...filter, listId: id, search }).map((expense) => ({
       kind: 'expense',
       date: expense.spent_on,
@@ -185,17 +185,22 @@ export function ListDetail({
     }
     rows.sort((a, b) => b.date.localeCompare(a.date) || b.createdAt.localeCompare(a.createdAt))
 
+    // Future-dated expenses are listed apart, so the months start at today.
+    const today = todayISO()
+    const scheduled = rows.filter((row) => row.date > today)
     const grouped = new Map<string, Row[]>()
-    for (const row of rows) {
+    for (const row of rows.filter((row) => row.date <= today)) {
       const month = monthKey(row.date)
       grouped.set(month, [...(grouped.get(month) ?? []), row])
     }
-    return [...grouped].map(([month, monthRows]) => ({
+    const monthGroups = [...grouped].map(([month, monthRows]) => ({
       month,
       rows: monthRows,
       total: totalCents(monthRows.flatMap((row) => (row.kind === 'expense' ? [row.expense] : []))),
     }))
+    return { scheduled, monthGroups }
   }, [id, expenses, settlements, search, filter, searching])
+  const { scheduled, monthGroups: months } = groups
 
   // Only the newest rows are drawn at first; older months appear on scrolling.
   // Month totals always cover the whole month, drawn or not.
@@ -229,6 +234,11 @@ export function ListDetail({
   const split = ratio(members, defaultShares, list.id)
   const splitTotal = split.reduce((sum, value) => sum + value, 0)
   const hasRows = expenses.some((expense) => expense.list_id === list.id) || months.length > 0
+  const upcoming = scheduledImpact(
+    expenses.filter((expense) => expense.list_id === list.id),
+    me.user_id,
+    todayISO(),
+  )
 
   return (
     <Screen gap={14}>
@@ -297,6 +307,18 @@ export function ListDetail({
             </button>
           )}
         </div>
+        {upcoming && (
+          <p className="border-t-[0.5px] border-separator pt-2.5 text-footnote text-text-2">
+            {t.balance.scheduled({
+              subject: names.subject,
+              to: names.to,
+              cents: upcoming.cents,
+              count: upcoming.count,
+              date: formatDayMonth(upcoming.until),
+              money: formatMoney(Math.abs(upcoming.cents)),
+            })}
+          </p>
+        )}
         <div className="flex items-center gap-2 border-t-[0.5px] border-separator pt-2.5 text-footnote text-text-2">
           <span className="flex h-1.5 w-12 flex-none overflow-hidden rounded-full">
             {members.map((member, index) => (
@@ -343,8 +365,32 @@ export function ListDetail({
 
       {!hasRows && <EmptyList onAdd={() => onAddExpense(list.id)} disabled={readOnly} />}
 
-      {hasRows && months.length === 0 && (
+      {hasRows && months.length === 0 && scheduled.length === 0 && (
         <p className="py-10 text-center text-body text-text-2">{t.lists.noResults}</p>
+      )}
+
+      {scheduled.length > 0 && (
+        <section className="flex flex-col gap-2">
+          <div className="flex justify-between px-1 pt-1 text-footnote font-semibold text-text-2">
+            <span className="tracking-[0.4px] uppercase">{t.lists.scheduled}</span>
+            <span>{formatMoney(totalCents(scheduled.flatMap((row) => (row.kind === 'expense' ? [row.expense] : []))))}</span>
+          </div>
+          <div className="overflow-hidden rounded-card bg-surface shadow-card">
+            {scheduled.map((row, index) =>
+              row.kind === 'expense' ? (
+                <div key={row.expense.id} className={index > 0 ? 'border-t-[0.5px] border-separator' : ''}>
+                  <ExpenseRow
+                    expense={row.expense}
+                    category={categories?.find((category) => category.id === row.expense.category_id)}
+                    me={me}
+                    partner={partner}
+                    onOpen={() => !readOnly && onEditExpense(row.expense)}
+                  />
+                </div>
+              ) : null,
+            )}
+          </div>
+        </section>
       )}
 
       {visibleMonths.map(({ month, rows, total }) => (

@@ -5,9 +5,11 @@ import {
   expensesInMonth,
   expensesInPeriod,
   filterExpenses,
+  isScheduled,
   listBalance,
   monthlyTrend,
   overallBalance,
+  scheduledImpact,
   sharesByUser,
   totalCents,
   totalsByCategory,
@@ -142,5 +144,27 @@ describe('positions and balances', () => {
     expect(listBalance(balances, 'missing', A)).toBe(0)
     expect(overallBalance(balances, lists, A)).toBe(6490)
     expect(overallBalance(balances, lists, B)).toBe(-6490)
+  })
+})
+
+describe('scheduled expenses', () => {
+  const upcoming = [
+    expense('Concerto', '2026-10-27', 6000, A, 3000),
+    expense('Jantar', '2026-10-20', 4000, B, 2500),
+    expense('Hoje', '2026-10-13', 1000, A, 500),
+  ]
+
+  it('treats only dates after today as scheduled', () => {
+    expect(upcoming.map((e) => isScheduled(e, '2026-10-13'))).toEqual([true, true, false])
+  })
+
+  it('sums the viewer net effect and finds the last date', () => {
+    // A lends 3000 on Concerto and owes 2500 on Jantar.
+    expect(scheduledImpact(upcoming, A, '2026-10-13')).toEqual({ count: 2, cents: 500, until: '2026-10-27' })
+    expect(scheduledImpact(upcoming, B, '2026-10-13')).toEqual({ count: 2, cents: -500, until: '2026-10-27' })
+  })
+
+  it('is null when nothing is scheduled', () => {
+    expect(scheduledImpact(upcoming, A, '2026-10-27')).toBeNull()
   })
 })
