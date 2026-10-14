@@ -10,6 +10,9 @@ export const queryKeys = {
   balances: ['balances'],
   recurring: ['recurring'],
   activity: ['activity'],
+  reactions: ['reactions'],
+  comments: ['comments'],
+  reads: ['reads'],
   receipt: ['receipt'],
 } as const
 
@@ -28,6 +31,9 @@ export const keysByTable: Partial<Record<TableName, readonly QueryKey[]>> = {
   settlements: [queryKeys.settlements, queryKeys.balances],
   recurring_expenses: [queryKeys.recurring],
   activity: [queryKeys.activity],
+  expense_reactions: [queryKeys.reactions],
+  expense_comments: [queryKeys.comments],
+  expense_reads: [queryKeys.reads],
 }
 
 export const realtimeTables = Object.keys(keysByTable) as TableName[]

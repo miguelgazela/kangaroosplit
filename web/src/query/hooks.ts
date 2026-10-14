@@ -22,6 +22,16 @@ import {
 } from '../data/lists'
 import { fetchMembers, updateMember } from '../data/members'
 import {
+  addComment,
+  editComment,
+  fetchComments,
+  fetchReactions,
+  fetchReads,
+  markRead,
+  setCommentDeleted,
+  setReaction,
+} from '../data/social'
+import {
   createRecurring,
   deleteRecurring,
   fetchRecurring,
@@ -82,6 +92,18 @@ export function useBalances() {
 
 export function useRecurring() {
   return useQuery({ queryKey: queryKeys.recurring, queryFn: fetchRecurring, enabled: useSignedIn() })
+}
+
+export function useReactions() {
+  return useQuery({ queryKey: queryKeys.reactions, queryFn: fetchReactions, enabled: useSignedIn() })
+}
+
+export function useComments() {
+  return useQuery({ queryKey: queryKeys.comments, queryFn: fetchComments, enabled: useSignedIn() })
+}
+
+export function useReads() {
+  return useQuery({ queryKey: queryKeys.reads, queryFn: fetchReads, enabled: useSignedIn() })
 }
 
 export function useActivity() {
@@ -205,6 +227,26 @@ export function useSetExpenseDeleted() {
     ({ id, deleted }: { id: string; deleted: boolean }) => setExpenseDeleted(id, deleted),
     ['expenses'],
   )
+}
+
+export function useSetReaction() {
+  return useWrite(setReaction, ['expense_reactions'])
+}
+
+export function useAddComment() {
+  return useWrite(addComment, ['expense_comments'])
+}
+
+export function useEditComment() {
+  return useWrite(editComment, ['expense_comments'])
+}
+
+export function useSetCommentDeleted() {
+  return useWrite(setCommentDeleted, ['expense_comments'])
+}
+
+export function useMarkRead() {
+  return useWrite(markRead, ['expense_reads'])
 }
 
 export function useMoveExpense() {

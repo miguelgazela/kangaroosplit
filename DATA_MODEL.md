@@ -117,12 +117,44 @@ Feed, and single trigger point for push.
 | id | uuid PK | |
 | list_id | uuid | |
 | actor_id | uuid | |
-| action | enum | `expense_created`, `expense_updated`, `expense_deleted`, `expense_restored`, `settlement_created`, `settlement_deleted`, `list_created`, `list_archived` |
+| action | enum | `expense_created`, `expense_updated`, `expense_deleted`, `expense_restored`, `settlement_created`, `settlement_deleted`, `list_created`, `list_archived`, `expense_commented`, `expense_reacted` |
 | entity_id | uuid | |
 | snapshot | jsonb | description, amount, before/after for edits |
 | created_at | timestamptz | |
 
 Written only by DB triggers; clients read-only. Recurring-generated expenses log with a flag in `snapshot` so they can be batched or muted in push.
+
+### `expense_reactions`
+One reaction per person per expense (migration 0007).
+
+| Column | Type | Notes |
+|---|---|---|
+| expense_id | uuid | FK `expenses`, on delete cascade |
+| user_id | uuid | FK `members`; part of PK, so one row per person |
+| emoji | text | one of the six in the UI; removing a reaction deletes the row |
+| created_at | timestamptz | |
+
+### `expense_comments`
+
+| Column | Type | Notes |
+|---|---|---|
+| id | uuid PK | |
+| expense_id | uuid | FK `expenses`, on delete cascade |
+| user_id | uuid | author; only the author can edit or delete |
+| body | text | 1–500 characters |
+| created_at | timestamptz | |
+| edited_at | timestamptz null | set by trigger when `body` changes |
+| deleted_at | timestamptz null | soft delete |
+
+### `expense_reads`
+When each person last opened an expense's detail, for the "por ler" state. A person sees only their own rows.
+
+| Column | Type | Notes |
+|---|---|---|
+| expense_id, user_id | uuid | PK |
+| last_read_at | timestamptz | |
+
+Soft-deleting an expense hides its reactions and comments with it; restoring brings them back.
 
 ### `push_subscriptions`
 
@@ -154,12 +186,12 @@ Policy: user reads and writes own rows only.
 
 - RLS enabled on every table
 - Default policy: `using (kangaroosplit.is_member()) with check (kangaroosplit.is_member())`
-- Exceptions: `members` and `activity` read-only for clients; `push_subscriptions` own rows only
+- Exceptions: `members` and `activity` read-only for clients; `push_subscriptions` and `expense_reads` own rows only; `expense_reactions` and `expense_comments` readable by both, writable by their author only
 - Schema usage granted to `authenticated` only, not `anon`
 
 ## Realtime
 
-Added to `supabase_realtime` publication: `expenses`, `expense_shares`, `settlements`, `lists`, `list_default_shares`, `categories`, `recurring_expenses`, `activity`.
+Added to `supabase_realtime` publication: `expenses`, `expense_shares`, `settlements`, `lists`, `list_default_shares`, `categories`, `recurring_expenses`, `activity`, `expense_reactions`, `expense_comments`, `expense_reads`.
 
 ## Push flow
 

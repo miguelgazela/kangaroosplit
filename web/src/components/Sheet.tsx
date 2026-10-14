@@ -10,12 +10,15 @@ export function Sheet({
   onCancel,
   action,
   hideCancel = false,
+  cancelLabel = t.actions.cancel,
   children,
 }: {
   title: string
   onCancel: () => void
   // For a final confirmation screen that offers its own way out.
   hideCancel?: boolean
+  // "Fechar" for sheets that only show something.
+  cancelLabel?: string
   action?: { label: string; onClick: () => void; disabled?: boolean }
   children: ReactNode
 }) {
@@ -35,7 +38,7 @@ export function Sheet({
             <span />
           ) : (
             <button type="button" onClick={onCancel} className="h-11 justify-self-start px-2 text-body text-accent-text">
-              {t.actions.cancel}
+              {cancelLabel}
             </button>
           )}
           <h1 className="text-headline font-semibold">{title}</h1>

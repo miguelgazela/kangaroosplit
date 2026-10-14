@@ -5,6 +5,8 @@ export type SheetActions = {
   // Without a list, the last used one is preselected.
   addExpense: (listId?: string) => void
   editExpense: (expense: ExpenseWithShares) => void
+  // The detail sheet: summary, reactions and comments.
+  openExpense: (expenseId: string, options?: { focusComment?: boolean }) => void
   // Without a list, settles every active list at once.
   settle: (listId?: string) => void
   newList: () => void

@@ -1,6 +1,7 @@
 import { useMemo, useState, type ReactNode } from 'react'
 import type { Category, ExpenseWithShares, List, RecurringExpense } from '../lib/database.types'
 import { CategorySheet } from './CategorySheet'
+import { ExpenseDetailSheet } from './ExpenseDetailSheet'
 import { ExpenseSheet } from './ExpenseSheet'
 import { ListSheet } from './ListSheet'
 import { SettleSheet } from './SettleSheet'
@@ -8,6 +9,7 @@ import { SheetContext, type SheetActions } from './SheetContext'
 
 type Open = { key: number } & (
   | { kind: 'expense'; listId?: string; expense?: ExpenseWithShares; copyFrom?: ExpenseWithShares }
+  | { kind: 'detail'; expenseId: string; focusComment: boolean }
   | { kind: 'settle'; listId?: string }
   | { kind: 'list'; list?: List }
   | { kind: 'recurring'; rule?: RecurringExpense }
@@ -23,6 +25,8 @@ export function SheetHost({ children }: { children: ReactNode }) {
     () => ({
       addExpense: (listId) => setOpen({ kind: 'expense', key: Date.now(), listId }),
       editExpense: (expense) => setOpen({ kind: 'expense', key: Date.now(), expense }),
+      openExpense: (expenseId, options) =>
+        setOpen({ kind: 'detail', key: Date.now(), expenseId, focusComment: options?.focusComment ?? false }),
       settle: (listId) => setOpen({ kind: 'settle', key: Date.now(), listId }),
       newList: () => setOpen({ kind: 'list', key: Date.now() }),
       editList: (list) => setOpen({ kind: 'list', key: Date.now(), list }),
@@ -42,6 +46,15 @@ export function SheetHost({ children }: { children: ReactNode }) {
           expense={open.expense}
           copyFrom={open.copyFrom}
           onDuplicate={(copyFrom) => setOpen({ kind: 'expense', key: Date.now(), copyFrom })}
+          onClose={close}
+        />
+      )}
+      {open?.kind === 'detail' && (
+        <ExpenseDetailSheet
+          key={open.key}
+          expenseId={open.expenseId}
+          focusComment={open.focusComment}
+          onEdit={(expense) => setOpen({ kind: 'expense', key: Date.now(), expense })}
           onClose={close}
         />
       )}

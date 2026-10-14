@@ -11,6 +11,8 @@ export type ActivityAction =
   | 'settlement_deleted'
   | 'list_created'
   | 'list_archived'
+  | 'expense_commented'
+  | 'expense_reacted'
 
 // One person's part of an expense. `input_value` keeps what was typed
 // (percent or share count) so the editor can reopen as entered.
@@ -126,6 +128,30 @@ export type Settlement = {
   deleted_at: string | null
 }
 
+export type ExpenseReaction = {
+  expense_id: string
+  user_id: string
+  emoji: string
+  created_at: string
+}
+
+export type ExpenseComment = {
+  id: string
+  expense_id: string
+  user_id: string
+  body: string
+  created_at: string
+  edited_at: string | null
+  deleted_at: string | null
+}
+
+// When a person last opened an expense's detail (their own rows only).
+export type ExpenseRead = {
+  expense_id: string
+  user_id: string
+  last_read_at: string
+}
+
 export type ActivitySnapshot = {
   description?: string
   amount_cents?: number
@@ -142,6 +168,9 @@ export type ActivitySnapshot = {
   batch_id?: string | null
   name?: string
   icon?: string
+  // Comments and reactions.
+  body?: string
+  emoji?: string
 }
 
 export type Activity = {
@@ -214,6 +243,9 @@ export type Database = {
       >
       settlements: Table<Settlement, 'list_id' | 'from_user' | 'to_user' | 'amount_cents'>
       activity: Table<Activity, 'list_id' | 'actor_id' | 'action' | 'entity_id'>
+      expense_reactions: Table<ExpenseReaction, 'expense_id' | 'emoji'>
+      expense_comments: Table<ExpenseComment, 'expense_id' | 'body'>
+      expense_reads: Table<ExpenseRead, 'expense_id'>
       push_subscriptions: Table<PushSubscriptionRow, 'endpoint' | 'p256dh' | 'auth'>
     }
     Views: {

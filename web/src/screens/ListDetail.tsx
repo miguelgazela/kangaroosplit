@@ -4,6 +4,8 @@ import { FilterSheet, type ListFilter } from '../sheets/FilterSheet'
 import { ActionSheet } from '../components/ActionSheet'
 import { BackLink } from '../components/BackLink'
 import { BalanceAmount } from '../components/Balance'
+import { MenuList, PressMenu } from '../components/PressMenu'
+import { ReactionBar } from '../components/ReactionBar'
 import { Guru } from '../components/Guru'
 import { Icon } from '../components/Icon'
 import { Screen } from '../components/Screen'
@@ -15,16 +17,23 @@ import { formatDateRange, formatDayMonth, formatMoney, formatMonthYear } from '.
 import { OfflineError, useOnline } from '../lib/online'
 import { nameForms, ratio } from '../lib/people'
 import { expensePosition, filterExpenses, listBalance, scheduledImpact, totalCents } from '../lib/stats'
+import { nextReaction, rowReactions, socialFor, type Social } from '../lib/social'
 import { useIncremental } from '../lib/useIncremental'
+import { useLongPress } from '../lib/useLongPress'
 import {
   useBalances,
   useCategories,
+  useComments,
   useCurrentMember,
   useDefaultShares,
   useExpenses,
   useLists,
   useMembers,
+  useReactions,
+  useReads,
+  useSetExpenseDeleted,
   useSetListArchived,
+  useSetReaction,
   useSetSettlementDeleted,
   useSettlements,
 } from '../query/hooks'
@@ -38,21 +47,46 @@ function ExpenseRow({
   category,
   me,
   partner,
+  social,
   onOpen,
+  onMenu,
 }: {
   expense: ExpenseWithShares
   category: Category | undefined
   me: Member
   partner: Member
+  social: Social
   onOpen: () => void
+  // Press and hold: gets the pressed row, to place the menu next to it.
+  onMenu: (element: HTMLElement) => void
 }) {
   const mine = expense.paid_by === me.user_id
   const position = expensePosition(expense, me.user_id)
+  const press = useLongPress({ onTap: onOpen, onLongPress: onMenu })
+  const emojis = rowReactions(social)
+  const count = social.comments.length
 
   return (
-    <button type="button" onClick={onOpen} className="flex min-h-16 w-full items-center gap-3 px-3.5 py-2.5 text-left">
-      <span className="flex size-[42px] flex-none items-center justify-center rounded-xl bg-fill text-[21px]">
+    <button
+      type="button"
+      {...press}
+      aria-label={`${expense.description}, ${formatMoney(expense.amount_cents)}${count > 0 ? `, ${t.detail.commentCount(count, social.unread)}` : ''}`}
+      className="flex min-h-16 w-full items-center gap-3 px-3.5 py-2.5 text-left select-none [-webkit-touch-callout:none]"
+    >
+      <span className="relative flex size-[42px] flex-none items-center justify-center rounded-xl bg-fill text-[21px]">
         {category?.icon ?? '📦'}
+        {emojis.length > 0 && (
+          <span aria-hidden="true" className="absolute -right-2 -bottom-1.5 flex">
+            {emojis.map((emoji, index) => (
+              <span
+                key={emoji + index}
+                className={`flex size-5 items-center justify-center rounded-full bg-surface text-[11px] shadow-[0_1px_3px_rgba(0,0,0,0.18)] ${index > 0 ? '-ml-1.5' : ''}`}
+              >
+                {emoji}
+              </span>
+            ))}
+          </span>
+        )}
       </span>
       <span className="flex min-w-0 flex-1 flex-col gap-0.5">
         <span className="flex items-center gap-1.5 text-base font-semibold">
@@ -69,8 +103,30 @@ function ExpenseRow({
             </span>
           )}
         </span>
-        <span className="truncate text-footnote text-text-2">
-          {formatDayMonth(expense.spent_on)} · {mine ? t.expense.paidByYou : t.expense.paidBy(nameForms(partner).by)}
+        <span className="flex items-center gap-1.5 text-footnote text-text-2">
+          <span className="truncate">
+            {formatDayMonth(expense.spent_on)} · {mine ? t.expense.paidByYou : t.expense.paidBy(nameForms(partner).by)}
+          </span>
+          {count > 0 && (
+            <span
+              aria-hidden="true"
+              className={`inline-flex flex-none items-center gap-[3px] ${social.unread ? 'font-bold text-accent-text' : 'font-medium'}`}
+            >
+              <svg
+                width="13"
+                height="13"
+                viewBox="0 0 24 24"
+                fill={social.unread ? 'currentColor' : 'none'}
+                stroke="currentColor"
+                strokeWidth="2.4"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1.1-4.6A8 8 0 1 1 21 12z" />
+              </svg>
+              {count}
+            </span>
+          )}
         </span>
       </span>
       <span className="flex flex-none flex-col items-end gap-0.5">
@@ -138,11 +194,13 @@ function EmptyList({ onAdd, disabled }: { onAdd: () => void; disabled: boolean }
 export function ListDetail({
   onAddExpense,
   onEditExpense,
+  onOpenExpense,
   onSettle,
   onOptions,
 }: {
   onAddExpense: (listId: string) => void
   onEditExpense: (expense: ExpenseWithShares) => void
+  onOpenExpense: (expenseId: string, options?: { focusComment?: boolean }) => void
   onSettle: (listId: string) => void
   onOptions: (list: List) => void
 }) {
@@ -156,6 +214,13 @@ export function ListDetail({
   const { data: expenses } = useExpenses()
   const { data: settlements } = useSettlements()
   const { data: categories } = useCategories()
+  const { data: reactions } = useReactions()
+  const { data: comments } = useComments()
+  const { data: reads } = useReads()
+  const setReaction = useSetReaction()
+  const setExpenseDeleted = useSetExpenseDeleted()
+  const [menu, setMenu] = useState<{ expense: ExpenseWithShares; top: number } | null>(null)
+  const [deleting, setDeleting] = useState<ExpenseWithShares | null>(null)
   const setArchived = useSetListArchived()
   const [search, setSearch] = useState('')
   const [filter, setFilter] = useState<ListFilter>({})
@@ -239,6 +304,17 @@ export function ListDetail({
     me.user_id,
     todayISO(),
   )
+
+  const socialOf = (expense: ExpenseWithShares) =>
+    socialFor(expense.id, me.user_id, reactions ?? [], comments ?? [], reads ?? [])
+  const openMenu = (expense: ExpenseWithShares, element: HTMLElement) => {
+    const rect = element.getBoundingClientRect()
+    // Room for the reaction bar above the row and the menu (about 140 px) below.
+    const top = Math.min(Math.max(rect.top - 62, 60), window.innerHeight - 330)
+    setMenu({ expense, top })
+  }
+  const failToast = (error: unknown) =>
+    toast({ kind: 'error', message: error instanceof OfflineError ? t.system.offline : t.system.error })
 
   return (
     <Screen gap={14}>
@@ -384,7 +460,9 @@ export function ListDetail({
                     category={categories?.find((category) => category.id === row.expense.category_id)}
                     me={me}
                     partner={partner}
-                    onOpen={() => !readOnly && onEditExpense(row.expense)}
+                    social={socialOf(row.expense)}
+                    onOpen={() => onOpenExpense(row.expense.id)}
+                    onMenu={(element) => openMenu(row.expense, element)}
                   />
                 </div>
               ) : null,
@@ -408,7 +486,9 @@ export function ListDetail({
                     category={categories?.find((category) => category.id === row.expense.category_id)}
                     me={me}
                     partner={partner}
-                    onOpen={() => !readOnly && onEditExpense(row.expense)}
+                    social={socialOf(row.expense)}
+                    onOpen={() => onOpenExpense(row.expense.id)}
+                    onMenu={(element) => openMenu(row.expense, element)}
                   />
                 ) : (
                   <SettlementRow
@@ -426,6 +506,100 @@ export function ListDetail({
 
       {hasMore && <div ref={sentinel} aria-hidden="true" className="h-px" />}
 
+      {menu && (
+        <PressMenu label={t.detail.menu} top={menu.top} onClose={() => setMenu(null)}>
+          <ReactionBar
+            variant="pill"
+            mine={socialOf(menu.expense).mine}
+            theirs={socialOf(menu.expense).theirs}
+            partner={partner}
+            disabled={!online}
+            onPick={(emoji) => {
+              setReaction.mutate(
+                {
+                  expenseId: menu.expense.id,
+                  userId: me.user_id,
+                  emoji: nextReaction(socialOf(menu.expense).mine, emoji),
+                },
+                { onError: failToast },
+              )
+              setMenu(null)
+            }}
+          />
+          <div className="w-full overflow-hidden rounded-[20px] bg-surface shadow-[0_12px_40px_rgba(17,17,20,0.18)]">
+            <ExpenseRow
+              expense={menu.expense}
+              category={categories?.find((category) => category.id === menu.expense.category_id)}
+              me={me}
+              partner={partner}
+              social={socialOf(menu.expense)}
+              onOpen={() => {}}
+              onMenu={() => {}}
+            />
+          </div>
+          <MenuList
+            label={t.detail.menu}
+            items={[
+              {
+                label: t.detail.comment,
+                icon: 'comment',
+                onSelect: () => {
+                  const { id } = menu.expense
+                  setMenu(null)
+                  onOpenExpense(id, { focusComment: true })
+                },
+              },
+              ...(readOnly
+                ? []
+                : [
+                    {
+                      label: t.detail.edit,
+                      icon: 'edit' as const,
+                      onSelect: () => {
+                        const { expense } = menu
+                        setMenu(null)
+                        onEditExpense(expense)
+                      },
+                    },
+                    {
+                      label: t.expense.delete,
+                      icon: 'trash' as const,
+                      destructive: true,
+                      onSelect: () => {
+                        setDeleting(menu.expense)
+                        setMenu(null)
+                      },
+                    },
+                  ]),
+            ]}
+          />
+        </PressMenu>
+      )}
+      {deleting && (
+        <ActionSheet
+          message={t.expense.deleteConfirm}
+          confirmLabel={t.expense.delete}
+          onCancel={() => setDeleting(null)}
+          onConfirm={() => {
+            const { id } = deleting
+            setDeleting(null)
+            setExpenseDeleted.mutate(
+              { id, deleted: true },
+              {
+                onSuccess: () =>
+                  toast({
+                    message: t.expense.deleted,
+                    action: {
+                      label: t.actions.undo,
+                      onClick: () => setExpenseDeleted.mutate({ id, deleted: false }, { onError: failToast }),
+                    },
+                  }),
+                onError: failToast,
+              },
+            )
+          }}
+        />
+      )}
       {removing && (
         <ActionSheet
           message={t.settlement.deleteConfirm(

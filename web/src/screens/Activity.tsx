@@ -4,14 +4,16 @@ import { Screen } from '../components/Screen'
 import { useToast } from '../components/ToastContext'
 import { t } from '../i18n/pt'
 import type { Activity as ActivityEntry, ActivityAction, Member } from '../lib/database.types'
-import { addDays, todayISO } from '../lib/dates'
-import { formatMoney, formatTime, formatWeekday } from '../lib/format'
+import { dayLabel, localDay } from '../lib/dayLabel'
+import { formatMoney, formatTime } from '../lib/format'
 import { OfflineError, useOnline } from '../lib/online'
 import { nameForms } from '../lib/people'
 import { useIncremental } from '../lib/useIncremental'
+import { useSheets } from '../sheets/SheetContext'
 import {
   useActivity,
   useCurrentMember,
+  useExpenses,
   useLists,
   useSetExpenseDeleted,
   useSetSettlementDeleted,
@@ -27,6 +29,8 @@ const BADGES: Record<ActivityAction, { icon: IconName; tone: string }> = {
   settlement_deleted: { icon: 'close', tone: 'bg-danger' },
   list_created: { icon: 'list', tone: 'bg-text-2' },
   list_archived: { icon: 'archive', tone: 'bg-text-2' },
+  expense_commented: { icon: 'comment', tone: 'bg-accent' },
+  expense_reacted: { icon: 'heart', tone: 'bg-[#C0367A]' },
 }
 
 const quote = (text: string | undefined) => `“${text ?? ''}”`
@@ -58,17 +62,15 @@ function sentence(entry: ActivityEntry, me: Member, partner: Member): string {
       return mine ? t.activity.youCreatedList(list) : t.activity.createdList(subject, list)
     case 'list_archived':
       return mine ? t.activity.youArchivedList(list) : t.activity.archivedList(subject, list)
+    case 'expense_commented':
+      return mine
+        ? t.activity.youCommented(expense, snapshot.body ?? '')
+        : t.activity.commented(subject, expense, snapshot.body ?? '')
+    case 'expense_reacted':
+      return mine
+        ? t.activity.youReacted(snapshot.emoji ?? '', expense)
+        : t.activity.reacted(subject, snapshot.emoji ?? '', expense)
   }
-}
-
-// Local calendar day of an instant, as 'YYYY-MM-DD'.
-const localDay = (instant: string) => todayISO(new Date(instant))
-
-function dayLabel(day: string): string {
-  const today = todayISO()
-  if (day === today) return t.activity.today
-  if (day === addDays(today, -1)) return t.activity.yesterday
-  return formatWeekday(day)
 }
 
 export function Activity() {
@@ -80,6 +82,8 @@ export function Activity() {
   const setDeleted = useSetExpenseDeleted()
   const setSettlementDeleted = useSetSettlementDeleted()
   const { data: settlements } = useSettlements()
+  const { data: expenses } = useExpenses()
+  const { openExpense } = useSheets()
 
   const ready = me && partner && entries && lists
 
@@ -132,6 +136,13 @@ export function Activity() {
                 const actor = actorId === me.user_id ? me : partner
                 const list = lists.find((candidate) => candidate.id === entry.list_id)
                 const badge = BADGES[entry.action]
+                // Comments and reactions open the expense, as long as it still exists.
+                const target =
+                  entry.action === 'expense_commented' || entry.action === 'expense_reacted'
+                    ? expenses?.find((candidate) => candidate.id === entry.entity_id)
+                    : undefined
+                const openable = target !== undefined
+                const open = () => target && openExpense(target.id)
                 const canRestore =
                   latestByEntity.get(entry.entity_id) === entry.id &&
                   (entry.action === 'expense_deleted' ||
@@ -147,7 +158,12 @@ export function Activity() {
                         <Icon name={badge.icon} size={10} strokeWidth={3.4} />
                       </span>
                     </span>
-                    <span className="flex min-w-0 flex-1 flex-col gap-1">
+                    <span
+                      className={`flex min-w-0 flex-1 flex-col gap-1 ${openable ? 'cursor-pointer' : ''}`}
+                      {...(openable
+                        ? { role: 'button', tabIndex: 0, onClick: open, onKeyDown: (event: React.KeyboardEvent) => event.key === 'Enter' && open() }
+                        : {})}
+                    >
                       <span className="text-subhead leading-5">{sentence(entry, me, partner)}</span>
                       <span className="flex items-center gap-2 text-footnote text-text-2">
                         {list && (

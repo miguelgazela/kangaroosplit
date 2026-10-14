@@ -18,6 +18,8 @@ type Snapshot = {
   from_user?: string
   to_user?: string
   name?: string
+  body?: string
+  emoji?: string
 }
 
 type Activity = {
@@ -79,6 +81,11 @@ function message(activity: Activity, actor: Member, recipientId: string): string
       return `${subject} criou a lista “${snapshot.name ?? ''}”`
     case 'list_archived':
       return `${subject} arquivou a lista “${snapshot.name ?? ''}”`
+    // Written as plain names, like the push title in the design.
+    case 'expense_commented':
+      return `${actor.display_name} comentou ${expense}`
+    case 'expense_reacted':
+      return `${actor.display_name} reagiu com ${snapshot.emoji ?? ''} a ${expense}`
     default:
       return null
   }
@@ -115,8 +122,18 @@ Deno.serve(async (request) => {
       if (!title) return
       const payload = JSON.stringify({
         title,
-        body: list ? `${list.icon} ${list.name}` : '',
-        url: `/lista/${activity.list_id}`,
+        // A comment's text is the body; everything else names the list.
+        body:
+          activity.action === 'expense_commented'
+            ? (activity.snapshot.body ?? '')
+            : list
+              ? `${list.icon} ${list.name}`
+              : '',
+        // Comments and reactions open that expense's detail.
+        url:
+          activity.action === 'expense_commented' || activity.action === 'expense_reacted'
+            ? `/lista/${activity.list_id}?despesa=${activity.entity_id}`
+            : `/lista/${activity.list_id}`,
         tag: activity.id,
       })
       try {

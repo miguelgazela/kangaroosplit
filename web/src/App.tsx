@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { BrowserRouter, Outlet, Route, Routes, useNavigate } from 'react-router-dom'
+import { BrowserRouter, Outlet, Route, Routes, useNavigate, useSearchParams } from 'react-router-dom'
 import { useAuth } from './auth/AuthContext'
 import { InstallHint } from './components/InstallHint'
 import { NotificationPrompt } from './components/NotificationPrompt'
@@ -57,9 +57,25 @@ function NewExpenseRoute() {
 }
 
 function ListRoute() {
-  const { addExpense, editExpense, settle, editList } = useSheets()
+  const { addExpense, editExpense, openExpense, settle, editList } = useSheets()
+  const [params, setParams] = useSearchParams()
+
+  // A push about a comment or reaction links to ?despesa=<id>.
+  const target = params.get('despesa')
+  useEffect(() => {
+    if (!target) return
+    openExpense(target)
+    setParams({}, { replace: true })
+  }, [target, openExpense, setParams])
+
   return (
-    <ListDetail onAddExpense={addExpense} onEditExpense={editExpense} onSettle={settle} onOptions={editList} />
+    <ListDetail
+      onAddExpense={addExpense}
+      onEditExpense={editExpense}
+      onOpenExpense={openExpense}
+      onSettle={settle}
+      onOptions={editList}
+    />
   )
 }
 
