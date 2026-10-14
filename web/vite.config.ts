@@ -21,6 +21,16 @@ export default defineConfig({
         start_url: '/',
         background_color: '#f2f2f7',
         theme_color: '#f2f2f7',
+        // Long-press the app icon (Android, desktop Chrome/Edge). iOS ignores
+        // these; there, add /nova to the home screen as its own icon.
+        shortcuts: [
+          {
+            name: 'Nova despesa',
+            short_name: 'Nova despesa',
+            url: '/nova',
+            icons: [{ src: 'icons/icon-192.png', sizes: '192x192', type: 'image/png' }],
+          },
+        ],
         icons: [
           { src: 'icons/icon-192.png', sizes: '192x192', type: 'image/png' },
           { src: 'icons/icon-512.png', sizes: '512x512', type: 'image/png' },

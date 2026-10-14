@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { BrowserRouter, Outlet, Route, Routes } from 'react-router-dom'
+import { BrowserRouter, Outlet, Route, Routes, useNavigate } from 'react-router-dom'
 import { useAuth } from './auth/AuthContext'
 import { InstallHint } from './components/InstallHint'
 import { NotificationPrompt } from './components/NotificationPrompt'
@@ -43,6 +43,19 @@ function HomeRoute() {
   )
 }
 
+// Target of the home-screen shortcut: opens the add-expense sheet straight
+// away, over the home screen, instead of landing on a blank page.
+function NewExpenseRoute() {
+  const online = useOnline()
+  const { addExpense } = useSheets()
+  const navigate = useNavigate()
+  useEffect(() => {
+    if (online) addExpense()
+    navigate('/', { replace: true })
+  }, [online, addExpense, navigate])
+  return null
+}
+
 function ListRoute() {
   const { addExpense, editExpense, settle, editList } = useSheets()
   return (
@@ -79,6 +92,7 @@ function Content() {
       <Routes>
         <Route element={<Shell />}>
           <Route index element={<HomeRoute />} />
+          <Route path="nova" element={<NewExpenseRoute />} />
           <Route path="lista/:id" element={<ListRoute />} />
           <Route path="atividade" element={<Activity />} />
           <Route path="estatisticas" element={<Stats />} />
