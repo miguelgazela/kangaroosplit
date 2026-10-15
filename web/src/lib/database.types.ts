@@ -152,6 +152,41 @@ export type ExpenseRead = {
   last_read_at: string
 }
 
+export type ShoppingSection =
+  | 'frutas'
+  | 'padaria'
+  | 'laticinios'
+  | 'talho'
+  | 'mercearia'
+  | 'congelados'
+  | 'bebidas'
+  | 'limpeza'
+  | 'higiene'
+  | 'outros'
+
+export type ShoppingItem = {
+  id: string
+  name: string
+  name_key: string
+  emoji: string
+  section: ShoppingSection
+  quantity: number
+  note: string | null
+  added_by: string
+  created_at: string
+  checked_at: string | null
+  checked_by: string | null
+}
+
+export type ShoppingHistory = {
+  name_key: string
+  name: string
+  emoji: string
+  section: ShoppingSection
+  times_bought: number
+  last_bought_at: string | null
+}
+
 export type ActivitySnapshot = {
   description?: string
   amount_cents?: number
@@ -246,6 +281,8 @@ export type Database = {
       expense_reactions: Table<ExpenseReaction, 'expense_id' | 'emoji'>
       expense_comments: Table<ExpenseComment, 'expense_id' | 'body'>
       expense_reads: Table<ExpenseRead, 'expense_id'>
+      shopping_items: Table<ShoppingItem, 'name' | 'name_key'>
+      shopping_history: Table<ShoppingHistory, 'name_key' | 'name'>
       push_subscriptions: Table<PushSubscriptionRow, 'endpoint' | 'p256dh' | 'auth'>
     }
     Views: {
@@ -278,6 +315,10 @@ export type Database = {
       settle_all: {
         Args: Record<PropertyKey, never>
         Returns: string | null
+      }
+      clear_shopping_cart: {
+        Args: Record<PropertyKey, never>
+        Returns: number
       }
       generate_recurring: {
         Args: { p_today?: string }

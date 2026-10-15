@@ -1,4 +1,6 @@
+import { useEffect } from 'react'
 import { Avatar } from '../components/Avatar'
+import { BackLink } from '../components/BackLink'
 import { Icon, type IconName } from '../components/Icon'
 import { Screen } from '../components/Screen'
 import { useToast } from '../components/ToastContext'
@@ -8,6 +10,7 @@ import { dayLabel, localDay } from '../lib/dayLabel'
 import { formatMoney, formatTime } from '../lib/format'
 import { OfflineError, useOnline } from '../lib/online'
 import { nameForms } from '../lib/people'
+import { markActivitySeen } from '../lib/activitySeen'
 import { useIncremental } from '../lib/useIncremental'
 import { useSheets } from '../sheets/SheetContext'
 import {
@@ -87,6 +90,13 @@ export function Activity() {
 
   const ready = me && partner && entries && lists
 
+  // Opening the feed clears the bell on Início.
+  const myId = me?.user_id
+  const newest = entries?.[0]?.created_at
+  useEffect(() => {
+    if (myId) markActivitySeen(myId)
+  }, [myId, newest])
+
   // An expense can be restored from its latest entry, if that entry is a deletion.
   const latestByEntity = new Map<string, string>()
   for (const entry of entries ?? []) {
@@ -117,9 +127,8 @@ export function Activity() {
 
   return (
     <Screen>
-      <div className="mt-1 flex h-[52px] items-center">
-        <h1 className="text-large-title font-bold tracking-[0.4px]">{t.tabs.activity}</h1>
-      </div>
+      <BackLink to="/" label={t.tabs.home} />
+      <h1 className="-mt-2 flex h-11 items-center text-large-title font-bold tracking-[0.4px]">{t.tabs.activity}</h1>
 
       {ready && entries.length === 0 && (
         <p className="py-10 text-center text-body text-text-2">{t.activity.empty}</p>

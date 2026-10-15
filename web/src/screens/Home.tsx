@@ -11,7 +11,16 @@ import { useOnline } from '../lib/online'
 import { nameForms, ratio } from '../lib/people'
 import { todayISO } from '../lib/dates'
 import { listBalance, overallBalance, scheduledImpact } from '../lib/stats'
-import { useBalances, useCurrentMember, useDefaultShares, useExpenses, useLists, useMembers } from '../query/hooks'
+import { unseenCount, useActivitySeenAt } from '../lib/activitySeen'
+import {
+  useActivity,
+  useBalances,
+  useCurrentMember,
+  useDefaultShares,
+  useExpenses,
+  useLists,
+  useMembers,
+} from '../query/hooks'
 
 function HeroBalance({ cents, me, partner }: { cents: number; me: Member; partner: Member }) {
   const { whole, rest } = splitMoney(Math.abs(cents))
@@ -94,6 +103,9 @@ export function Home({ onSettleAll, onNewList }: { onSettleAll: () => void; onNe
   const { data: balances } = useBalances()
   const { data: defaultShares } = useDefaultShares()
   const { data: expenses } = useExpenses()
+  const { data: activity } = useActivity()
+  const seenAt = useActivitySeenAt()
+  const news = me && activity && seenAt ? unseenCount(activity, me.user_id, seenAt) : 0
   const [showArchived, setShowArchived] = useState(false)
 
   const ready = me && partner && members && lists && balances && defaultShares
@@ -117,12 +129,31 @@ export function Home({ onSettleAll, onNewList }: { onSettleAll: () => void; onNe
     <Screen>
       <div className="mt-1 flex h-[52px] items-center justify-between">
         <h1 className="text-large-title font-bold tracking-[0.4px]">{t.tabs.home}</h1>
-        {me && partner && (
-          <div className="flex items-center" aria-label={`${me.display_name} e ${partner.display_name}`}>
-            <Avatar member={me} size={40} className="border-2 border-bg" />
-            <Avatar member={partner} size={40} className="-ml-2.5 border-2 border-bg" />
-          </div>
-        )}
+        <div className="flex items-center gap-1">
+          <Link
+            to="/atividade"
+            aria-label={news > 0 ? t.activity.bellNews(news) : t.tabs.activity}
+            className="relative flex size-11 items-center justify-center"
+          >
+            <span className="flex size-9 items-center justify-center rounded-full bg-surface text-accent-text">
+              <Icon name="bell" size={20} />
+            </span>
+            {news > 0 && (
+              <span
+                aria-hidden="true"
+                className="absolute top-0.5 right-0.5 flex h-[18px] min-w-[18px] items-center justify-center rounded-full border-2 border-bg bg-danger px-1 text-[11px] leading-none font-bold text-white"
+              >
+                {news}
+              </span>
+            )}
+          </Link>
+          {me && partner && (
+            <div className="flex items-center" aria-label={`${me.display_name} e ${partner.display_name}`}>
+              <Avatar member={me} size={40} className="border-2 border-bg" />
+              <Avatar member={partner} size={40} className="-ml-2.5 border-2 border-bg" />
+            </div>
+          )}
+        </div>
       </div>
 
       <section

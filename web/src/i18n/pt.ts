@@ -6,6 +6,7 @@ export const t = {
   tabs: {
     home: 'Início',
     activity: 'Atividade',
+    shopping: 'Compras',
     stats: 'Estatísticas',
     settings: 'Definições',
     add: 'Nova despesa',
@@ -187,6 +188,7 @@ export const t = {
 
   activity: {
     empty: 'Ainda não há atividade.',
+    bellNews: (count: number) => `Atividade, ${count === 1 ? '1 novidade' : `${count} novidades`}`,
     today: 'Hoje',
     yesterday: 'Ontem',
     restore: 'Restaurar',
@@ -367,6 +369,46 @@ export const t = {
     unarchived: 'Lista desarquivada',
     deleted: 'Lista apagada',
     datesInvalid: 'A data de fim não pode ser anterior à de início.',
+  },
+
+  shopping: {
+    options: 'Opções da lista de compras',
+    nothingToBuy: 'Nada por comprar',
+    toBuy: (count: number, partner: string) =>
+      `${count === 1 ? '1 artigo por comprar' : `${count} artigos por comprar`} · partilhada com ${partner}`,
+    addLabel: 'Adicionar artigo',
+    addPlaceholder: 'Adicionar artigo…',
+    add: 'Adicionar',
+    suggestions: 'Sugestões',
+    tip: 'Dica: “2 leite” adiciona 2 unidades.',
+    alreadyOn: (quantity: number) => `Já na lista (${quantity})`,
+    addLiteral: (text: string) => `Adicionar “${text}”`,
+    usual: 'Habituais · toca para adicionar',
+    alreadyThere: (name: string, quantity: number) => `${name} já estava na lista. Agora são ${quantity}.`,
+    emptyTitle: 'A lista está vazia.',
+    emptyBody: 'Escreve acima ou toca num artigo habitual.',
+    inCart: 'No carrinho',
+    inCartCount: (count: number) => (count === 1 ? '1 no carrinho' : `${count} no carrinho`),
+    clearCart: 'Limpar carrinho',
+    cartCleared: (count: number) =>
+      count === 1 ? '1 artigo removido do carrinho.' : `${count} artigos removidos do carrinho.`,
+    deleteAll: 'Apagar tudo',
+    deleteAllConfirm: 'Apagar todos os artigos da lista de compras?',
+    deleteAllDone: 'Lista de compras apagada.',
+    itemDeleted: 'Artigo apagado.',
+    check: (name: string, quantity: number, done: boolean) =>
+      `${name}${quantity > 1 ? `, ${quantity}` : ''}${done ? ', no carrinho' : ''}`,
+    addedByOn: (by: string, when: string) => `Adicionado ${by} · ${when}`,
+    sheetTitle: 'Artigo',
+    changeEmoji: 'Mudar emoji',
+    name: 'Nome do artigo',
+    quantity: 'Quantidade',
+    less: 'Menos um',
+    more: 'Mais um',
+    note: 'Nota (opcional)',
+    section: 'Secção',
+    deleteItem: 'Apagar artigo',
+    emoji: 'Emoji',
   },
 
   system: {

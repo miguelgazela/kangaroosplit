@@ -22,6 +22,17 @@ import {
 } from '../data/lists'
 import { fetchMembers, updateMember } from '../data/members'
 import {
+  addShoppingItem,
+  clearShoppingCart,
+  deleteAllShoppingItems,
+  deleteShoppingItem,
+  fetchShoppingHistory,
+  fetchShoppingItems,
+  restoreShoppingItems,
+  setShoppingChecked,
+  updateShoppingItem,
+} from '../data/shopping'
+import {
   addComment,
   editComment,
   fetchComments,
@@ -104,6 +115,14 @@ export function useComments() {
 
 export function useReads() {
   return useQuery({ queryKey: queryKeys.reads, queryFn: fetchReads, enabled: useSignedIn() })
+}
+
+export function useShoppingItems() {
+  return useQuery({ queryKey: queryKeys.shoppingItems, queryFn: fetchShoppingItems, enabled: useSignedIn() })
+}
+
+export function useShoppingHistory() {
+  return useQuery({ queryKey: queryKeys.shoppingHistory, queryFn: fetchShoppingHistory, enabled: useSignedIn() })
 }
 
 export function useActivity() {
@@ -288,4 +307,34 @@ export function useSetRecurringPaused() {
 
 export function useDeleteRecurring() {
   return useWrite((id: string) => deleteRecurring(id), ['recurring_expenses'])
+}
+
+// The shopping list never writes to the activity feed; the extra refetch from
+// `useWrite` is harmless.
+export function useAddShoppingItem() {
+  return useWrite(addShoppingItem, ['shopping_items', 'shopping_history'])
+}
+
+export function useUpdateShoppingItem() {
+  return useWrite(updateShoppingItem, ['shopping_items', 'shopping_history'])
+}
+
+export function useSetShoppingChecked() {
+  return useWrite(setShoppingChecked, ['shopping_items', 'shopping_history'])
+}
+
+export function useDeleteShoppingItem() {
+  return useWrite(deleteShoppingItem, ['shopping_items'])
+}
+
+export function useClearShoppingCart() {
+  return useWrite(() => clearShoppingCart(), ['shopping_items'])
+}
+
+export function useRestoreShoppingItems() {
+  return useWrite(restoreShoppingItems, ['shopping_items', 'shopping_history'])
+}
+
+export function useDeleteAllShoppingItems() {
+  return useWrite(() => deleteAllShoppingItems(), ['shopping_items'])
 }

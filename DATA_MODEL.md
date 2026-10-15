@@ -156,6 +156,24 @@ When each person last opened an expense's detail, for the "por ler" state. A per
 
 Soft-deleting an expense hides its reactions and comments with it; restoring brings them back.
 
+### `shopping_items`
+The shared shopping list (Compras tab). Not tied to expenses; writes nothing to `activity`.
+
+| Column | Notes |
+|---|---|
+| `id` | uuid |
+| `name`, `name_key` | `name_key` is the name without case, accents and extra spaces; used for duplicates |
+| `emoji`, `section` | `section` is one of `frutas`, `padaria`, `laticinios`, `talho`, `mercearia`, `congelados`, `bebidas`, `limpeza`, `higiene`, `outros` |
+| `quantity` | integer >= 1 |
+| `note` | optional, up to 120 chars |
+| `added_by`, `created_at` | |
+| `checked_at`, `checked_by` | set when ticked ("No carrinho"); null while open |
+
+"Limpar carrinho" calls `clear_shopping_cart()`, which deletes the ticked rows.
+
+### `shopping_history`
+One row per `name_key`, kept by a trigger on `shopping_items`: the last emoji and section chosen for the name, `times_bought` (+1 when ticked, -1 when unticked) and `last_bought_at`. Feeds the "Habituais" chips, the suggestions and the remembered section.
+
 ### `push_subscriptions`
 
 | Column | Type | Notes |
@@ -181,17 +199,18 @@ Policy: user reads and writes own rows only.
 | `save_expense(...)` | Insert or update expense + its shares in one transaction; validates shares sum to amount |
 | `settle_all()` | Inserts one settlement per list with non-zero balance, shared `batch_id` |
 | `generate_recurring()` | Creates due occurrences; `on conflict (recurring_id, occurrence_date) do nothing` |
+| `clear_shopping_cart()` | Deletes the ticked shopping items ("Limpar carrinho"); returns how many |
 
 ## Security
 
 - RLS enabled on every table
 - Default policy: `using (kangaroosplit.is_member()) with check (kangaroosplit.is_member())`
-- Exceptions: `members` and `activity` read-only for clients; `push_subscriptions` and `expense_reads` own rows only; `expense_reactions` and `expense_comments` readable by both, writable by their author only
+- Exceptions: `members` and `activity` read-only for clients; `push_subscriptions` and `expense_reads` own rows only; `expense_reactions` and `expense_comments` readable by both, writable by their author only; `shopping_items` and `shopping_history` readable and writable by both
 - Schema usage granted to `authenticated` only, not `anon`
 
 ## Realtime
 
-Added to `supabase_realtime` publication: `expenses`, `expense_shares`, `settlements`, `lists`, `list_default_shares`, `categories`, `recurring_expenses`, `activity`, `expense_reactions`, `expense_comments`, `expense_reads`.
+Added to `supabase_realtime` publication: `expenses`, `expense_shares`, `settlements`, `lists`, `list_default_shares`, `categories`, `recurring_expenses`, `activity`, `expense_reactions`, `expense_comments`, `expense_reads`, `shopping_items`, `shopping_history`.
 
 ## Push flow
 

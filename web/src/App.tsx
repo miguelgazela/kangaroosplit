@@ -18,6 +18,7 @@ import { Login } from './screens/Login'
 import { NoAccess } from './screens/NoAccess'
 import { Recurring } from './screens/Recurring'
 import { Settings } from './screens/Settings'
+import { Shopping } from './screens/Shopping'
 import { Stats } from './screens/Stats'
 import { useSheets } from './sheets/SheetContext'
 import { SheetHost } from './sheets/SheetHost'
@@ -111,6 +112,7 @@ function Content() {
           <Route path="nova" element={<NewExpenseRoute />} />
           <Route path="lista/:id" element={<ListRoute />} />
           <Route path="atividade" element={<Activity />} />
+          <Route path="compras" element={<Shopping />} />
           <Route path="estatisticas" element={<Stats />} />
           <Route path="estatisticas/categoria/:categoryId" element={<CategoryStats />} />
           <Route path="definicoes" element={<Settings />} />
