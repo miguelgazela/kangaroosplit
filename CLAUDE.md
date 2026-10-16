@@ -12,4 +12,4 @@ The UI must follow the mockups in `design/`.
 
 ## App version
 
-The version shown on the Definições screen is the `VERSION` constant in `web/src/screens/Settings.tsx`. It is not generated, so update it by hand every time you push something.
+The version shown on the Definições screen is the newest entry in `web/src/data/changelog.ts`. It is not generated, so add a new entry (version, date, what changed, in pt-PT) by hand every time you push something. The same list is the Novidades screen, opened from Definições.

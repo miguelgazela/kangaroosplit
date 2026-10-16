@@ -7,6 +7,7 @@ import { ColorSwatches } from '../components/ColorSwatches'
 import { Icon } from '../components/Icon'
 import { Screen } from '../components/Screen'
 import { useToast } from '../components/ToastContext'
+import { VERSION } from '../data/changelog'
 import { t } from '../i18n/pt'
 import { todayISO } from '../lib/dates'
 import { buildCsv, saveCsv } from '../lib/export'
@@ -22,8 +23,6 @@ import {
   useSettlements,
   useUpdateProfile,
 } from '../query/hooks'
-
-const VERSION = '1.1.0'
 
 export function Settings() {
   const online = useOnline()
@@ -195,7 +194,10 @@ export function Settings() {
       >
         {t.system.signOut}
       </button>
-      <p className="text-center text-footnote text-text-2">{t.settings.version(VERSION)}</p>
+      <Link to="/novidades" className="flex h-11 items-center justify-center gap-1 text-footnote text-text-2">
+        {t.settings.version(VERSION)} · {t.settings.changelog}
+        <Icon name="chevronRight" size={11} strokeWidth={2.5} />
+      </Link>
 
       {confirmingSignOut && (
         <ActionSheet

@@ -11,6 +11,7 @@ import { useOnline } from './lib/online'
 import { useCurrentMember } from './query/hooks'
 import { Activity } from './screens/Activity'
 import { Categories } from './screens/Categories'
+import { Changelog } from './screens/Changelog'
 import { CategoryStats } from './screens/CategoryStats'
 import { Home } from './screens/Home'
 import { ListDetail } from './screens/ListDetail'
@@ -118,6 +119,7 @@ function Content() {
           <Route path="definicoes" element={<Settings />} />
           <Route path="recorrentes" element={<Recurring />} />
           <Route path="categorias" element={<Categories />} />
+          <Route path="novidades" element={<Changelog />} />
           <Route path="*" element={<HomeRoute />} />
         </Route>
       </Routes>

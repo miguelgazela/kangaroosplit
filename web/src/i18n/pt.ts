@@ -296,6 +296,7 @@ export const t = {
     color: 'Cor',
     categories: 'Categorias',
     version: (version: string) => `Versão ${version}`,
+    changelog: 'Novidades',
     signOutConfirm: 'Terminar sessão neste dispositivo?',
     profileSaved: 'Perfil guardado',
     exportData: 'Exportar dados',
