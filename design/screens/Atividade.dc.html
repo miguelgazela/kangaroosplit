@@ -14,7 +14,13 @@ body{margin:0}
 </helmet>
 <div style="width: 390px; height: 844px; position: relative; overflow: hidden; background: #F2F2F7; color: #111114; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', sans-serif">
   <div style="position: absolute; inset: 0; padding: 54px 16px 120px; box-sizing: border-box; display: flex; flex-direction: column; gap: 14px">
-    <h1 style="margin: 4px 0 0; height: 52px; display: flex; align-items: center; font-size: 34px; font-weight: 700; letter-spacing: 0.4px">Atividade</h1>
+    <div style="height: 44px; display: flex; align-items: center; margin: 0 -8px">
+      <a href="Main.dc.html" style="height: 44px; display: flex; align-items: center; gap: 2px; padding-right: 8px; color: #5B3FD9; text-decoration: none; font-size: 17px">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 5-7 7 7 7"></path></svg>
+        Início
+      </a>
+    </div>
+    <h1 style="margin: -6px 0 0; height: 44px; display: flex; align-items: center; font-size: 34px; font-weight: 700; letter-spacing: 0.4px">Atividade</h1>
 
     <sc-for list="{{days}}" as="d" hint-placeholder-count="3">
       <section style="display: flex; flex-direction: column; gap: 8px">
@@ -49,7 +55,7 @@ body{margin:0}
     </sc-for>
   </div>
   <div style="position: absolute; left: 0; bottom: 0; width: 390px; height: 100px">
-    <dc-import name="TabBar" active="atividade" hint-size="390px,100px"></dc-import>
+    <dc-import name="TabBar" active="inicio" badge="6" hint-size="390px,100px"></dc-import>
   </div>
 </div>
 </x-dc>
@@ -65,13 +71,17 @@ class Component extends DCLogic {
       restore: ['M4 12a8 8 0 1 0 2.5-5.8M4 4v4h4', '#0B7A5C'],
       settle: ['M7 7h12l-4-4M17 17H5l4 4', '#5B3FD9'],
       list: ['M5 6h14M5 12h14M5 18h9', '#6B6B76'],
-      archive: ['M4 5h16v4H4zM6 9v10h12V9', '#6B6B76']
+      archive: ['M4 5h16v4H4zM6 9v10h12V9', '#6B6B76'],
+      comment: ['M20 12a7 7 0 0 1-10.2 6.2L5 19l1-4A7 7 0 1 1 20 12z', '#5B3FD9'],
+      react: ['M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z', '#C0367A']
     };
     const e = (who, type, text, list, time, extra) => Object.assign({}, who, {
       text, list, time, badge: B[type][0], badgeBg: B[type][1], restorable: false, bg: '#FFFFFF'
     }, extra || {});
     const days = [
       { label: 'Hoje', items: [
+        e(MA, 'comment', 'A Mara comentou “Jantar no Ramiro”: “Combinado 😄”', '🏠 Casa', '21:22', { open: true }),
+        e(MA, 'react', 'A Mara reagiu com ❤️ a “Jantar no Ramiro”', '🏠 Casa', '21:15'),
         e(MA, 'del', 'A Mara apagou “Táxi” · 12,50 €', '🏠 Casa', '09:15', { restorable: true }),
         e(MA, 'list', 'A Mara criou a lista “Natal 2026”', '🎄 Natal 2026', '08:40')
       ] },

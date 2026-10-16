@@ -27,9 +27,17 @@ body{margin:0}
 
     <div style="display: flex; align-items: center; justify-content: space-between; height: 52px; margin-top: 4px">
       <h1 style="margin: 0; font-size: 34px; line-height: 41px; font-weight: 700; letter-spacing: 0.4px">Início</h1>
+      <div style="display: flex; align-items: center; gap: 4px">
+      <a href="Atividade.dc.html" aria-label="Atividade, 2 novidades" style="position: relative; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center">
+        <span style="width: 36px; height: 36px; border-radius: 18px; background: {{c.card}}; color: {{c.link}}; display: flex; align-items: center; justify-content: center">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9M10.3 21a1.94 1.94 0 0 0 3.4 0"></path></svg>
+        </span>
+        <span aria-hidden="true" style="position: absolute; right: 2px; top: 2px; min-width: 18px; height: 18px; padding: 0 4px; box-sizing: border-box; border-radius: 9px; background: #C42B1C; color: #FFFFFF; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center; border: 2px solid {{c.bg}}">2</span>
+      </a>
       <div style="display: flex; align-items: center" aria-label="Miguel e Mara">
         <span style="width: 36px; height: 36px; border-radius: 18px; background: #2563EB; color: #FFFFFF; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 600; border: 2px solid {{c.bg}}">Mi</span>
         <span style="width: 36px; height: 36px; border-radius: 18px; background: #C0367A; color: #FFFFFF; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 600; border: 2px solid {{c.bg}}; margin-left: -10px">Ma</span>
+      </div>
       </div>
     </div>
 
@@ -139,7 +147,7 @@ body{margin:0}
   </div>
 
   <div style="position: absolute; left: 0; bottom: 0; width: 390px; height: 100px">
-    <dc-import name="TabBar" active="inicio" dark="{{dark}}" disabled="{{offline}}" hint-size="390px,100px"></dc-import>
+    <dc-import name="TabBar" active="inicio" badge="6" dark="{{dark}}" disabled="{{offline}}" hint-size="390px,100px"></dc-import>
   </div>
 </div>
 </x-dc>

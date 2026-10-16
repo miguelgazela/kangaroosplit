@@ -1,0 +1,256 @@
+<!doctype html>
+<html lang="pt-PT">
+<head>
+<meta charset="utf-8">
+<title>Compras</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; position: relative; overflow: hidden; background: #F2F2F7; color: #111114; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', sans-serif">
+  <div style="position: absolute; inset: 0; padding: 54px 16px 190px; box-sizing: border-box; display: flex; flex-direction: column; gap: 12px; overflow: hidden">
+
+    <div style="display: flex; align-items: center; justify-content: space-between; height: 52px; margin-top: 4px; flex: none">
+      <div style="display: flex; flex-direction: column">
+        <h1 style="margin: 0; font-size: 34px; line-height: 41px; font-weight: 700; letter-spacing: 0.4px">Compras</h1>
+      </div>
+      <button type="button" aria-label="Opções: limpar comprados, ordenar" style="width: 44px; height: 44px; border: 0; background: transparent; display: flex; align-items: center; justify-content: center; cursor: pointer; padding: 0">
+        <span style="width: 34px; height: 34px; border-radius: 17px; background: #FFFFFF; display: flex; align-items: center; justify-content: center; color: #5B3FD9">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="5" cy="12" r="2"></circle><circle cx="12" cy="12" r="2"></circle><circle cx="19" cy="12" r="2"></circle></svg>
+        </span>
+      </button>
+    </div>
+    <span style="margin-top: -10px; font-size: 15px; color: #6B6B76; flex: none">{{subtitle}}</span>
+
+    <sc-if value="{{offline}}" hint-placeholder-val="{{ false }}">
+      <div role="status" style="display: flex; align-items: flex-start; gap: 10px; padding: 10px 14px; border-radius: 14px; background: #FFF1D6; color: #7A4A00; font-size: 14px; line-height: 19px; flex: none">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex: none; margin-top: 1px"><path d="M3 3l18 18M7 18h10a4 4 0 0 0 1.6-7.7M14.5 6.2A6 6 0 0 0 6.1 11 4 4 0 0 0 7 18"></path></svg>
+        <span><strong>Sem rede.</strong> Podes continuar. As alterações são enviadas quando voltares a ter ligação.</span>
+      </div>
+    </sc-if>
+
+    <form onSubmit="{{submit}}" style="flex: none; position: relative">
+      <label style="height: 52px; border-radius: 16px; background: #FFFFFF; box-shadow: {{fieldRing}}; display: flex; align-items: center; gap: 10px; padding: 0 6px 0 12px">
+        <span aria-hidden="true" style="width: 28px; height: 28px; border-radius: 14px; background: #6847F0; color: #FFFFFF; display: flex; align-items: center; justify-content: center; flex: none">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M12 5v14M5 12h14"></path></svg>
+        </span>
+        <input type="text" aria-label="Adicionar artigo" placeholder="Adicionar artigo…" value="{{draft}}" onChange="{{onDraft}}" autocomplete="off" enterkeyhint="done" style="flex: 1; min-width: 0; border: 0; outline: none; background: transparent; font: inherit; font-size: 17px; color: #111114">
+        <sc-if value="{{hasDraft}}" hint-placeholder-val="{{ false }}">
+          <button type="submit" style="height: 40px; padding: 0 14px; border: 0; border-radius: 12px; background: #6847F0; color: #FFFFFF; font: inherit; font-size: 15px; font-weight: 600; cursor: pointer">Adicionar</button>
+        </sc-if>
+      </label>
+
+      <sc-if value="{{hasDraft}}" hint-placeholder-val="{{ false }}">
+        <div role="listbox" aria-label="Sugestões" style="margin-top: 8px; border-radius: 16px; background: #FFFFFF; box-shadow: 0 8px 24px rgba(17,17,20,0.10); overflow: hidden">
+          <sc-for list="{{suggestions}}" as="s" hint-placeholder-count="3">
+            <button type="button" role="option" onClick="{{s.pick}}" style="width: 100%; min-height: 48px; border: 0; border-top: {{s.border}}; background: transparent; color: #111114; font: inherit; display: flex; align-items: center; gap: 10px; padding: 0 14px; cursor: pointer; text-align: left">
+              <span style="font-size: 20px; width: 26px; text-align: center" aria-hidden="true">{{s.e}}</span>
+              <span style="flex: 1; display: flex; flex-direction: column">
+                <span style="font-size: 17px">{{s.label}}</span>
+                <span style="font-size: 12px; color: #6B6B76">{{s.aisle}}</span>
+              </span>
+              <span style="font-size: 13px; color: {{s.hintColor}}; font-weight: 500">{{s.hint}}</span>
+            </button>
+          </sc-for>
+          <div style="border-top: 0.5px solid #E6E6EC; padding: 8px 14px; font-size: 12px; color: #6B6B76">Dica: “2 leite” adiciona 2 unidades.</div>
+        </div>
+      </sc-if>
+    </form>
+
+    <sc-if value="{{showRecents}}" hint-placeholder-val="{{ true }}">
+      <div style="flex: none; display: flex; flex-direction: column; gap: 6px">
+        <span style="font-size: 13px; font-weight: 600; color: #6B6B76; padding: 0 4px">Habituais · toca para adicionar</span>
+        <div style="display: flex; gap: 8px; overflow: hidden">
+          <sc-for list="{{recents}}" as="r" hint-placeholder-count="5">
+            <button type="button" onClick="{{r.pick}}" style="flex: none; height: 36px; padding: 0 12px; border: 0; border-radius: 999px; background: #FFFFFF; color: #111114; font: inherit; font-size: 15px; display: flex; align-items: center; gap: 6px; cursor: pointer; white-space: nowrap">
+              <span aria-hidden="true">{{r.e}}</span>{{r.n}}
+            </button>
+          </sc-for>
+        </div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{showNotice}}" hint-placeholder-val="{{ false }}">
+      <div role="status" style="flex: none; font-size: 13px; color: #0B7A5C; padding: 0 4px">{{notice}}</div>
+    </sc-if>
+
+    <sc-if value="{{empty}}" hint-placeholder-val="{{ false }}">
+      <div style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; text-align: center; padding-bottom: 20px">
+        <dc-import name="Guru" pose="vazio" size="{{ 130 }}" hint-size="130px,156px"></dc-import>
+        <p style="margin: 0; font-size: 17px; font-weight: 600">A lista está vazia.</p>
+        <p style="margin: 0; font-size: 15px; color: #6B6B76">Escreve acima ou toca num artigo habitual.</p>
+      </div>
+    </sc-if>
+
+    <sc-for list="{{sections}}" as="sec" hint-placeholder-count="3">
+      <section style="flex: none; display: flex; flex-direction: column; gap: 6px">
+        <h2 style="margin: 0; padding: 0 4px; display: flex; justify-content: space-between; font-size: 13px; font-weight: 600; color: #6B6B76; text-transform: uppercase; letter-spacing: 0.4px">
+          <span>{{sec.label}}</span><span style="text-transform: none; letter-spacing: 0">{{sec.count}}</span>
+        </h2>
+        <div style="border-radius: 18px; background: {{sec.bg}}; overflow: hidden">
+          <sc-for list="{{sec.items}}" as="it" hint-placeholder-count="2">
+            <div style="min-height: 52px; display: flex; align-items: center; gap: 4px; padding: 0 12px 0 4px; border-top: {{it.border}}">
+              <button type="button" role="checkbox" aria-checked="{{it.checked}}" aria-label="{{it.aria}}" onClick="{{it.toggle}}" style="width: 44px; height: 44px; border: 0; background: transparent; display: flex; align-items: center; justify-content: center; cursor: pointer; padding: 0; flex: none">
+                <span style="width: 24px; height: 24px; border-radius: 12px; box-sizing: border-box; border: {{it.boxBorder}}; background: {{it.boxBg}}; color: #FFFFFF; display: flex; align-items: center; justify-content: center">
+                  <sc-if value="{{it.done}}" hint-placeholder-val="{{ false }}">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 5 5 9-10"></path></svg>
+                  </sc-if>
+                </span>
+              </button>
+              <a href="ComprasArtigo.dc.html" style="flex: 1; min-width: 0; min-height: 44px; display: flex; align-items: center; gap: 8px; text-decoration: none; color: {{it.color}}">
+                <span aria-hidden="true" style="font-size: 20px; opacity: {{it.op}}">{{it.emoji}}</span>
+                <span style="flex: 1; min-width: 0; display: flex; flex-direction: column; justify-content: center">
+                  <span style="display: flex; align-items: baseline; gap: 6px">
+                    <span style="font-size: 17px; text-decoration: {{it.strike}}; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">{{it.name}}</span>
+                    <sc-if value="{{it.hasQty}}" hint-placeholder-val="{{ false }}">
+                      <span style="font-size: 15px; font-weight: 600; color: #6B6B76">×{{it.qty}}</span>
+                    </sc-if>
+                  </span>
+                  <sc-if value="{{it.hasNote}}" hint-placeholder-val="{{ false }}">
+                    <span style="font-size: 13px; color: #6B6B76">{{it.note}}</span>
+                  </sc-if>
+                </span>
+              </a>
+              <sc-if value="{{it.pending}}" hint-placeholder-val="{{ false }}">
+                <span title="A enviar" style="display: flex; align-items: center; gap: 3px; font-size: 12px; color: #7A4A00">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg>
+                  a enviar
+                </span>
+              </sc-if>
+              <sc-if value="{{it.byMara}}" hint-placeholder-val="{{ false }}">
+                <span title="Adicionado pela Mara" style="width: 22px; height: 22px; border-radius: 11px; background: #C0367A; color: #FFFFFF; font-size: 9px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex: none; opacity: {{it.op}}">Ma</span>
+              </sc-if>
+            </div>
+          </sc-for>
+        </div>
+      </section>
+    </sc-for>
+  </div>
+
+  <sc-if value="{{hasCart}}" hint-placeholder-val="{{ true }}">
+    <div style="position: absolute; left: 12px; right: 12px; bottom: 104px; height: 60px; border-radius: 20px; background: #FFFFFF; box-shadow: 0 10px 30px rgba(17,17,20,0.16); display: flex; align-items: center; gap: 10px; padding: 0 8px 0 16px">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#0B7A5C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 4h2l2.2 10.6a2 2 0 0 0 2 1.6h7.9a2 2 0 0 0 2-1.5L21 8H6"></path></svg>
+      <span style="flex: 1; font-size: 15px; font-weight: 600">{{cartLabel}}</span>
+      <button type="button" onClick="{{clearCart}}" style="height: 44px; padding: 0 16px; border: 0; border-radius: 14px; background: #6847F0; color: #FFFFFF; font: inherit; font-size: 15px; font-weight: 600; cursor: pointer">Limpar carrinho</button>
+    </div>
+  </sc-if>
+
+  <div style="position: absolute; left: 0; bottom: 0; width: 390px; height: 100px">
+    <dc-import name="TabBar" layout="a" active="compras" badge="{{badge}}" hint-size="390px,100px"></dc-import>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"variant":{"editor":"enum","options":["lista","escrever","vazia","offline"],"default":"lista"},"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    const v = props.variant ?? 'lista';
+    const base = [
+      { id: 1, name: 'Bananas', emoji: '🍌', aisle: 'frutas', qty: 6, by: 'mi' },
+      { id: 2, name: 'Abacates', emoji: '🥑', aisle: 'frutas', qty: 2, by: 'ma' },
+      { id: 3, name: 'Tomate cherry', emoji: '🍅', aisle: 'frutas', qty: 1, by: 'mi' },
+      { id: 4, name: 'Leite', emoji: '🥛', aisle: 'laticinios', qty: 2, by: 'ma' },
+      { id: 5, name: 'Queijo da Serra', emoji: '🧀', aisle: 'laticinios', qty: 1, by: 'ma', note: 'Para o jantar de sábado' },
+      { id: 6, name: 'Detergente da loiça', emoji: '🧽', aisle: 'limpeza', qty: 1, by: 'mi' },
+      { id: 7, name: 'Pão', emoji: '🍞', aisle: 'padaria', qty: 1, by: 'mi', done: true },
+      { id: 8, name: 'Ovos', emoji: '🥚', aisle: 'laticinios', qty: 1, by: 'ma', done: true },
+      { id: 9, name: 'Café', emoji: '☕', aisle: 'mercearia', qty: 1, by: 'mi', done: true }
+    ];
+    let items = base;
+    if (v === 'vazia') items = [];
+    if (v === 'offline') items = base.concat([{ id: 10, name: 'Pilhas AA', emoji: '🔋', aisle: 'outros', qty: 4, by: 'mi', pending: true }]);
+    this.state = { items, draft: v === 'escrever' ? '2 lei' : '', notice: '', nextId: 100 };
+  }
+  renderVals() {
+    const variant = this.props.variant ?? 'lista';
+    const offline = variant === 'offline';
+    const AISLES = [['frutas', 'Frutas e legumes'], ['padaria', 'Padaria'], ['laticinios', 'Laticínios e ovos'], ['talho', 'Talho e peixe'], ['mercearia', 'Mercearia'], ['congelados', 'Congelados'], ['bebidas', 'Bebidas'], ['limpeza', 'Limpeza'], ['higiene', 'Higiene'], ['outros', 'Outros']];
+    const aisleName = (a) => (AISLES.find((x) => x[0] === a) || ['', 'Outros'])[1];
+    const DICT = [
+      ['Leite', '🥛', 'laticinios'], ['Leite de aveia', '🥛', 'laticinios'], ['Iogurtes', '🥣', 'laticinios'], ['Ovos', '🥚', 'laticinios'],
+      ['Pão', '🍞', 'padaria'], ['Bananas', '🍌', 'frutas'], ['Limões', '🍋', 'frutas'], ['Tomate cherry', '🍅', 'frutas'], ['Abacates', '🥑', 'frutas'],
+      ['Café', '☕', 'mercearia'], ['Arroz', '🍚', 'mercearia'], ['Massa', '🍝', 'mercearia'], ['Azeite', '🫒', 'mercearia'],
+      ['Frango', '🍗', 'talho'], ['Salmão', '🐟', 'talho'], ['Água', '💧', 'bebidas'], ['Vinho tinto', '🍷', 'bebidas'], ['Gelado', '🍨', 'congelados'],
+      ['Detergente da loiça', '🧽', 'limpeza'], ['Papel higiénico', '🧻', 'higiene'], ['Pasta de dentes', '🪥', 'higiene']
+    ];
+    const norm = (s) => s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
+    const items = this.state.items;
+    const draft = this.state.draft;
+    const m = draft.trim().match(/^(\d+)\s*x?\s+(.*)$/i);
+    const qty = m ? parseInt(m[1], 10) : 1;
+    const term = (m ? m[2] : draft).trim();
+
+    const add = (name, emoji, aisle, q) => {
+      const existing = items.find((i) => !i.done && norm(i.name) === norm(name));
+      if (existing) {
+        const n = (existing.qty || 1) + q;
+        this.setState({ items: items.map((i) => i === existing ? Object.assign({}, i, { qty: n }) : i), draft: '', notice: name + ' já estava na lista. Agora são ' + n + '.' });
+        return;
+      }
+      const id = this.state.nextId;
+      this.setState({ items: [{ id, name, emoji, aisle, qty: q, by: 'mi', pending: offline }].concat(items), draft: '', notice: '', nextId: id + 1 });
+    };
+    const fromText = () => {
+      if (!term) return;
+      const hit = DICT.find((d) => norm(d[0]) === norm(term)) || DICT.find((d) => norm(d[0]).startsWith(norm(term)));
+      if (hit) add(hit[0], hit[1], hit[2], qty);
+      else add(term.charAt(0).toUpperCase() + term.slice(1), '🛒', 'outros', qty);
+    };
+    const open = items.filter((i) => !i.done);
+    const matches = term ? DICT.filter((d) => norm(d[0]).includes(norm(term))).slice(0, 3) : [];
+    const suggestions = matches.map((d, i) => {
+      const inList = open.find((x) => norm(x.name) === norm(d[0]));
+      return {
+        e: d[1], label: d[0] + (qty > 1 ? ' ×' + qty : ''), aisle: aisleName(d[2]),
+        hint: inList ? 'Já na lista (' + (inList.qty || 1) + ')' : '', hintColor: '#B93D0B',
+        border: i === 0 ? 'none' : '0.5px solid #E6E6EC',
+        pick: () => add(d[0], d[1], d[2], qty)
+      };
+    });
+    if (term && !matches.some((d) => norm(d[0]) === norm(term))) {
+      suggestions.push({ e: '＋', label: 'Adicionar “' + term + '”' + (qty > 1 ? ' ×' + qty : ''), aisle: 'Outros', hint: '', hintColor: '#6B6B76',
+        border: suggestions.length ? '0.5px solid #E6E6EC' : 'none', pick: () => add(term.charAt(0).toUpperCase() + term.slice(1), '🛒', 'outros', qty) });
+    }
+    const recents = [['Pão', '🍞', 'padaria'], ['Ovos', '🥚', 'laticinios'], ['Iogurtes', '🥣', 'laticinios'], ['Papel higiénico', '🧻', 'higiene'], ['Café', '☕', 'mercearia'], ['Bananas', '🍌', 'frutas']]
+      .filter((r) => !open.some((i) => norm(i.name) === norm(r[0])))
+      .map((r) => ({ n: r[0], e: r[1], pick: () => add(r[0], r[1], r[2], 1) }));
+
+    const toggle = (it) => () => this.setState({ items: items.map((i) => i.id === it.id ? Object.assign({}, i, { done: !i.done, pending: offline || i.pending }) : i), notice: '' });
+    const row = (it, idx) => ({
+      name: it.name, emoji: it.emoji, qty: it.qty || 1, hasQty: (it.qty || 1) > 1, note: it.note || '', hasNote: !!it.note,
+      done: !!it.done, checked: it.done ? 'true' : 'false', aria: it.name + (it.qty > 1 ? ', ' + it.qty : '') + (it.done ? ', no carrinho' : ''),
+      boxBorder: it.done ? '0' : '2px solid #B4B4BC', boxBg: it.done ? '#0B7A5C' : 'transparent',
+      color: it.done ? '#6B6B76' : '#111114', strike: it.done ? 'line-through' : 'none', op: it.done ? 0.55 : 1,
+      byMara: it.by === 'ma', pending: !!it.pending, border: idx === 0 ? 'none' : '0.5px solid #E6E6EC', toggle: toggle(it)
+    });
+    const sections = AISLES.map(([id, label]) => {
+      const list = open.filter((i) => i.aisle === id);
+      return { label, count: String(list.length), bg: '#FFFFFF', items: list.map(row) };
+    }).filter((s) => s.items.length);
+    const cart = items.filter((i) => i.done);
+    if (cart.length) sections.push({ label: 'No carrinho', count: String(cart.length), bg: 'rgba(255,255,255,0.6)', items: cart.map(row) });
+
+    const n = open.length;
+    return {
+      offline, draft, hasDraft: draft.trim().length > 0, suggestions,
+      showRecents: draft.trim().length === 0 && recents.length > 0, recents,
+      notice: this.state.notice, showNotice: !!this.state.notice,
+      empty: items.length === 0, sections,
+      subtitle: n === 0 ? 'Nada por comprar' : (n === 1 ? '1 artigo por comprar' : n + ' artigos por comprar') + ' · partilhada com a Mara',
+      hasCart: cart.length > 0, cartLabel: cart.length === 1 ? '1 no carrinho' : cart.length + ' no carrinho',
+      badge: n ? String(n) : '',
+      fieldRing: draft ? '0 0 0 2px #6847F0' : '0 1px 2px rgba(17,17,20,0.04)',
+      clearCart: () => this.setState({ items: open, notice: cart.length === 1 ? '1 artigo removido do carrinho.' : cart.length + ' artigos removidos do carrinho.' }),
+      onDraft: (e) => this.setState({ draft: e.target.value, notice: '' }),
+      submit: (e) => { if (e && e.preventDefault) e.preventDefault(); fromText(); }
+    };
+  }
+}
+</script>
+</body>
+</html>

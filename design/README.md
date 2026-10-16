@@ -31,12 +31,14 @@ Several files are small wrappers that show a variant of a main file. The variant
 | 5 Settle up (sheet) | `Acerto.dc.html` | `AcertarTudo` (`variant="tudo"`), `AcertoSucesso` (`variant="sucesso"`) |
 | 6 Create / edit list (sheet) | `NovaLista.dc.html` | `EditarLista` (`edit`) |
 | 7 Recurring expenses | `Recorrentes.dc.html` | `RecorrentesVazio` (`empty`); the editor is `DespesaRecorrente` |
-| 8 Estatísticas | `Estatisticas.dc.html` | — |
-| 9 Atividade | `Atividade.dc.html` | — |
+| 8 Estatísticas | `EstatisticasCalendario.dc.html` (full scrolled page, interactive; prop `day`, `full`) | `Estatisticas` (top of the page, no day selected), `EstatisticasPrevista` (15 Oct selected: future recurring expense) |
+| 9 Atividade | `Atividade.dc.html` (now a pushed screen, opened from the bell on Início) | — |
 | 10 Definições | `Definicoes.dc.html` | — (includes the profile photo upload) |
 | 11 System states | `Notificacoes`, `Instalar`, `ConfirmarApagar` (iOS action sheet), `Toast` | offline and loading: see Início |
 | Shared | `TabBar.dc.html` (tab bar + raised "+"), `Componentes.dc.html` (component sheet), `Icone.dc.html` (app icon) | |
 | Mascot | `Guru.dc.html` (the mascot component, prop `pose` = `normal` / `ola` / `vazio` / `sucesso` / `dormir`, prop `crop` for a head-only avatar), `Mascote.dc.html` (mascot sheet) | |
+| Comments and reactions | `DespesaDetalhe.dc.html` (expense detail sheet: summary, reactions, comment thread) | `DetalheVazio` (`variant="vazia"`), `DetalheAcoes` (long-press on own comment), `ReacaoRapida` (long-press on a list row), `DetalheEscuro` (`dark`). `Lista` and `Atividade` also changed. |
+| Shopping list (Compras tab) | `Compras.dc.html` (interactive; prop `variant`) | `ComprasEscrever` (typing, suggestions), `ComprasArtigo` (edit item sheet), `ComprasVazia` (empty), `ComprasOffline` (no signal). `Navegacao` shows the chosen tab layout. |
 
 ## Decisions (these override DESIGN_BRIEF.md)
 
@@ -82,6 +84,127 @@ Guru is a kangaroo with a pouch full of coins. The name comes from "canGURU". Th
 | `ola` | Login, "Ativar notificações" prompt | `Login.dc.html`, `Notificacoes.dc.html` |
 | `dormir` (`crop`) | Offline banner | `Main.dc.html` (`offline`) |
 | `dormir` | Month with no expenses in Estatísticas (not drawn) | — |
+
+## Comments and reactions
+
+Both people can react to an expense and talk about it in a short comment thread.
+
+### Navigation change
+- **Tap an expense row → expense detail sheet** (`DespesaDetalhe`), not the edit sheet. The detail sheet header has "Fechar" (left) and "Editar" (right). "Editar" opens the existing edit sheet.
+- **Long-press an expense row → context menu** (`ReacaoRapida`): background blurs, the row lifts, a reaction bar shows above it, and a menu shows below it ("Comentar", "Editar", "Apagar despesa"). "Comentar" opens the detail sheet with the comment field focused.
+- Settlement rows do not get reactions or comments.
+
+### Detail sheet (`DespesaDetalhe`)
+1. **Summary card:** category icon, description, amount, "date · list · payer", the viewer's position ("Deves 44,40 € · 60 / 40", with arrow and colour as in the list), a "Recibo" button when there is a receipt, and the note ("Nota: …") when there is one.
+2. **Reaction bar:** always six emojis, in this order: ❤️ 👍 😂 😮 😬 🙏.
+   - Each person has **at most one reaction** per expense. Tap an emoji to set it, tap it again to remove it, tap another emoji to change it.
+   - The viewer's reaction has an accent ring and `accent-soft` background (`aria-pressed="true"`).
+   - The other person's reaction has a small "Ma" avatar badge on that emoji.
+   - A line under the bar says it in words: "A Mara reagiu com ❤️ · Reagiste com 😂". With no reactions: "Toca num emoji para reagir."
+3. **Comment thread** ("Comentários · 3"), oldest at the top, newest at the bottom, scrolled to the bottom on open.
+   - The viewer's comments: right side, accent background, white text.
+   - The other person's comments: left side, `surface` background, "Ma" avatar on the last bubble of a run.
+   - Under each bubble: time, and "editado" if edited. Day separators: "Hoje", "Ontem", then "Quarta, 08 out".
+   - Empty: "Ainda não há comentários." / "Escreve à Mara sobre esta despesa."
+4. **Composer** at the bottom, above the home indicator and the keyboard: input "Escreve um comentário…" (16 px font, max 500 characters) and a round send button. The button is disabled when the text is empty or the app is offline.
+
+### Long-press on own comment (`DetalheAcoes`)
+- Menu: "Copiar", "Editar comentário", "Apagar comentário" (destructive, no confirmation, show the toast with "Anular").
+- Only the author can edit or delete a comment. The other person's comments only have "Copiar".
+
+### Indicators in the list (`Lista`)
+- Reactions: up to two small emoji bubbles on the bottom-right corner of the category icon.
+- Comments: speech-bubble icon and count after "date · payer". **Unread** (the other person wrote after the viewer last opened the detail sheet): filled icon, accent colour, bold count.
+- The row `aria-label` includes the count and "por ler".
+
+### Activity (`Atividade`) and notifications
+- New activity entries: "A Mara comentou “Jantar no Ramiro”: “Combinado 😄”" and "A Mara reagiu com ❤️ a “Jantar no Ramiro”". Tapping one opens the detail sheet.
+- Push notifications (when enabled): title "Mara comentou “Jantar no Ramiro”", body = the comment text; "Mara reagiu com ❤️ a “Jantar no Ramiro”". Never notify a person about their own action. Removing a reaction does not create an activity entry or a notification.
+
+### Offline
+- Read-only: the reaction bar and the composer are disabled, as for other write actions.
+
+### Suggested data (adapt to DATA_MODEL.md)
+- `expense_reactions`: `expense_id`, `user_id`, `emoji`, `created_at`; primary key (`expense_id`, `user_id`) = one reaction per person.
+- `expense_comments`: `id`, `expense_id`, `user_id`, `body` (1–500 chars), `created_at`, `edited_at` null, `deleted_at` null.
+- `expense_reads`: `expense_id`, `user_id`, `last_read_at`, for the unread state.
+- Deleting an expense deletes its reactions and comments. Restoring it restores them.
+
+## Navigation change: Compras tab and activity bell
+
+This overrides the tab table in DESIGN_BRIEF.md.
+
+| Position | Tab |
+|---|---|
+| 1 | Início |
+| 2 | Compras (new) |
+| centre | + (new expense, unchanged) |
+| 3 | Estatísticas |
+| 4 | Definições |
+
+- **Atividade is no longer a tab.** It opens from a **bell button** in the Início header (left of the avatars). The bell has a red count badge with the number of activity entries by the other person since the viewer last opened Atividade. Opening Atividade clears it. The Atividade screen is a pushed screen with a "‹ Início" back link, and the Início tab stays active.
+- The **Compras tab** has a red count badge with the number of items not yet bought. No badge at zero.
+- `TabBar.dc.html`: prop `layout="a"` is the chosen layout (default). `atual` and `b` are kept only for reference.
+
+## Shopping list — Compras
+
+One shared shopping list for both people. It does **not** create expenses.
+
+### Adding (must be fast)
+- The add field is always at the top: "Adicionar artigo…". Enter adds the item, clears the field and **keeps the keyboard open** for the next item (`enterkeyhint="done"` is fine; do not blur on submit).
+- **Quantity from text:** a leading number sets the quantity: "2 leite" → Leite ×2 (also "2x leite").
+- **Automatic emoji and section:** match the text against a small pt-PT dictionary (case- and accent-insensitive) to set the emoji and the section. No match → 🛒 and "Outros". The user can change both in the edit sheet. Store the user's corrections so the same name gets the same section next time.
+- **Suggestions while typing** (max 3 + "Adicionar “…”"): from the dictionary and from previously bought items. If the item is already on the list, the suggestion shows "Já na lista (n)".
+- **No duplicates:** adding an item that is already on the list (not ticked) increases its quantity and shows "Leite já estava na lista. Agora são 4."
+- **"Habituais" chips** under the field when it is empty: the most often bought items that are not on the list. One tap adds the item.
+
+### Sections
+Fixed order (store route): Frutas e legumes · Padaria · Laticínios e ovos · Talho e peixe · Mercearia · Congelados · Bebidas · Limpeza · Higiene · Outros. Show only sections with items, with a count.
+
+### Managing
+- **Tick** (44 × 44 checkbox, green when ticked): the item moves to "No carrinho" at the bottom, struck through and faded. Tap again to untick.
+- **Tap the item name:** edit sheet (`ComprasArtigo`) with emoji, name, quantity stepper, note, section chips, "Adicionado pela Mara · ontem, 19:02" and "Apagar artigo".
+- Items added by the other person show a small avatar ("Ma") on the right.
+- **Bottom bar** when the cart has items: "3 no carrinho" + **"Limpar carrinho"**. It removes the ticked items and shows the toast with "Anular".
+- Menu (⋯) in the header: "Limpar carrinho", "Apagar tudo" (with destructive confirmation).
+- Changes from the other person appear live.
+
+### Empty
+Guru (`vazio`), "A lista está vazia.", "Escreve acima ou toca num artigo habitual.", plus the "Habituais" chips.
+
+### Offline — different from the rest of the app
+Shops often have no signal, so **this tab stays fully usable offline**. Queue the changes locally and send them when the connection returns. Show the banner "Sem rede. Podes continuar. As alterações são enviadas quando voltares a ter ligação." and a small "a enviar" marker on changed items. If both people changed the same item, the last change wins.
+
+### Suggested data (adapt to DATA_MODEL.md)
+- `shopping_items`: `id`, `name`, `emoji`, `section`, `quantity` (≥ 1), `note` null, `added_by`, `created_at`, `checked_at` null, `checked_by` null. "Limpar carrinho" deletes the rows where `checked_at` is not null.
+- `shopping_history`: `name` (normalized), `emoji`, `section`, `times_bought`, `last_bought_at`, for "Habituais" and for remembered sections.
+- Activity: shopping list changes do **not** create activity entries or push notifications.
+
+## Statistics — calendar
+
+The calendar is part of the Estatísticas page. There is no picker or separate view.
+
+### Page order
+Title + list filter ("Todas as listas") · month selector · "Total do mês" overview card · "Por categoria" · **Calendário card** (last on the page).
+- Show the calendar card **only when a single month is selected** (hide it for any year or longer period).
+- It uses the same list filter and month as the rest of the page.
+
+### Calendar card
+- Header "Calendário" (17 px semibold) with the number of expenses in the month on the right ("6 despesas").
+- Weekday row S T Q Q S S D (week starts on Monday). 7 columns, **6 px gap** (room for the selection border), day cells 52 px high, 10 px radius.
+- Each day cell, top to bottom: day number (16 px), the day total in **whole euros with €** ("86 €", "1.150 €"; use a narrow no-break space U+202F before € here only, so the sign sits close to the number), then small who-paid dots (5 px): blue = viewer, pink = other person, green = a settlement that day. Exact amounts appear in the day details.
+- **Background tint** by day total (one hue, 4 steps): < 50 € `#F1EDFE`, < 100 € `#DCD3FD`, < 500 € `#B9A8F8`, ≥ 500 € accent `#6847F0` with white text. No expenses = no tint. Settlements and planned expenses do not count for the tint.
+- **Today:** 1.5 px inset violet outline and bold number.
+- **Planned expense** (anything dated after today: an expense you entered with a future date, or the next occurrence of a recurring rule that is not created yet): 1.5 px dashed violet border, the amount at 75 % opacity. A day with only planned expenses has no tint.
+- **Days with nothing** (no expense, settlement or planned expense) are disabled: they cannot be selected.
+- No legend under the calendar.
+
+### Selecting a day
+- On open, **no day is selected** and the day details are hidden.
+- Tap a day to select it: a **2.5 px amber border `#F59E0B` outside the cell** (`box-shadow: 0 0 0 2.5px #F59E0B`), plus bold number. The cell colour and size do not change, and the border does not touch the neighbouring days. On today, keep the inner violet outline as well. Tap the same day again to deselect.
+- The selected day's expenses appear inside the calendar card, under the grid: "SEGUNDA, 5 OUT" + day total, then one row per expense (icon, description, "list · Pago por ti / Pago pela Mara", amount, viewer position). Settlements use the settlement row style. Planned expenses show "Prevista" ("Recorrente prevista" when recurring) and no position, and are left out of the day total and of the "despesas" count in the header.
+- No "add expense" shortcut in the day details.
+- Each day cell has a full `aria-label`, e.g. "Segunda, 5 de outubro, 101,20 €" (+ "(hoje)", "despesa recorrente prevista", "acerto de contas").
 
 ## Not shown in the mockups
 

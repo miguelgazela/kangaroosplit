@@ -98,8 +98,16 @@ body{margin:0}
           <sc-for list="{{m.rows}}" as="r" hint-placeholder-count="3">
             <div style="border-top: {{r.border}}">
               <sc-if value="{{r.isExpense}}" hint-placeholder-val="{{ true }}">
-                <a href="DespesaEditar.dc.html" style="text-decoration: none; color: inherit; min-height: 64px; padding: 10px 14px; display: flex; align-items: center; gap: 12px; box-sizing: border-box">
-                  <span style="width: 42px; height: 42px; border-radius: 12px; background: {{c.fill}}; display: flex; align-items: center; justify-content: center; font-size: 21px; flex: none">{{r.icon}}</span>
+                <a href="DespesaDetalhe.dc.html" aria-label="{{r.aria}}" style="text-decoration: none; color: inherit; min-height: 64px; padding: 10px 14px; display: flex; align-items: center; gap: 12px; box-sizing: border-box">
+                  <span style="position: relative; width: 42px; height: 42px; border-radius: 12px; background: {{c.fill}}; display: flex; align-items: center; justify-content: center; font-size: 21px; flex: none">{{r.icon}}
+                    <sc-if value="{{r.hasReacts}}" hint-placeholder-val="{{ false }}">
+                      <span aria-hidden="true" style="position: absolute; right: -8px; bottom: -6px; display: flex">
+                        <sc-for list="{{r.reacts}}" as="e" hint-placeholder-count="1">
+                          <span style="width: 20px; height: 20px; border-radius: 10px; background: {{c.card}}; box-shadow: 0 1px 3px rgba(0,0,0,0.18); font-size: 11px; display: flex; align-items: center; justify-content: center; margin-left: {{e.ml}}">{{e.e}}</span>
+                        </sc-for>
+                      </span>
+                    </sc-if>
+                  </span>
                   <span style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px">
                     <span style="display: flex; align-items: center; gap: 6px; font-size: 16px; font-weight: 600; white-space: nowrap">
                       {{r.desc}}
@@ -110,7 +118,15 @@ body{margin:0}
                         </span>
                       </sc-if>
                     </span>
-                    <span style="font-size: 13px; color: {{c.text2}}; white-space: nowrap">{{r.date}} · {{r.payer}}</span>
+                    <span style="display: flex; align-items: center; gap: 6px; font-size: 13px; color: {{c.text2}}; white-space: nowrap">
+                      <span>{{r.date}} · {{r.payer}}</span>
+                      <sc-if value="{{r.hasComments}}" hint-placeholder-val="{{ false }}">
+                        <span aria-hidden="true" style="display: inline-flex; align-items: center; gap: 3px; color: {{r.commentColor}}; font-weight: {{r.commentWeight}}">
+                          <svg width="13" height="13" viewBox="0 0 24 24" fill="{{r.commentFill}}" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1.1-4.6A8 8 0 1 1 21 12z"></path></svg>
+                          {{r.comments}}
+                        </span>
+                      </sc-if>
+                    </span>
                   </span>
                   <span style="display: flex; flex-direction: column; align-items: flex-end; gap: 2px; flex: none">
                     <span style="font-size: 16px; font-weight: 600; font-variant-numeric: tabular-nums">{{r.amount}}</span>
@@ -156,12 +172,23 @@ class Component extends DCLogic {
       link: '#5B3FD9', accent: '#6847F0', accentSoft: '#EFEAFE', pos: '#0B7A5C', neg: '#B93D0B',
       shadow: '0 1px 2px rgba(17,17,20,0.04)', settleBg: '#F7F4FF', coin: '#FFFFFF', pouch: '#EFEAFE'
     };
-    const exp = (icon, desc, date, mine, amount, position, extra) => Object.assign({
-      isExpense: true, isSettle: false, icon, desc, date,
-      payer: mine ? 'Pago por ti' : 'Pago pela Mara', amount,
-      position: (mine ? 'emprestaste ' : 'deves ') + position,
-      posColor: mine ? c.pos : c.neg, recurring: false
-    }, extra || {});
+    const exp = (icon, desc, date, mine, amount, position, extra) => {
+      const r = Object.assign({
+        isExpense: true, isSettle: false, icon, desc, date,
+        payer: mine ? 'Pago por ti' : 'Pago pela Mara', amount,
+        position: (mine ? 'emprestaste ' : 'deves ') + position,
+        posColor: mine ? c.pos : c.neg, recurring: false,
+        reacts: [], comments: 0, unread: false
+      }, extra || {});
+      r.hasReacts = r.reacts.length > 0;
+      r.reacts = r.reacts.map((e, i) => ({ e, ml: i === 0 ? '0px' : '-6px' }));
+      r.hasComments = r.comments > 0;
+      r.commentColor = r.unread ? c.link : c.text2;
+      r.commentWeight = r.unread ? 700 : 500;
+      r.commentFill = r.unread ? 'currentColor' : 'none';
+      r.aria = desc + ', ' + amount + (r.hasComments ? ', ' + r.comments + (r.comments === 1 ? ' comentário' : ' comentários') + (r.unread ? ', por ler' : '') : '');
+      return r;
+    };
     const settle = (desc, date, amount) => ({ isExpense: false, isSettle: true, desc, date, amount, recurring: false });
     const sepd = (rows) => rows.map((r, i) => Object.assign(r, { border: i === 0 ? 'none' : '0.5px solid ' + c.sep }));
     let d;
@@ -185,9 +212,9 @@ class Component extends DCLogic {
         months: [
           { label: 'Outubro 2026', total: '1.411,55 €', rows: sepd([
             exp('🛒', 'Continente', '10 out', true, '86,35 €', '34,54 €'),
-            exp('🍽️', 'Jantar no Ramiro', '08 out', false, '74,00 €', '44,40 €'),
+            exp('🍽️', 'Jantar no Ramiro', '08 out', false, '74,00 €', '44,40 €', { reacts: ['❤️', '😂'], comments: 3, unread: true }),
             settle('A Mara pagou-te', '06 out', '354,65 €'),
-            exp('💡', 'Eletricidade', '05 out', true, '61,20 €', '24,48 €'),
+            exp('💡', 'Eletricidade', '05 out', true, '61,20 €', '24,48 €', { reacts: ['😬'], comments: 2 }),
             exp('🚗', 'Passe Navegante', '03 out', false, '40,00 €', '24,00 €'),
             exp('🏠', 'Renda', '01 out', true, '1.150,00 €', '460,00 €', { recurring: true })
           ]) },

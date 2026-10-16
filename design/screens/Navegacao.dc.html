@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="pt-PT">
+<head>
+<meta charset="utf-8">
+<title>Navegação com Compras</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div style="width: 960px; height: 640px; box-sizing: border-box; padding: 48px 56px; background: #F7F7FA; color: #111114; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', sans-serif; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 64px">
+
+  <section style="display: flex; flex-direction: column; gap: 16px">
+    <div style="display: flex; align-items: center; gap: 10px">
+      <h2 style="margin: 0; font-size: 22px; font-weight: 700">Opção A</h2>
+      <span style="font-size: 12px; font-weight: 600; color: #4B2FD0; background: #EFEAFE; padding: 3px 9px; border-radius: 999px">Escolhida</span>
+    </div>
+    <p style="margin: 0; font-size: 15px; line-height: 21px; color: #4A4A55">Compras entra no lugar de Atividade. A atividade passa para um sino no Início, com o número de novidades.</p>
+    <div style="width: 390px; border-radius: 28px; background: #F2F2F7; box-shadow: inset 0 0 0 1px #E6E6EC; overflow: hidden">
+      <div style="height: 72px; display: flex; align-items: center; justify-content: space-between; padding: 0 16px">
+        <span style="font-size: 34px; font-weight: 700">Início</span>
+        <span style="display: flex; align-items: center; gap: 6px">
+          <button type="button" aria-label="Atividade, 2 novidades" style="position: relative; width: 44px; height: 44px; border: 0; background: transparent; display: flex; align-items: center; justify-content: center; padding: 0; cursor: pointer">
+            <span style="width: 36px; height: 36px; border-radius: 18px; background: #FFFFFF; color: #5B3FD9; display: flex; align-items: center; justify-content: center">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9M10.3 21a1.94 1.94 0 0 0 3.4 0"></path></svg>
+            </span>
+            <span style="position: absolute; right: 2px; top: 2px; min-width: 18px; height: 18px; border-radius: 9px; background: #C42B1C; color: #FFFFFF; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center; border: 2px solid #F2F2F7; box-sizing: border-box; padding: 0 4px">2</span>
+          </button>
+          <span style="width: 36px; height: 36px; border-radius: 18px; background: #2563EB; color: #FFFFFF; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 600">Mi</span>
+        </span>
+      </div>
+      <div style="height: 120px; margin: 0 16px; border-radius: 24px; background: #6847F0; opacity: 0.18"></div>
+      <div style="height: 120px"></div>
+      <div style="height: 100px; position: relative">
+        <dc-import name="TabBar" layout="a" active="compras" badge="6" hint-size="390px,100px"></dc-import>
+      </div>
+    </div>
+  </section>
+
+  <section style="display: flex; flex-direction: column; gap: 16px">
+    <h2 style="margin: 0; font-size: 22px; font-weight: 700">Opção B</h2>
+    <p style="margin: 0; font-size: 15px; line-height: 21px; color: #4A4A55">Compras entra no lugar de Estatísticas. As estatísticas abrem a partir de um cartão no Início.</p>
+    <div style="width: 390px; border-radius: 28px; background: #F2F2F7; box-shadow: inset 0 0 0 1px #E6E6EC; overflow: hidden">
+      <div style="height: 72px; display: flex; align-items: center; justify-content: space-between; padding: 0 16px">
+        <span style="font-size: 34px; font-weight: 700">Início</span>
+        <span style="width: 36px; height: 36px; border-radius: 18px; background: #2563EB; color: #FFFFFF; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 600">Mi</span>
+      </div>
+      <div style="height: 120px; margin: 0 16px; border-radius: 24px; background: #6847F0; opacity: 0.18"></div>
+      <a href="Estatisticas.dc.html" style="margin: 12px 16px 0; height: 60px; border-radius: 18px; background: #FFFFFF; display: flex; align-items: center; gap: 12px; padding: 0 14px; text-decoration: none; color: inherit">
+        <span style="width: 36px; height: 36px; border-radius: 10px; background: #EFEAFE; color: #5B3FD9; display: flex; align-items: center; justify-content: center">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M5 20V12M12 20V5M19 20v-9"></path></svg>
+        </span>
+        <span style="flex: 1; display: flex; flex-direction: column"><span style="font-size: 15px; font-weight: 600">Estatísticas de outubro</span><span style="font-size: 13px; color: #6B6B76">1.451,55 € gastos</span></span>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#8A8A94" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"></path></svg>
+      </a>
+      <div style="height: 48px"></div>
+      <div style="height: 100px; position: relative">
+        <dc-import name="TabBar" layout="b" active="compras" badge="6" hint-size="390px,100px"></dc-import>
+      </div>
+    </div>
+  </section>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":960,"height":640}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

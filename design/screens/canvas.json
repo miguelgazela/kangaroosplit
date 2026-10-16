@@ -48,7 +48,20 @@
     "TabBar.dc.html": {"x": 2320, "y": 6100, "w": 390, "h": 100, "title": "Barra de separadores"},
 
     "Mascote.dc.html": {"x": 0, "y": 7660, "w": 1280, "h": 1000, "title": "Mascote — Guru"},
-    "Guru.dc.html": {"x": 1360, "y": 7660, "w": 200, "h": 240, "title": "Guru (componente)"}
+    "Guru.dc.html": {"x": 1360, "y": 7660, "w": 200, "h": 240, "title": "Guru (componente)"},
+
+    "DespesaDetalhe.dc.html": {"x": 0, "y": 9040, "w": 390, "h": 844, "title": "Despesa — comentários e reações", "is_interactive": true},
+    "DetalheVazio.dc.html": {"x": 470, "y": 9040, "w": 390, "h": 844, "title": "Despesa — sem comentários"},
+    "DetalheAcoes.dc.html": {"x": 940, "y": 9040, "w": 390, "h": 844, "title": "Comentário — editar ou apagar"},
+    "ReacaoRapida.dc.html": {"x": 1410, "y": 9040, "w": 390, "h": 844, "title": "Lista — reação rápida (toque longo)"},
+    "DetalheEscuro.dc.html": {"x": 1880, "y": 9040, "w": 390, "h": 844, "title": "Despesa — comentários (escuro)"},
+
+    "Compras.dc.html": {"x": 0, "y": 10260, "w": 390, "h": 844, "title": "Compras", "is_interactive": true},
+    "ComprasEscrever.dc.html": {"x": 470, "y": 10260, "w": 390, "h": 844, "title": "Compras — a escrever (sugestões)", "is_interactive": true},
+    "ComprasArtigo.dc.html": {"x": 940, "y": 10260, "w": 390, "h": 844, "title": "Compras — editar artigo"},
+    "ComprasVazia.dc.html": {"x": 1410, "y": 10260, "w": 390, "h": 844, "title": "Compras — vazia"},
+    "ComprasOffline.dc.html": {"x": 1880, "y": 10260, "w": 390, "h": 844, "title": "Compras — sem rede"},
+    "Navegacao.dc.html": {"x": 2350, "y": 10260, "w": 960, "h": 640, "title": "Navegação — onde fica o separador"}
   },
   "order": [
     "Main.dc.html", "Lista.dc.html", "Despesa.dc.html", "Acerto.dc.html", "Atividade.dc.html", "Estatisticas.dc.html", "Definicoes.dc.html",
@@ -57,7 +70,9 @@
     "Login.dc.html", "LoginErro.dc.html", "InicioOffline.dc.html", "InicioLoading.dc.html", "Notificacoes.dc.html", "Instalar.dc.html", "ConfirmarApagar.dc.html", "Toast.dc.html",
     "InicioEscuro.dc.html", "ListaEscuro.dc.html", "DespesaEscuro.dc.html",
     "Componentes.dc.html", "Icone.dc.html", "TabBar.dc.html",
-    "Mascote.dc.html", "Guru.dc.html"
+    "Mascote.dc.html", "Guru.dc.html",
+    "DespesaDetalhe.dc.html", "DetalheVazio.dc.html", "DetalheAcoes.dc.html", "ReacaoRapida.dc.html", "DetalheEscuro.dc.html",
+    "Compras.dc.html", "ComprasEscrever.dc.html", "ComprasArtigo.dc.html","ComprasVazia.dc.html", "ComprasOffline.dc.html", "Navegacao.dc.html"
   ],
   "notes": {
     "r1": {"x": 0, "y": -260, "text": "Ecrãs principais", "kind": "title1", "maxW": 3210},
@@ -66,7 +81,9 @@
     "r4": {"x": 0, "y": 3400, "text": "Sessão e estados do sistema", "kind": "title1", "maxW": 3680},
     "r5": {"x": 0, "y": 4620, "text": "Modo escuro", "kind": "title1", "maxW": 1330},
     "r6": {"x": 0, "y": 5840, "text": "Componentes e ícone", "kind": "title1", "maxW": 2710},
-    "r7": {"x": 0, "y": 7400, "text": "Mascote", "kind": "title1", "maxW": 1560}
+    "r7": {"x": 0, "y": 7400, "text": "Mascote", "kind": "title1", "maxW": 1560},
+    "r8": {"x": 0, "y": 8780, "text": "Comentários e reações", "kind": "title1", "maxW": 2270},
+    "r9": {"x": 0, "y": 10000, "text": "Lista de compras", "kind": "title1", "maxW": 3310}
   },
   "designSystems": []
 }

@@ -16,14 +16,24 @@ body{margin:0}
   <nav aria-label="Navegação principal" style="position: absolute; left: 0; right: 0; bottom: 0; height: 83px; background: {{c.bar}}; backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-top: 0.5px solid {{c.sep}}; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); padding: 0 6px; box-sizing: border-box">
     <sc-for list="{{left}}" as="t" hint-placeholder-count="2">
       <a href="#" style="height: 49px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; text-decoration: none; color: {{t.color}}">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="{{t.sw}}" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{t.d}}"></path></svg>
+        <span style="position: relative; display: flex">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="{{t.sw}}" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{t.d}}"></path></svg>
+          <sc-if value="{{t.hasBadge}}" hint-placeholder-val="{{ false }}">
+            <span style="position: absolute; left: 15px; top: -5px; min-width: 18px; height: 18px; padding: 0 5px; box-sizing: border-box; border-radius: 9px; background: #C42B1C; color: #FFFFFF; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center; border: 2px solid {{c.ring}}">{{t.badge}}</span>
+          </sc-if>
+        </span>
         <span style="font-size: 10px; font-weight: {{t.fw}}; letter-spacing: 0.1px">{{t.label}}</span>
       </a>
     </sc-for>
     <div style="height: 49px"></div>
     <sc-for list="{{right}}" as="t" hint-placeholder-count="2">
       <a href="#" style="height: 49px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; text-decoration: none; color: {{t.color}}">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="{{t.sw}}" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{t.d}}"></path></svg>
+        <span style="position: relative; display: flex">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="{{t.sw}}" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{t.d}}"></path></svg>
+          <sc-if value="{{t.hasBadge}}" hint-placeholder-val="{{ false }}">
+            <span style="position: absolute; left: 15px; top: -5px; min-width: 18px; height: 18px; padding: 0 5px; box-sizing: border-box; border-radius: 9px; background: #C42B1C; color: #FFFFFF; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center; border: 2px solid {{c.ring}}">{{t.badge}}</span>
+          </sc-if>
+        </span>
         <span style="font-size: 10px; font-weight: {{t.fw}}; letter-spacing: 0.1px">{{t.label}}</span>
       </a>
     </sc-for>
@@ -33,7 +43,7 @@ body{margin:0}
   </button>
 </div>
 </x-dc>
-<script type="text/x-dc" data-dc-script data-props='{"active":{"editor":"enum","options":["inicio","atividade","estatisticas","definicoes"],"default":"inicio"},"dark":{"editor":"boolean","default":false},"disabled":{"editor":"boolean","default":false},"$preview":{"width":390,"height":100}}'>
+<script type="text/x-dc" data-dc-script data-props='{"active":{"editor":"enum","options":["inicio","compras","atividade","estatisticas","definicoes"],"default":"inicio"},"dark":{"editor":"boolean","default":false},"disabled":{"editor":"boolean","default":false},"layout":{"editor":"enum","options":["a","atual","b"],"default":"a"},"badge":{"editor":"text","default":""},"$preview":{"width":390,"height":100}}'>
 class Component extends DCLogic {
   renderVals() {
     const dark = !!this.props.dark;
@@ -52,16 +62,25 @@ class Component extends DCLogic {
       estatisticas: 'M5 20V12M12 20V5M19 20v-9M3 20h18',
       definicoes: 'M12 9a3 3 0 1 0 0 6a3 3 0 1 0 0-6M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z'
     };
+    icons.compras = 'M3 4h2l2.2 10.6a2 2 0 0 0 2 1.6h7.9a2 2 0 0 0 2-1.5L21 8H6M9.5 20.5a.5.5 0 1 0 0-.01M17.5 20.5a.5.5 0 1 0 0-.01';
+    const badge = this.props.badge ?? '';
     const mk = (id, label) => ({
       label, d: icons[id],
       color: id === active ? c.on : c.off,
       fw: id === active ? 600 : 500,
-      sw: id === active ? 2.2 : 1.8
+      sw: id === active ? 2.2 : 1.8,
+      hasBadge: id === 'compras' && !!badge, badge
     });
+    const layout = this.props.layout ?? 'a';
+    const L = {
+      atual: [['inicio', 'Início'], ['atividade', 'Atividade'], ['estatisticas', 'Estatísticas'], ['definicoes', 'Definições']],
+      a: [['inicio', 'Início'], ['compras', 'Compras'], ['estatisticas', 'Estatísticas'], ['definicoes', 'Definições']],
+      b: [['inicio', 'Início'], ['compras', 'Compras'], ['atividade', 'Atividade'], ['definicoes', 'Definições']]
+    }[layout] || [];
     return {
       c,
-      left: [mk('inicio', 'Início'), mk('atividade', 'Atividade')],
-      right: [mk('estatisticas', 'Estatísticas'), mk('definicoes', 'Definições')]
+      left: [mk(L[0][0], L[0][1]), mk(L[1][0], L[1][1])],
+      right: [mk(L[2][0], L[2][1]), mk(L[3][0], L[3][1])]
     };
   }
 }
