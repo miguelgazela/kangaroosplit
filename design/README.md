@@ -206,6 +206,14 @@ Title + list filter ("Todas as listas") · month selector · "Total do mês" ove
 - No "add expense" shortcut in the day details.
 - Each day cell has a full `aria-label`, e.g. "Segunda, 5 de outubro, 101,20 €" (+ "(hoje)", "despesa recorrente prevista", "acerto de contas").
 
+## Início — last expenses on the Casa card
+
+- The Casa card on Início shows the **last 3 expenses** of the Casa list, newest first, under the label "Últimas despesas".
+- Each row shows the category emoji, the description, "date · Pago por ti / pela Mara" and the amount. Settlements are not shown.
+- Tap a row to open the expense detail (`DespesaDetalhe`).
+- Tap the card header (name, split, balance) or "Ver todas" to open the Casa list (`Lista`). The header has no chevron.
+- If the list has fewer than 3 expenses, show only the ones that exist. If it has none, hide the label and the "Ver todas" link.
+
 ## Not shown in the mockups
 
 - Category editor sub-screen (add / edit / archive a category). Follow the `NovaLista` sheet pattern.
