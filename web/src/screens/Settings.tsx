@@ -23,7 +23,7 @@ import {
   useUpdateProfile,
 } from '../query/hooks'
 
-const VERSION = '1.0.0'
+const VERSION = '1.1.0'
 
 export function Settings() {
   const online = useOnline()
