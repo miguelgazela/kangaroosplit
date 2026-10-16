@@ -280,6 +280,14 @@ export const t = {
     byCategory: 'Por categoria',
     categories: (count: number) => (count === 1 ? '1 categoria' : `${count} categorias`),
     empty: 'Sem despesas neste mês.',
+    calendar: 'Calendário',
+    calendarLabel: (month: string) => `Calendário de ${month}`,
+    weekdays: ['S', 'T', 'Q', 'Q', 'S', 'S', 'D'],
+    plannedRecurring: 'Recorrente prevista',
+    planned: 'Prevista',
+    today: 'hoje',
+    plannedAria: 'despesa prevista',
+    settledAria: 'acerto de contas',
   },
 
   settings: {

@@ -127,3 +127,10 @@ export function formatTime(instant: string): string {
 export function formatPercent(fraction: number): string {
   return `${(fraction * 100).toFixed(1).replace('.', ',')} %`
 }
+
+// Whole euros for tight spots such as calendar cells: "1.150 €". A narrow
+// no-break space keeps the sign close to the number.
+export function formatWholeEuros(cents: number): string {
+  const euros = String(Math.round(cents / 100)).replace(/\B(?=(\d{3})+(?!\d))/g, '.')
+  return `${euros} €`
+}

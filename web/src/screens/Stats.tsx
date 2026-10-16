@@ -6,8 +6,11 @@ import { Icon } from '../components/Icon'
 import { OptionSheet } from '../components/OptionSheet'
 import { Screen } from '../components/Screen'
 import { Segmented } from '../components/Segmented'
+import { StatsCalendar } from '../components/StatsCalendar'
 import { TrendBars } from '../components/TrendBars'
 import { t } from '../i18n/pt'
+import { buildCalendar } from '../lib/calendar'
+import { todayISO } from '../lib/dates'
 import { formatMoney, formatPercent, splitMoney } from '../lib/format'
 import { nameForms } from '../lib/people'
 import {
@@ -23,7 +26,7 @@ import {
   trendWindow,
 } from '../lib/period'
 import { expensesInPeriod, filterExpenses, monthlyTrend, sharesByUser, totalCents, totalsByCategory } from '../lib/stats'
-import { useCategories, useCurrentMember, useExpenses, useLists, useMembers } from '../query/hooks'
+import { useCategories, useCurrentMember, useExpenses, useLists, useMembers, useRecurring, useSettlements } from '../query/hooks'
 
 const ALL = 'all'
 const FALLBACK_COLOR = '#64748b'
@@ -34,6 +37,8 @@ export function Stats() {
   const { data: lists } = useLists()
   const { data: expenses } = useExpenses()
   const { data: categories } = useCategories()
+  const { data: settlements } = useSettlements()
+  const { data: recurring } = useRecurring()
   const [params, setParams] = useSearchParams()
   const [pickingScope, setPickingScope] = useState(false)
 
@@ -47,7 +52,7 @@ export function Stats() {
       <h1 className="text-large-title font-bold tracking-[0.4px]">{t.tabs.stats}</h1>
     </div>
   )
-  if (!me || !partner || !members || !lists || !expenses || !categories) return <Screen>{header}</Screen>
+  if (!me || !partner || !members || !lists || !expenses || !categories || !settlements || !recurring) return <Screen>{header}</Screen>
 
   const scopeList = lists.find((list) => list.id === scope)
   const scoped = scopeList ? filterExpenses(expenses, { listId: scopeList.id }) : expenses
@@ -62,6 +67,8 @@ export function Stats() {
   const { whole, rest } = splitMoney(total)
   const change = previous > 0 ? (total - previous) / previous : null
   const months = elapsedMonths(period)
+  const inScope = <T extends { list_id: string }>(rows: T[]) => (scopeList ? rows.filter((row) => row.list_id === scopeList.id) : rows)
+  const today = todayISO()
 
   return (
     <Screen>
@@ -222,6 +229,18 @@ export function Stats() {
             })}
           </div>
         </section>
+      )}
+
+      {!yearly && (
+        <StatsCalendar
+          key={`${scope ?? ALL}-${period}`}
+          month={period}
+          days={buildCalendar(period, inPeriod, inScope(settlements), inScope(recurring), today)}
+          today={today}
+          me={me}
+          partner={partner}
+          categories={categories}
+        />
       )}
 
       {pickingScope && (
