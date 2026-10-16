@@ -10,11 +10,13 @@ import { formatDateRange, formatDayMonth, formatMoney, splitMoney } from '../lib
 import { useOnline } from '../lib/online'
 import { nameForms, ratio } from '../lib/people'
 import { todayISO } from '../lib/dates'
-import { listBalance, overallBalance, scheduledImpact } from '../lib/stats'
+import { isScheduled, listBalance, overallBalance, scheduledImpact } from '../lib/stats'
 import { unseenCount, useActivitySeenAt } from '../lib/activitySeen'
+import { useSheets } from '../sheets/SheetContext'
 import {
   useActivity,
   useBalances,
+  useCategories,
   useCurrentMember,
   useDefaultShares,
   useExpenses,
@@ -104,6 +106,8 @@ export function Home({ onSettleAll, onNewList }: { onSettleAll: () => void; onNe
   const { data: defaultShares } = useDefaultShares()
   const { data: expenses } = useExpenses()
   const { data: activity } = useActivity()
+  const { data: categories } = useCategories()
+  const { openExpense } = useSheets()
   const seenAt = useActivitySeenAt()
   const news = me && activity && seenAt ? unseenCount(activity, me.user_id, seenAt) : 0
   const [showArchived, setShowArchived] = useState(false)
@@ -119,6 +123,16 @@ export function Home({ onSettleAll, onNewList }: { onSettleAll: () => void; onNe
     ready && expenses
       ? scheduledImpact(expenses.filter((expense) => activeIds.has(expense.list_id)), me.user_id, todayISO())
       : null
+
+  // The last three expenses of the main list, newest first. Ones dated after
+  // today have not happened yet, so they stay out.
+  const today = todayISO()
+  const recent = main
+    ? (expenses ?? [])
+        .filter((expense) => expense.list_id === main.id && !isScheduled(expense, today))
+        .sort((a, b) => b.spent_on.localeCompare(a.spent_on) || b.created_at.localeCompare(a.created_at))
+        .slice(0, 3)
+    : []
 
   const subtitle = (list: List) =>
     formatDateRange(list.starts_on, list.ends_on) ??
@@ -225,12 +239,50 @@ export function Home({ onSettleAll, onNewList }: { onSettleAll: () => void; onNe
       ) : (
         <div className="flex flex-col gap-3">
           {main && (
-            <Link
-              to={`/lista/${main.id}`}
-              className="flex items-center gap-3.5 rounded-card bg-surface px-4 py-3.5 shadow-card outline-[1.5px] outline-main-ring"
-            >
-              <ListRow list={main} subtitle={subtitle(main)} balance={balanceOf(main)} />
-            </Link>
+            <div className="overflow-hidden rounded-card bg-surface shadow-card outline-[1.5px] outline-main-ring">
+              <Link to={`/lista/${main.id}`} className="flex items-center gap-3.5 px-4 py-3.5">
+                <ListRow list={main} subtitle={subtitle(main)} balance={balanceOf(main)} />
+              </Link>
+              {recent.length > 0 && (
+                <>
+                  <h3 className="mx-4 border-t-[0.5px] border-separator pt-2 pb-0.5 text-xs font-semibold tracking-[0.4px] text-text-2 uppercase">
+                    {t.lists.recentExpenses}
+                  </h3>
+                  {recent.map((expense) => (
+                    <button
+                      key={expense.id}
+                      type="button"
+                      onClick={() => openExpense(expense.id)}
+                      className="flex min-h-11 w-full items-center gap-2.5 px-4 py-1 text-left"
+                    >
+                      <span
+                        aria-hidden="true"
+                        className="flex size-8 flex-none items-center justify-center rounded-[10px] bg-fill text-base"
+                      >
+                        {categories?.find((category) => category.id === expense.category_id)?.icon ?? '📦'}
+                      </span>
+                      <span className="flex min-w-0 flex-1 flex-col">
+                        <span className="truncate text-subhead font-medium">{expense.description}</span>
+                        <span className="text-xs text-text-2">
+                          {formatDayMonth(expense.spent_on)} ·{' '}
+                          {expense.paid_by === me.user_id ? t.expense.paidByYou : t.expense.paidBy(nameForms(partner).by)}
+                        </span>
+                      </span>
+                      <span className="flex-none text-subhead font-semibold tabular-nums">
+                        {formatMoney(expense.amount_cents)}
+                      </span>
+                    </button>
+                  ))}
+                  <Link
+                    to={`/lista/${main.id}`}
+                    className="mx-4 mt-0.5 flex h-11 items-center justify-between border-t-[0.5px] border-separator text-subhead font-medium text-accent-text"
+                  >
+                    {t.lists.seeAll}
+                    <Icon name="chevronRight" size={14} strokeWidth={2.5} />
+                  </Link>
+                </>
+              )}
+            </div>
           )}
 
           {others.length > 0 && (

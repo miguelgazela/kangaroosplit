@@ -8,6 +8,11 @@ export type ChangelogEntry = {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '1.3.0',
+    date: '2026-10-17',
+    changes: ['Início mostra as últimas despesas da lista principal, com acesso direto ao detalhe'],
+  },
+  {
     version: '1.2.0',
     date: '2026-10-16',
     changes: ['Ecrã de novidades nas Definições, com o que mudou em cada versão'],

@@ -53,6 +53,8 @@ export const t = {
     title: 'Listas',
     main: 'Principal',
     mainList: 'Lista principal',
+    recentExpenses: 'Últimas despesas',
+    seeAll: 'Ver todas',
     create: 'Nova lista',
     archived: 'Listas arquivadas',
     defaultSplit: (ratio: string) => `Divisão predefinida: ${ratio}`,
