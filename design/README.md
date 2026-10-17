@@ -25,7 +25,7 @@ Several files are small wrappers that show a variant of a main file. The variant
 | Screen (brief §) | Main file | Variants |
 |---|---|---|
 | 1 Login | `Login.dc.html` | `LoginErro` (prop `error`) |
-| 2 Início | `Main.dc.html` | `InicioOffline` (`offline`), `InicioLoading` (`loading`), `InicioEscuro` (`dark`) |
+| 2 Início | `Main.dc.html` (immersive header with parallax; interactive, prop `scroll`) | `InicioScroll` (`scroll=170`, halfway through the parallax), `InicioOffline` (`offline`), `InicioLoading` (`loading`), `InicioEscuro` (`dark`) |
 | 3 List detail | `Lista.dc.html` (balance card has the "Despesas recorrentes" row) | `ListaVazia` (`variant="vazia"`), `ListaArquivada` (`variant="arquivada"`), `ListaEscuro` (`dark`) |
 | 4 Add / edit expense (sheet) | `Despesa.dc.html` | `DespesaTeclado` (on open, keypad + quick details card), `DespesaIgual`, `DespesaPercentagem`, `DespesaExatoErro` (validation error), `DespesaPartes`, `DespesaEditar` (`variant="editar"`), `DespesaRecorrente` (`variant="recorrente"`), `DespesaEscuro` (`dark`) |
 | 5 Settle up (sheet) | `Acerto.dc.html` | `AcertarTudo` (`variant="tudo"`), `AcertoSucesso` (`variant="sucesso"`) |
@@ -240,7 +240,7 @@ The balance card on `Lista` has a **"Despesas recorrentes"** row below the defau
 
 ## Scrolling screens
 
-`Main` and `Lista` scroll vertically under the tab bar. Cards in a scrolling column must not shrink (`flex: none` / `flex-shrink: 0`). If they can shrink, `overflow: hidden` cards collapse (the Saldo total card collapsed when the Casa card got taller).
+`Main` and `Lista` scroll vertically under the tab bar. Cards in a scrolling column must not shrink (`flex: none` / `flex-shrink: 0`). If they can shrink, `overflow: hidden` cards collapse (this happened to the old Saldo total card when the Casa card got taller).
 
 ## To implement — design changes of 17 Oct 2026
 
@@ -308,6 +308,46 @@ Mockup copy for 1.4.0 (you can use it as the first `highlights`):
 2. Make a `WhatsNewSheet` component that follows the mockup and the rules above.
 3. Show it from Início with the "last seen version" logic. Add tests for the version compare and for the first-use case.
 4. Add a changelog entry for this feature (see `CLAUDE.md`). That entry has no `highlights`, so the sheet does not show for it.
+
+## Início — immersive header with parallax
+
+Mockups: `Main` (top of the page; you can scroll it in Play mode), `InicioScroll` (halfway), `InicioEscuro`, `InicioOffline`, `InicioLoading`. This replaces the "Saldo total" card and the "Início" large title.
+
+**Structure** (from back to front):
+
+1. **Header layer** (fixed, behind everything). Full width, from the top edge of the screen, 380px high, background `linear-gradient(165deg, #8A6DFB 0%, #6847F0 52%, #5534DD 100%)`. Dark: `#5B44C8 → #4A34B8 → #3A2799`. Offline: grey `#A8A8B2 → #8E8E98` (dark `#4A4A50 → #3A3A3D`). Decoration: 3 thin white circles at 16% opacity at the top right, and a soft white glow at the bottom left.
+   - **Top row** at the safe-area top + 10px (54px in the mockup), 44px high: the Mi/Ma avatars (38px, 2px white 85% border) on the left, and the bell on the right (38px circle, white 18%, red badge with the count). There is no screen title.
+   - **Balance block**, centred, starts 64px under the top row, 8px gap:
+     - "Saldo total · 3 listas ativas" (15px, white 86%).
+     - **Direction pill**: 30px high, white 16%, with the Ma → Mi mini avatars (22px) and "A Mara deve-te" (14px semibold).
+     - **Amount**: 52px / 60px bold, letter-spacing −1.2px, tabular numbers, **all in solid white (the decimals too)**.
+     - **"Acertar tudo"**: white pill button, 40px high, accent text `#4B2FD0`, swap icon, soft shadow. Disabled when offline.
+2. **Scroll container** (the whole screen). It starts with a transparent spacer of **312px**, so the header shows through. Then comes the **content sheet**: background `bg` (`#F2F2F7` / dark `#000`), top corners 28px, shadow `0 -8px 24px rgba(40,20,120,0.12)`, a 36×5px grabber, padding 18px 16px, and the bottom padding of the tab bar. The sheet has the offline banner (when offline), the "Listas" header, the Casa card with "Últimas despesas", the other lists and "Listas arquivadas", as before.
+3. **Tab bar** on top, as before.
+
+**Parallax** (`y` = scroll offset in px):
+
+- Header layer: `translateY(-0.45 × y)`, so it moves at about half the speed of the sheet.
+- Balance block: extra `translateY(0.12 × y)` and `scale(1 − min(y, 240) / 1200)`, from the top centre.
+- Top row and balance block: `opacity = clamp(1 − y / 220, 0, 1)`.
+- There is **no compact header**. When the sheet reaches the top, it continues up under the status bar. Put a thin translucent band (`backdrop-filter: blur`) behind the status bar (height = `env(safe-area-inset-top)`), so the clock stays easy to read over the content.
+- Use one passive scroll listener and `requestAnimationFrame`, and change only `transform` and `opacity` (no layout changes). If the user turns on `prefers-reduced-motion`, do not use the parallax: the header scrolls with the content.
+- **Touch on the header:** a swipe that starts on the purple area must scroll the page. Do not put the header in a separate scroll area. For example, put the header inside the scroll container with `position: sticky; top: 0` and `z-index` under the sheet, or let touch events go through the spacer. The buttons in the header (bell, "Acertar tudo") must still work.
+- **Overscroll at the top (iOS bounce):** extend the gradient upwards, so no white gap shows.
+
+**Loading:** in the header, show 2 white 22% skeleton bars (150×26 and 210×48) in place of the pill and the amount. In the sheet, show the existing list skeletons.
+
+## Amounts — no lighter decimals
+
+Show every amount in one colour. Do not show the decimals ("…,40 €") in a lighter colour or a lighter weight. This applies to the Início header, the "Total do mês" card in Estatísticas, the amount field in Acertar contas and the amount on the new-expense sheet.
+
+### To implement — immersive header and amounts
+
+1. Replace the Saldo total card and the "Início" title in `web/src/screens/Home.tsx` with the header layer, the 312px spacer and the content sheet described above. Keep all the data and actions of the old card.
+2. Add the parallax with the rules above (passive listener, transform and opacity only, reduced motion, touch on the header, overscroll, status-bar band).
+3. Support the dark, offline and loading states (see the mockups).
+4. Remove the lighter decimals everywhere (search for `text-white/70` on the amount `rest` and similar classes in Stats, the settle sheet and the expense sheet).
+5. Add a changelog entry (see `CLAUDE.md`). Think about `highlights` for the what's-new sheet, because this is a visible change.
 
 ## Not shown in the mockups
 

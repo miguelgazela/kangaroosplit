@@ -31,7 +31,7 @@ body{margin:0}
           <div style="display: flex; align-items: baseline; gap: 2px; font-size: 44px; line-height: 52px; font-weight: 700; letter-spacing: -0.8px; font-variant-numeric: tabular-nums">
             <span id="valor">{{v.amountMain}}</span>
             <sc-if value="{{keypad}}" hint-placeholder-val="{{ false }}"><span aria-hidden="true" style="width: 2px; height: 40px; background: {{c.accent}}; align-self: center; margin: 0 2px"></span></sc-if>
-            <span style="color: {{c.text2}}; font-weight: 500">{{v.amountRest}}</span>
+            <span>{{v.amountRest}}</span>
           </div>
         </div>
         <div style="border-top: 0.5px solid {{c.sep}}; padding: 0 16px; height: 50px; display: flex; align-items: center">
