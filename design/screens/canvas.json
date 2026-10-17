@@ -363,6 +363,13 @@
       "w": 390,
       "x": 3290,
       "y": 3660
+    },
+    "Novidades.dc.html": {
+      "h": 844,
+      "title": "Novidades da versão",
+      "w": 390,
+      "x": 3760,
+      "y": 3660
     }
   },
   "createdOnFiles": {
@@ -408,7 +415,7 @@
     },
     "r4": {
       "kind": "title1",
-      "maxW": 3680,
+      "maxW": 4150,
       "text": "Sessão e estados do sistema",
       "w": 240,
       "x": 0,
@@ -486,6 +493,7 @@
     "Instalar.dc.html",
     "ConfirmarApagar.dc.html",
     "Toast.dc.html",
+    "Novidades.dc.html",
     "InicioEscuro.dc.html",
     "ListaEscuro.dc.html",
     "DespesaEscuro.dc.html",

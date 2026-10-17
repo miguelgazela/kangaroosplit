@@ -34,7 +34,7 @@ Several files are small wrappers that show a variant of a main file. The variant
 | 8 Estatísticas | `EstatisticasCalendario.dc.html` (full scrolled page, interactive; prop `day`, `full`) | `Estatisticas` (top of the page, no day selected), `EstatisticasPrevista` (15 Oct selected: future recurring expense) |
 | 9 Atividade | `Atividade.dc.html` (now a pushed screen, opened from the bell on Início) | — |
 | 10 Definições | `Definicoes.dc.html` | — (includes the profile photo upload) |
-| 11 System states | `Notificacoes`, `Instalar`, `ConfirmarApagar` (iOS action sheet), `Toast` | offline and loading: see Início |
+| 11 System states | `Notificacoes`, `Instalar`, `ConfirmarApagar` (iOS action sheet), `Toast`, `Novidades` (what's new after an update) | offline and loading: see Início |
 | Shared | `TabBar.dc.html` (tab bar + raised "+"), `Componentes.dc.html` (component sheet), `Icone.dc.html` (app icon) | |
 | Mascot | `Guru.dc.html` (the mascot component, prop `pose` = `normal` / `ola` / `vazio` / `sucesso` / `dormir`, prop `crop` for a head-only avatar), `Mascote.dc.html` (mascot sheet) | |
 | Comments and reactions | `DespesaDetalhe.dc.html` (expense detail sheet: summary, reactions, comment thread) | `DetalheVazio` (`variant="vazia"`), `DetalheAcoes` (long-press on own comment), `ReacaoRapida` (long-press on a list row), `DetalheEscuro` (`dark`). `Lista` and `Atividade` also changed. |
@@ -264,6 +264,50 @@ Do these in order. Each item points to its spec section in this file and to the 
 6. Add a changelog entry (see `CLAUDE.md`).
 
 Screenshots in `design/screenshots/` are not yet updated for these changes. The `.dc.html` files are the source of truth.
+
+## What's new sheet — Novidades
+
+Mockup: `Novidades.dc.html` (shown over Início). It tells the user about the new features after an update.
+
+**Layout** (same sheet style as `Notificacoes`: white, 32px radius, 8px from the screen edges, 38% black scrim):
+
+- **Close button** at the top right: 44×44 touch area, 30px grey circle (`fill`) with a × icon (secondary text colour). There is no "Continuar" button.
+- **Guru** (`sucesso` pose, 80px wide, about 96px high) with a **version badge** at its top right ("1.4.0", accent background, white text, 3px white border).
+- **Title:** "O que há de novo" (22px, bold, centred).
+- **Up to 3 rows:** a 40px icon tile (12px radius, soft colour + matching icon colour), a title (16px semibold) and one line of text (14px, secondary colour).
+- **"Ver todas as novidades"** text button (accent, 15px semibold, 44px high). It opens the Novidades screen (the `novidades` route, the existing `Changelog` screen) and closes the sheet.
+
+**Close:** the ×, a tap on the scrim and a swipe down all close the sheet.
+
+**When to show it:**
+
+- Show it one time only, on the first app open after the version changes. Store the last seen version on the device (for example in `localStorage` as `ks.lastSeenVersion`). Show the sheet when the newest changelog version is greater than the stored value, and then store the new version.
+- Do not show it on the first use: when there is no stored version, store the current version and show nothing.
+- Show it only when the newest entry has `highlights` (see below). Small fixes have no highlights, so no sheet shows.
+- Show it on Início only, after login. Do not show it over another sheet or over the notifications prompt. If both are pending, show Novidades first.
+- If the user skips several versions, look at all entries newer than the stored version and show the highlights of the newest one that has highlights.
+- The release that adds this sheet has no stored version yet on any phone, so the first-use rule applies and no sheet shows. The first sheet appears with the next release that has `highlights`.
+
+**Data:** add an optional `highlights` field to `ChangelogEntry` in `web/src/data/changelog.ts`:
+
+```ts
+highlights?: { title: string; text: string; icon: string; tone: 'accent' | 'teal' | 'orange' }[]  // max 3
+```
+
+`tone` picks the tile colours: accent `#EFEAFE` / `#5B3FD9`, teal `#E3F6F3` / `#0F6E63`, orange `#FFF1E6` / `#A3520F`. In dark mode, use the same hue at about 24% alpha on the dark surface. The copy is pt-PT and addresses the viewer as "tu". Keep `changes` as the full list for the Novidades screen.
+
+Mockup copy for 1.4.0 (you can use it as the first `highlights`):
+
+1. "Detalhes rápidos ao adicionar" — "Categoria, lista, data e quem pagou ficam logo por cima do teclado." (accent, plus icon)
+2. "Categorias com cor" — "Cada categoria aparece com a sua cor, como nas estatísticas." (teal, tag icon)
+3. "Recorrentes de cada lista" — "Vê as despesas recorrentes no cartão de saldo de cada lista." (orange, repeat icon)
+
+### To implement — what's new sheet
+
+1. Add `highlights` to `ChangelogEntry`. Add the 1.4.0 highlights below to the 1.4.0 entry, so the Novidades screen and future tests have real data.
+2. Make a `WhatsNewSheet` component that follows the mockup and the rules above.
+3. Show it from Início with the "last seen version" logic. Add tests for the version compare and for the first-use case.
+4. Add a changelog entry for this feature (see `CLAUDE.md`). That entry has no `highlights`, so the sheet does not show for it.
 
 ## Not shown in the mockups
 

@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="pt-PT">
+<head>
+<meta charset="utf-8">
+<title>Novidades da versão</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; position: relative; overflow: hidden; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', sans-serif; color: #111114">
+  <dc-import name="Main" hint-size="390px,844px"></dc-import>
+
+    <div style="position: absolute; inset: 0">
+      <div aria-hidden="true" style="position: absolute; inset: 0; background: rgba(0,0,0,0.38)"></div>
+      <div role="dialog" aria-labelledby="nov-a-title" style="position: absolute; left: 8px; right: 8px; bottom: 8px; border-radius: 32px; background: #FFFFFF; padding: 24px 20px 12px; display: flex; flex-direction: column; align-items: center; gap: 10px">
+        <button type="button" aria-label="Fechar" style="position: absolute; right: 10px; top: 10px; width: 44px; height: 44px; border: 0; background: transparent; display: flex; align-items: center; justify-content: center; cursor: pointer; padding: 0">
+          <span style="width: 30px; height: 30px; border-radius: 15px; background: #F2F2F7; color: #6B6B76; display: flex; align-items: center; justify-content: center">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"></path></svg>
+          </span>
+        </button>
+        <div style="width: 128px; height: 98px; position: relative; display: flex; align-items: flex-end; justify-content: center; margin-top: -6px">
+          <dc-import name="Guru" pose="sucesso" size="{{ 80 }}" hint-size="80px,96px"></dc-import>
+          <span style="position: absolute; right: -4px; top: 0; height: 28px; padding: 0 10px; border-radius: 14px; background: #6847F0; border: 3px solid #FFFFFF; color: #FFFFFF; font-size: 12px; font-weight: 700; display: flex; align-items: center; box-sizing: content-box">1.4.0</span>
+        </div>
+        <h2 id="nov-a-title" style="margin: 2px 0 0; font-size: 22px; font-weight: 700; text-align: center">O que há de novo</h2>
+        <div style="width: 100%; display: flex; flex-direction: column; gap: 4px; margin-top: 4px">
+          <sc-for list="{{items}}" as="it" hint-placeholder-count="3">
+            <div style="display: flex; gap: 12px; align-items: flex-start; padding: 8px 4px">
+              <span aria-hidden="true" style="width: 40px; height: 40px; border-radius: 12px; background: {{it.tile}}; color: {{it.fg}}; display: flex; align-items: center; justify-content: center; flex: none">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="{{it.icon}}"></path></svg>
+              </span>
+              <span style="flex: 1; display: flex; flex-direction: column; gap: 2px">
+                <span style="font-size: 16px; font-weight: 600">{{it.title}}</span>
+                <span style="font-size: 14px; line-height: 19px; color: #6B6B76">{{it.text}}</span>
+              </span>
+            </div>
+          </sc-for>
+        </div>
+        <div style="width: 100%; display: flex; flex-direction: column; margin-top: 2px">
+          <button type="button" style="height: 44px; border: 0; border-radius: 16px; background: transparent; color: #5B3FD9; font: inherit; font-size: 15px; font-weight: 600; cursor: pointer">Ver todas as novidades</button>
+        </div>
+      </div>
+    </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const items = [
+      { title: 'Detalhes rápidos ao adicionar', text: 'Categoria, lista, data e quem pagou ficam logo por cima do teclado.', tile: '#EFEAFE', fg: '#5B3FD9', icon: 'M12 5v14M5 12h14' },
+      { title: 'Categorias com cor', text: 'Cada categoria aparece com a sua cor, como nas estatísticas.', tile: '#E3F6F3', fg: '#0F6E63', icon: 'M20.6 13.4 13.4 20.6a2 2 0 0 1-2.8 0L3 13V3h10l7.6 7.6a2 2 0 0 1 0 2.8zM7.5 7.5h.01' },
+      { title: 'Recorrentes de cada lista', text: 'Vê as despesas recorrentes no cartão de saldo de cada lista.', tile: '#FFF1E6', fg: '#A3520F', icon: 'M17 2l4 4-4 4M3 11V9a3 3 0 0 1 3-3h15M7 22l-4-4 4-4M21 13v2a3 3 0 0 1-3 3H3' }
+    ];
+    return { items };
+  }
+}
+</script>
+</body>
+</html>
