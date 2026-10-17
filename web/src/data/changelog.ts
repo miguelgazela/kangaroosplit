@@ -22,26 +22,9 @@ export type ChangelogEntry = {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
-    version: '1.6.0',
+    version: '1.5.1',
     date: '2026-10-17',
-    changes: [
-      'Início com um cabeçalho grande com o saldo, que se move suavemente ao deslizar',
-      'Os valores aparecem sempre numa só cor, sem os cêntimos mais claros',
-    ],
-    highlights: [
-      {
-        title: 'Início renovado',
-        text: 'O saldo ocupa o topo do ecrã e acompanha o deslizar, com um efeito suave.',
-        icon: 'home',
-        tone: 'accent',
-      },
-      {
-        title: 'Valores mais claros',
-        text: 'Os montantes aparecem sempre numa só cor, com os cêntimos incluídos.',
-        icon: 'check',
-        tone: 'teal',
-      },
-    ],
+    changes: ['Os valores aparecem sempre numa só cor, sem os cêntimos mais claros'],
   },
   {
     version: '1.5.0',

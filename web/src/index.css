@@ -29,14 +29,6 @@
   --ks-teal-fg: #0f6e63;
   --ks-orange-bg: #fff1e6;
   --ks-orange-fg: #a3520f;
-  /* Início header: the profile colour as a gradient, or grey when offline. */
-  --ks-hero-from: color-mix(in oklab, var(--ks-brand) 78%, white);
-  --ks-hero-mid: var(--ks-brand);
-  --ks-hero-to: color-mix(in oklab, var(--ks-brand) 82%, black);
-  --ks-hero-off-from: #a8a8b2;
-  --ks-hero-off-to: #8e8e98;
-  --ks-sheet-shadow: 0 -8px 24px rgba(40, 20, 120, 0.12);
-  --ks-handle: #d5d5dc;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -58,13 +50,6 @@
     --ks-teal-fg: #5fd3c4;
     --ks-orange-bg: color-mix(in srgb, #e07020 24%, transparent);
     --ks-orange-fg: #ffb06b;
-    --ks-hero-from: color-mix(in oklab, var(--ks-brand) 86%, black);
-    --ks-hero-mid: color-mix(in oklab, var(--ks-brand) 72%, black);
-    --ks-hero-to: color-mix(in oklab, var(--ks-brand) 58%, black);
-    --ks-hero-off-from: #4a4a50;
-    --ks-hero-off-to: #3a3a3d;
-    --ks-sheet-shadow: 0 -8px 24px rgba(0, 0, 0, 0.5);
-    --ks-handle: #3a3a3c;
   }
 }
 
@@ -86,13 +71,6 @@
   --ks-teal-fg: #5fd3c4;
   --ks-orange-bg: color-mix(in srgb, #e07020 24%, transparent);
   --ks-orange-fg: #ffb06b;
-  --ks-hero-from: color-mix(in oklab, var(--ks-brand) 86%, black);
-  --ks-hero-mid: color-mix(in oklab, var(--ks-brand) 72%, black);
-  --ks-hero-to: color-mix(in oklab, var(--ks-brand) 58%, black);
-  --ks-hero-off-from: #4a4a50;
-  --ks-hero-off-to: #3a3a3d;
-  --ks-sheet-shadow: 0 -8px 24px rgba(0, 0, 0, 0.5);
-  --ks-handle: #3a3a3c;
 }
 
 @theme inline {
