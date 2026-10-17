@@ -23,7 +23,7 @@ import type {
   ShareInput,
 } from '../lib/database.types'
 import { todayISO } from '../lib/dates'
-import { formatAmountInput, formatDate, parseMoney, splitMoney } from '../lib/format'
+import { formatAmountInput, formatDate, formatMoney, parseMoney } from '../lib/format'
 import { OfflineError } from '../lib/online'
 import { ruleStatus } from '../lib/ruleStatus'
 import { descriptionHistory, knownCategory, suggestDescriptions, type Suggestion } from '../lib/suggest'
@@ -398,7 +398,6 @@ function ExpenseForm({
     )
   }
 
-  const { whole, rest } = splitMoney(amountCents)
 
   const author = (userId: string | null, own: (date: string) => string, other: (by: string, date: string) => string, at: string) => {
     const when = formatDate(new Date(at))
@@ -466,8 +465,7 @@ function ExpenseForm({
                 </>
               ) : (
                 <>
-                  <span>{whole}</span>
-                  <span className="font-medium text-text-2">{rest}</span>
+                  <span>{formatMoney(amountCents)}</span>
                 </>
               )}
             </span>

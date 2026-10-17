@@ -43,13 +43,6 @@ export function parseMoney(input: string): number | null {
   return Number(whole || '0') * 100 + Number(fraction)
 }
 
-// Splits "127,40 €" into "127" and ",40 €" so the cents can be dimmed.
-export function splitMoney(cents: number): { whole: string; rest: string } {
-  const formatted = formatMoney(cents)
-  const comma = formatted.lastIndexOf(',')
-  return { whole: formatted.slice(0, comma), rest: formatted.slice(comma) }
-}
-
 const MONTHS = [
   'janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho',
   'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro',

@@ -8,7 +8,7 @@ import { useToast } from '../components/ToastContext'
 import { t } from '../i18n/pt'
 import type { List, ListBalance, Member } from '../lib/database.types'
 import { todayISO } from '../lib/dates'
-import { formatAmountInput, formatMoney, parseMoney, splitMoney } from '../lib/format'
+import { formatAmountInput, formatMoney, parseMoney } from '../lib/format'
 import { OfflineError } from '../lib/online'
 import { nameForms } from '../lib/people'
 import { listBalance, overallBalance } from '../lib/stats'
@@ -121,7 +121,6 @@ function SettleForm({
   }
 
   const [from, to] = partnerPays ? [partner, me] : [me, partner]
-  const { whole, rest } = splitMoney(owed)
 
   return (
     <Sheet title={list ? t.balance.settleUp : t.balance.settleAll} onCancel={onClose}>
@@ -164,8 +163,7 @@ function SettleForm({
               </>
             ) : (
               <>
-                <span id="settle-amount">{whole}</span>
-                <span className="font-medium text-text-2">{rest}</span>
+                <span id="settle-amount">{formatMoney(owed)}</span>
               </>
             )}
           </div>

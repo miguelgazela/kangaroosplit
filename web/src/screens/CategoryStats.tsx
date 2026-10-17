@@ -3,7 +3,7 @@ import { BackLink } from '../components/BackLink'
 import { Screen } from '../components/Screen'
 import { TrendBars } from '../components/TrendBars'
 import { t } from '../i18n/pt'
-import { formatDayMonth, formatMoney, formatPercent, splitMoney } from '../lib/format'
+import { formatDayMonth, formatMoney, formatPercent } from '../lib/format'
 import { formatPeriod, isYear, readStatsParams, statsQuery, trendWindow } from '../lib/period'
 import { expensesInPeriod, filterExpenses, monthlyTrend, totalCents } from '../lib/stats'
 import { useIncremental } from '../lib/useIncremental'
@@ -43,7 +43,6 @@ export function CategoryStats() {
   // A month view still charts a year, so the trend has enough to show.
   const window = yearly ? trendWindow(period) : { endMonth: period, months: 12 }
   const trend = monthlyTrend(scoped, window.endMonth, window.months)
-  const { whole, rest } = splitMoney(total)
 
   return (
     <Screen gap={12}>
@@ -67,8 +66,7 @@ export function CategoryStats() {
       <section className="flex flex-col gap-3.5 rounded-card bg-surface p-4 shadow-card">
         <div className="flex flex-col">
           <span className="text-[32px] leading-10 font-bold tracking-[-0.5px] tabular-nums">
-            {whole}
-            <span className="text-text-2">{rest}</span>
+            {formatMoney(total)}
           </span>
           <span className="text-footnote text-text-2">
             {t.stats.expenses(inPeriod.length)}

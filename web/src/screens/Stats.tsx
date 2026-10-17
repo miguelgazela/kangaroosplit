@@ -11,7 +11,7 @@ import { TrendBars } from '../components/TrendBars'
 import { t } from '../i18n/pt'
 import { buildCalendar } from '../lib/calendar'
 import { todayISO } from '../lib/dates'
-import { formatMoney, formatPercent, splitMoney } from '../lib/format'
+import { formatMoney, formatPercent } from '../lib/format'
 import { nameForms } from '../lib/people'
 import {
   currentMonth,
@@ -64,7 +64,6 @@ export function Stats() {
   const trend = monthlyTrend(scoped, window.endMonth, window.months)
   const shares = sharesByUser(inPeriod)
   const byCategory = totalsByCategory(inPeriod)
-  const { whole, rest } = splitMoney(total)
   const change = previous > 0 ? (total - previous) / previous : null
   const months = elapsedMonths(period)
   const inScope = <T extends { list_id: string }>(rows: T[]) => (scopeList ? rows.filter((row) => row.list_id === scopeList.id) : rows)
@@ -126,8 +125,7 @@ export function Stats() {
           <div className="flex min-w-0 flex-1 flex-col">
             <span className="text-subhead text-text-2">{yearly ? t.stats.yearTotal : t.stats.monthTotal}</span>
             <span className="text-[32px] leading-10 font-bold tracking-[-0.5px] tabular-nums">
-              {whole}
-              <span className="text-text-2">{rest}</span>
+              {formatMoney(total)}
             </span>
             {yearly && total > 0 && months > 0 && (
               <span className="text-footnote text-text-2">
