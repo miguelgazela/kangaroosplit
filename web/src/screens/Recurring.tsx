@@ -1,3 +1,4 @@
+import { useSearchParams } from 'react-router-dom'
 import { BackLink } from '../components/BackLink'
 import { Guru } from '../components/Guru'
 import { Icon } from '../components/Icon'
@@ -20,6 +21,10 @@ export function Recurring() {
   const { data: lists } = useLists()
   const { data: categories } = useCategories()
   const setPaused = useSetRecurringPaused()
+  // Opened from a list: ?lista=<id> shows only that list's rules.
+  const [params, setParams] = useSearchParams()
+  const filterList = lists?.find((candidate) => candidate.id === params.get('lista'))
+  const shown = filterList ? rules?.filter((rule) => rule.list_id === filterList.id) : rules
 
   const resume = (id: string) =>
     setPaused.mutate(
@@ -33,7 +38,11 @@ export function Recurring() {
   return (
     <Screen gap={12}>
       <div className="-mx-2 flex h-11 items-center justify-between">
-        <BackLink to="/definicoes" label={t.tabs.settings} />
+        {filterList ? (
+          <BackLink to={`/lista/${filterList.id}`} label={filterList.name} />
+        ) : (
+          <BackLink to="/definicoes" label={t.tabs.settings} />
+        )}
         <button
           type="button"
           aria-label={t.recurring.create}
@@ -47,8 +56,19 @@ export function Recurring() {
         </button>
       </div>
       <h1 className="text-[30px] leading-9 font-bold">{t.recurring.title}</h1>
+      {filterList && (
+        <button
+          type="button"
+          aria-label={t.recurring.showAllLists}
+          onClick={() => setParams({}, { replace: true })}
+          className="-mt-1 flex h-9 flex-none items-center gap-1.5 self-start rounded-full bg-accent-soft pr-2.5 pl-3 text-subhead font-medium text-accent-text"
+        >
+          {filterList.icon} {filterList.name}
+          <Icon name="close" size={14} strokeWidth={2.6} />
+        </button>
+      )}
 
-      {rules && lists && categories && rules.length === 0 && (
+      {shown && lists && categories && shown.length === 0 && (
         <div className="flex flex-1 flex-col items-center justify-center gap-3.5 pb-[60px] text-center">
           <Guru pose="vazio" size={150} />
           <p className="text-headline font-semibold">{t.recurring.empty}</p>
@@ -65,10 +85,10 @@ export function Recurring() {
         </div>
       )}
 
-      {rules && lists && categories && rules.length > 0 && (
+      {shown && lists && categories && shown.length > 0 && (
         <>
           <div className="overflow-hidden rounded-card bg-surface shadow-card">
-            {rules.map((rule, index) => {
+            {shown.map((rule, index) => {
               const list = lists.find((candidate) => candidate.id === rule.list_id)
               const category = categories.find((candidate) => candidate.id === rule.category_id)
               const paused = rule.paused_at !== null

@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { useParams } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
 import { FilterSheet, type ListFilter } from '../sheets/FilterSheet'
 import { ActionSheet } from '../components/ActionSheet'
 import { BackLink } from '../components/BackLink'
@@ -31,6 +31,7 @@ import {
   useMembers,
   useReactions,
   useReads,
+  useRecurring,
   useSetExpenseDeleted,
   useSetListArchived,
   useSetReaction,
@@ -214,6 +215,7 @@ export function ListDetail({
   const { data: expenses } = useExpenses()
   const { data: settlements } = useSettlements()
   const { data: categories } = useCategories()
+  const { data: rules } = useRecurring()
   const { data: reactions } = useReactions()
   const { data: comments } = useComments()
   const { data: reads } = useReads()
@@ -304,6 +306,8 @@ export function ListDetail({
     me.user_id,
     todayISO(),
   )
+
+  const recurringCount = (rules ?? []).filter((rule) => rule.list_id === list.id).length
 
   const socialOf = (expense: ExpenseWithShares) =>
     socialFor(expense.id, me.user_id, reactions ?? [], comments ?? [], reads ?? [])
@@ -408,6 +412,21 @@ export function ListDetail({
             {t.lists.defaultSplit(split.join(' / '))} ({members.map((member) => member.display_name).join(' / ')})
           </span>
         </div>
+        <Link
+          to={`/recorrentes?lista=${list.id}`}
+          aria-label={t.recurring.inList(recurringCount)}
+          className="-mx-4 -mt-1.5 flex h-12 items-center gap-2.5 border-t-[0.5px] border-separator px-4"
+        >
+          <span
+            aria-hidden="true"
+            className="flex size-7 flex-none items-center justify-center rounded-lg bg-accent-soft text-accent-text"
+          >
+            <Icon name="repeat" size={16} strokeWidth={2.2} />
+          </span>
+          <span className="flex-1 text-subhead">{t.recurring.title}</span>
+          <span className="text-subhead text-text-2">{recurringCount}</span>
+          <Icon name="chevronRight" size={14} strokeWidth={2.5} className="flex-none text-text-2" />
+        </Link>
       </section>
 
       {hasRows && (

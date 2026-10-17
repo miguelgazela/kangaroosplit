@@ -8,6 +8,15 @@ export type ChangelogEntry = {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '1.4.0',
+    date: '2026-10-17',
+    changes: [
+      'Nova despesa: cartão com categoria, lista, data e quem pagou, tudo à vista com o teclado aberto',
+      'A categoria aparece com a sua cor',
+      'Despesas recorrentes de cada lista a partir do cartão da lista, com filtro por lista',
+    ],
+  },
+  {
     version: '1.3.0',
     date: '2026-10-17',
     changes: ['Início mostra as últimas despesas da lista principal, com acesso direto ao detalhe'],

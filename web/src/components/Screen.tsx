@@ -102,7 +102,7 @@ export function Screen({ children, gap = 16 }: { children: ReactNode; gap?: numb
       </div>
       <div ref={scroller} className="h-full overflow-x-hidden overflow-y-auto overscroll-y-contain">
       <div
-        className="flex min-h-full flex-col px-4 pt-[calc(env(safe-area-inset-top)+8px)] pb-[calc(env(safe-area-inset-bottom)+49px+38px)]"
+        className="flex min-h-full flex-col px-4 [&>*]:shrink-0 pt-[calc(env(safe-area-inset-top)+8px)] pb-[calc(env(safe-area-inset-bottom)+49px+38px)]"
         style={{
           gap,
           transform: pull ? `translateY(${pull}px)` : undefined,

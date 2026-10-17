@@ -31,7 +31,6 @@ import { nameForms } from '../lib/people'
 import { compressPhoto, removeReceipt, uploadReceipt } from '../lib/receipts'
 import {
   resolveSplit,
-  splitChip,
   splitFormFromDefaults,
   splitFormFromShares,
   splitSummary,
@@ -271,7 +270,11 @@ function ExpenseForm({
 
   const changeList = (id: string) => {
     setSelectedListId(id)
-    if (!splitTouched) setSplit(splitFormFromDefaults(members, defaultsFor(id)))
+    // From the quick view the split cannot be edited, so it always follows the list.
+    if (!splitTouched || keypad) {
+      setSplit(splitFormFromDefaults(members, defaultsFor(id)))
+      setSplitTouched(false)
+    }
   }
 
   const changeSplit = (next: SplitForm) => {
@@ -396,13 +399,48 @@ function ExpenseForm({
   }
 
   const { whole, rest } = splitMoney(amountCents)
-  const payerLabel = paidBy === me.user_id ? t.expense.paidByYou : t.expense.paidBy(nameForms(partner).by)
-  const chip = 'h-9 rounded-full bg-surface px-3 text-subhead'
 
   const author = (userId: string | null, own: (date: string) => string, other: (by: string, date: string) => string, at: string) => {
     const when = formatDate(new Date(at))
     return userId === me.user_id ? own(when) : other(nameForms(partner).by, when)
   }
+
+  // The same rows in the quick view (keypad open) and the full form.
+  const detailsCard = (
+    <div className="flex-none overflow-hidden rounded-card bg-surface">
+        <Row
+          label={t.expense.category}
+          value={`${category?.icon} ${category?.name}`}
+          tint={category?.color}
+          onClick={() => setPicker('category')}
+        />
+        <Row label={t.expense.list} value={`${list?.icon} ${list?.name}`} onClick={() => setPicker('list')} border />
+        {!recurring && (
+          <DateRow label={t.expense.date} value={date} onChange={(next) => next && setDate(next)} chevron border />
+        )}
+        <div className="flex h-14 items-center gap-2 border-t-[0.5px] border-separator pr-2 pl-4">
+          <span className="flex-1 text-body">{t.expense.payer}</span>
+          <div role="radiogroup" aria-label={t.expense.payer} className="flex rounded-xl bg-fill p-[3px]">
+            {members.map((member) => {
+              const active = member.user_id === paidBy
+              return (
+                <button
+                  key={member.user_id}
+                  type="button"
+                  role="radio"
+                  aria-checked={active}
+                  onClick={() => setPaidBy(member.user_id)}
+                  className={`flex h-10 items-center gap-1.5 rounded-[9px] pr-3 pl-1.5 text-subhead ${active ? 'bg-segment-on font-semibold shadow-[0_1px_3px_rgba(0,0,0,0.12)]' : 'font-medium'}`}
+                >
+                  <Avatar member={member} size={28} />
+                  {member.display_name}
+                </button>
+              )
+            })}
+          </div>
+        </div>
+      </div>
+  )
 
   return (
     <Sheet
@@ -477,33 +515,15 @@ function ExpenseForm({
 
         {keypad ? (
           <div className="flex flex-1 flex-col gap-3">
-            <div className="flex flex-wrap gap-2">
-              <button type="button" onClick={() => setPicker('category')} className={chip}>
-                {category?.icon} {category?.name}
-              </button>
-              <button type="button" onClick={() => setPicker('list')} className={chip}>
-                {list?.icon} {list?.name}
-              </button>
+            <div className="flex-none overflow-hidden rounded-card bg-surface">
+              {detailsCard}
               <button
                 type="button"
-                onClick={() => setPaidBy(paidBy === me.user_id ? partner.user_id : me.user_id)}
-                className={chip}
+                onClick={() => setKeypad(false)}
+                className="flex h-[46px] w-full items-center justify-center gap-2 border-t-[0.5px] border-separator bg-accent-soft/60 text-subhead font-medium text-accent-text"
               >
-                {payerLabel}
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  setKeypad(false)
-                  setExpanded(true)
-                }}
-                className={`${chip} tabular-nums`}
-              >
-                {splitChip(split, result)}
-              </button>
-              <button type="button" onClick={() => setKeypad(false)} className={`${chip} flex items-center gap-1 text-accent-text`}>
-                {recurring ? t.recurring.schedule : t.expense.moreOptions}
-                <Icon name="chevronDown" size={12} strokeWidth={2.8} />
+                <Icon name="plus" size={16} strokeWidth={2.4} />
+                {recurring ? t.recurring.schedule : t.expense.moreDetails}
               </button>
             </div>
             <div className="flex-1" />
@@ -514,7 +534,7 @@ function ExpenseForm({
                   type="button"
                   aria-label={key === 'back' ? t.expense.deleteDigit : key === ',' ? t.expense.decimalComma : key}
                   onClick={() => setAmount((current) => pressKey(current, key))}
-                  className="flex h-14 items-center justify-center rounded-button bg-surface text-[26px] font-medium active:bg-fill"
+                  className="flex h-[50px] items-center justify-center rounded-button bg-surface text-[26px] font-medium active:bg-fill"
                 >
                   {key === 'back' ? <Icon name="backspace" size={26} /> : key}
                 </button>
@@ -523,34 +543,7 @@ function ExpenseForm({
           </div>
         ) : (
           <>
-            <div className="flex-none overflow-hidden rounded-card bg-surface">
-              <Row label={t.expense.category} value={`${category?.icon} ${category?.name}`} onClick={() => setPicker('category')} />
-              <Row label={t.expense.list} value={`${list?.icon} ${list?.name}`} onClick={() => setPicker('list')} border />
-              {!recurring && (
-                <DateRow label={t.expense.date} value={date} onChange={(next) => next && setDate(next)} chevron border />
-              )}
-              <div className="flex h-14 items-center gap-2 border-t-[0.5px] border-separator pr-2 pl-4">
-                <span className="flex-1 text-body">{t.expense.payer}</span>
-                <div role="radiogroup" aria-label={t.expense.payer} className="flex rounded-xl bg-fill p-[3px]">
-                  {members.map((member) => {
-                    const active = member.user_id === paidBy
-                    return (
-                      <button
-                        key={member.user_id}
-                        type="button"
-                        role="radio"
-                        aria-checked={active}
-                        onClick={() => setPaidBy(member.user_id)}
-                        className={`flex h-10 items-center gap-1.5 rounded-[9px] pr-3 pl-1.5 text-subhead ${active ? 'bg-segment-on font-semibold shadow-[0_1px_3px_rgba(0,0,0,0.12)]' : 'font-medium'}`}
-                      >
-                        <Avatar member={member} size={28} />
-                        {member.display_name}
-                      </button>
-                    )
-                  })}
-                </div>
-              </div>
-            </div>
+            {detailsCard}
 
             {recurring && (
               <div className={`flex-none overflow-hidden rounded-card bg-surface ${scheduleInvalid ? 'ring-[1.5px] ring-danger ring-inset' : ''}`}>
@@ -729,7 +722,20 @@ function ExpenseForm({
   )
 }
 
-function Row({ label, value, onClick, border = false }: { label: string; value: string; onClick: () => void; border?: boolean }) {
+function Row({
+  label,
+  value,
+  onClick,
+  tint,
+  border = false,
+}: {
+  label: string
+  value: string
+  onClick: () => void
+  // A category colour for the value pill: tinted background and a ring.
+  tint?: string
+  border?: boolean
+}) {
   return (
     <button
       type="button"
@@ -737,7 +743,19 @@ function Row({ label, value, onClick, border = false }: { label: string; value: 
       className={`flex h-12 w-full items-center gap-2 pr-3 pl-4 text-left ${border ? 'border-t-[0.5px] border-separator' : ''}`}
     >
       <span className="flex-1 text-body">{label}</span>
-      <span className="truncate rounded-full bg-fill px-2.5 py-[5px] text-subhead">{value}</span>
+      <span
+        className="truncate rounded-full bg-fill px-2.5 py-[5px] text-subhead"
+        style={
+          tint
+            ? {
+                background: `color-mix(in srgb, ${tint} var(--ks-tint-bg), transparent)`,
+                boxShadow: `inset 0 0 0 1.5px color-mix(in srgb, ${tint} var(--ks-tint-ring), transparent)`,
+              }
+            : undefined
+        }
+      >
+        {value}
+      </span>
       <Icon name="chevronRight" size={14} strokeWidth={2.5} className="flex-none text-text-2" />
     </button>
   )

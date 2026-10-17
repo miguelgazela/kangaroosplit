@@ -67,7 +67,7 @@ export function StatsCalendar({
         <span className="text-footnote text-text-2">{t.stats.expenses(expenseCount)}</span>
       </div>
 
-      <div aria-hidden="true" className="grid grid-cols-7 pt-0.5 pb-1">
+      <div aria-hidden="true" className="grid grid-cols-7 gap-1.5 px-[3px] pt-0.5 pb-1">
         {t.stats.weekdays.map((weekday, index) => (
           <span key={index} className="text-center text-[11px] font-semibold text-text-2">
             {weekday}
@@ -75,7 +75,7 @@ export function StatsCalendar({
         ))}
       </div>
 
-      <div className="grid grid-cols-7 gap-1.5">
+      <div className="grid grid-cols-7 gap-1.5 px-[3px]">
         {Array.from({ length: blanks }, (_, index) => (
           <span key={`blank-${index}`} aria-hidden="true" />
         ))}

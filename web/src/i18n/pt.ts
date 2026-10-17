@@ -99,6 +99,7 @@ export const t = {
     editedByYou: (date: string) => `Editada por ti a ${date}`,
     editedBy: (by: string, date: string) => `Editada ${by} a ${date}`,
     moreOptions: 'Data e mais',
+    moreDetails: 'Mais detalhes · divisão, nota',
     duplicate: 'Duplicar',
     receipt: 'Recibo',
     addReceipt: 'Adicionar foto',
@@ -164,6 +165,8 @@ export const t = {
 
   recurring: {
     title: 'Despesas recorrentes',
+    showAllLists: 'Mostrar todas as listas',
+    inList: (count: number) => `Despesas recorrentes desta lista, ${count}`,
     create: 'Nova despesa recorrente',
     sheetTitle: 'Despesa recorrente',
     schedule: 'Frequência e datas',

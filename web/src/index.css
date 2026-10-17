@@ -22,6 +22,9 @@
   --ks-tab-off: #6b6b76;
   --ks-disabled: #c7c7ce;
   --ks-segment-on: #ffffff;
+  /* Strength of a category colour used as a background and as a ring. */
+  --ks-tint-bg: 14%;
+  --ks-tint-ring: 55%;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -37,6 +40,8 @@
     --ks-tab-off: #9a9aa3;
     --ks-disabled: #3a3a3d;
     --ks-segment-on: #636366;
+    --ks-tint-bg: 24%;
+    --ks-tint-ring: 70%;
   }
 }
 
@@ -52,6 +57,8 @@
   --ks-tab-off: #9a9aa3;
   --ks-disabled: #3a3a3d;
   --ks-segment-on: #636366;
+  --ks-tint-bg: 24%;
+  --ks-tint-ring: 70%;
 }
 
 @theme inline {
