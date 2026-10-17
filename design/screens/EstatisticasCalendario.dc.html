@@ -70,6 +70,29 @@ body{margin:0}
       </div>
     </section>
 
+    <section aria-label="Por categoria" style="border-radius: 20px; background: #FFFFFF; padding: 14px 16px 6px; display: flex; flex-direction: column; gap: 10px; flex: none">
+      <div style="display: flex; align-items: center; justify-content: space-between">
+        <h2 style="margin: 0; font-size: 17px; font-weight: 600">Por categoria</h2>
+        <span style="font-size: 13px; color: #6B6B76">6 categorias</span>
+      </div>
+      <div style="display: flex; height: 14px; border-radius: 4px; overflow: hidden; gap: 2px" role="img" aria-label="Distribuição por categoria">
+        <sc-for list="{{cats}}" as="k" hint-placeholder-count="6">
+          <span style="width: {{k.w}}; min-width: 3px; background: {{k.color}}"></span>
+        </sc-for>
+      </div>
+      <div style="display: flex; flex-direction: column">
+        <sc-for list="{{cats}}" as="k" hint-placeholder-count="6">
+          <div style="height: 42px; display: flex; align-items: center; gap: 10px; border-top: {{k.border}}">
+            <span style="width: 10px; height: 10px; border-radius: 3px; background: {{k.color}}; flex: none"></span>
+            <span style="font-size: 17px; width: 22px; text-align: center" aria-hidden="true">{{k.icon}}</span>
+            <span style="flex: 1; font-size: 15px">{{k.name}}</span>
+            <span style="font-size: 13px; color: #6B6B76; font-variant-numeric: tabular-nums; min-width: 48px; text-align: right">{{k.pct}}</span>
+            <span style="font-size: 15px; font-weight: 600; font-variant-numeric: tabular-nums; min-width: 86px; text-align: right">{{k.amount}}</span>
+          </div>
+        </sc-for>
+      </div>
+    </section>
+
     <section aria-label="Calendário de outubro" style="border-radius: 20px; background: #FFFFFF; padding: 12px 6px 10px; flex: none">
       <div style="display: flex; align-items: center; justify-content: space-between; padding: 0 10px 8px">
         <h2 style="margin: 0; font-size: 17px; font-weight: 600">Calendário</h2>
@@ -80,7 +103,7 @@ body{margin:0}
           <span style="text-align: center; font-size: 11px; font-weight: 600; color: #6B6B76">{{w}}</span>
         </sc-for>
       </div>
-      <div role="grid" style="display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 3px">
+      <div role="grid" style="display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 6px; padding: 0 3px">
         <sc-for list="{{cells}}" as="d" hint-placeholder-count="35">
           <button type="button" aria-label="{{d.aria}}" aria-pressed="{{d.pressed}}" disabled="{{d.blank}}" onClick="{{d.pick}}" style="position: relative; height: 52px; border: {{d.border}}; border-radius: 10px; background: {{d.bg}}; color: {{d.fg}}; box-shadow: {{d.ring}}; visibility: {{d.vis}}; font: inherit; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; padding: 0; cursor: pointer; box-sizing: border-box">
             <span style="min-width: 26px; height: 22px; padding: 0 4px; margin-bottom: -2px; box-sizing: border-box; border-radius: 11px; background: {{d.numBg}}; color: {{d.numFg}}; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: {{d.fw}}; line-height: 18px">{{d.n}}</span>
@@ -119,28 +142,6 @@ body{margin:0}
       </sc-if>
     </section>
 
-    <section aria-label="Por categoria" style="border-radius: 20px; background: #FFFFFF; padding: 14px 16px 6px; display: flex; flex-direction: column; gap: 10px; flex: none">
-      <div style="display: flex; align-items: center; justify-content: space-between">
-        <h2 style="margin: 0; font-size: 17px; font-weight: 600">Por categoria</h2>
-        <span style="font-size: 13px; color: #6B6B76">6 categorias</span>
-      </div>
-      <div style="display: flex; height: 14px; border-radius: 4px; overflow: hidden; gap: 2px" role="img" aria-label="Distribuição por categoria">
-        <sc-for list="{{cats}}" as="k" hint-placeholder-count="6">
-          <span style="width: {{k.w}}; min-width: 3px; background: {{k.color}}"></span>
-        </sc-for>
-      </div>
-      <div style="display: flex; flex-direction: column">
-        <sc-for list="{{cats}}" as="k" hint-placeholder-count="6">
-          <div style="height: 42px; display: flex; align-items: center; gap: 10px; border-top: {{k.border}}">
-            <span style="width: 10px; height: 10px; border-radius: 3px; background: {{k.color}}; flex: none"></span>
-            <span style="font-size: 17px; width: 22px; text-align: center" aria-hidden="true">{{k.icon}}</span>
-            <span style="flex: 1; font-size: 15px">{{k.name}}</span>
-            <span style="font-size: 13px; color: #6B6B76; font-variant-numeric: tabular-nums; min-width: 48px; text-align: right">{{k.pct}}</span>
-            <span style="font-size: 15px; font-weight: 600; font-variant-numeric: tabular-nums; min-width: 86px; text-align: right">{{k.amount}}</span>
-          </div>
-        </sc-for>
-      </div>
-    </section>
   </div>
 
   <div style="position: absolute; left: 0; bottom: 0; width: 390px; height: 100px">
@@ -156,7 +157,7 @@ class Component extends DCLogic {
     const sel = this.state.day !== undefined ? this.state.day : Number(this.props.day ?? 5);
     const today = 11;
     const fmt = (n) => { const p = n.toFixed(2).split('.'); return p[0].replace(/\B(?=(\d{3})+(?!\d))/g, '.') + ',' + p[1] + ' €'; };
-    const whole = (n) => String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g, '.') + ' €';
+    const whole = (n) => String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g, '.') + ' €'; // narrow no-break space
 
     const data = [['mai', 1380.20], ['jun', 1602.85], ['jul', 1295.40], ['ago', 2140.10], ['set', 1318.45], ['out', 1451.55]];
     const months = data.map(([label, v], i) => {
@@ -210,9 +211,9 @@ class Component extends DCLogic {
         amtOp: planned && !total ? 0.75 : 1,
         dots, bg: fills[lv], fg: lv === 4 ? '#FFFFFF' : '#111114', fw: d === today || isSel ? 700 : 500,
         border: planned && !total ? '1.5px dashed #6847F0' : '0',
-        numBg: isSel ? (lv === 4 ? '#FFFFFF' : '#111114') : 'transparent',
-        numFg: isSel ? (lv === 4 ? '#3B2799' : '#FFFFFF') : 'inherit',
-        ring: (d === today ? 'inset 0 0 0 1.5px #5B3FD9' : 'none'),
+        numBg: 'transparent',
+        numFg: 'inherit',
+        ring: isSel ? '0 0 0 2.5px #F59E0B' + (d === today ? ', inset 0 0 0 1.5px #5B3FD9' : '') : (d === today ? 'inset 0 0 0 1.5px #5B3FD9' : 'none'),
         pressed: isSel ? 'true' : 'false',
         aria: wd + ', ' + d + ' de outubro' + (d === today ? ' (hoje)' : '') + (total ? ', ' + fmt(total) : '') + (planned ? ', despesa recorrente prevista' : '') + (settle ? ', acerto de contas' : ''),
         pick: () => this.setState({ day: isSel ? 0 : d })

@@ -41,16 +41,35 @@ body{margin:0}
 
       <sc-if value="{{keypad}}" hint-placeholder-val="{{ false }}">
         <div style="display: flex; flex-direction: column; gap: 12px; flex: 1">
-          <div style="display: flex; flex-wrap: wrap; gap: 8px">
-            <button type="button" style="height: 36px; padding: 0 12px; border-radius: 999px; border: 0; background: {{c.card}}; color: {{c.text}}; font: inherit; font-size: 15px; cursor: pointer">🍽️ Restaurantes</button>
-            <button type="button" style="height: 36px; padding: 0 12px; border-radius: 999px; border: 0; background: {{c.card}}; color: {{c.text}}; font: inherit; font-size: 15px; cursor: pointer">🏠 Casa</button>
-            <button type="button" style="height: 36px; padding: 0 12px; border-radius: 999px; border: 0; background: {{c.card}}; color: {{c.text}}; font: inherit; font-size: 15px; cursor: pointer">Pago por ti</button>
-            <button type="button" style="height: 36px; padding: 0 12px; border-radius: 999px; border: 0; background: {{c.card}}; color: {{c.text}}; font: inherit; font-size: 15px; cursor: pointer">60 / 40</button>
+          <div style="border-radius: 20px; background: {{c.card}}; overflow: hidden; flex: none">
+            <sc-for list="{{v.rows}}" as="r" hint-placeholder-count="2">
+              <button type="button" style="width: 100%; height: 48px; border: 0; border-top: {{r.border}}; background: transparent; color: {{c.text}}; font: inherit; display: flex; align-items: center; gap: 8px; padding: 0 12px 0 16px; cursor: pointer; text-align: left">
+                <span style="flex: 1; font-size: 17px">{{r.label}}</span>
+                <span style="font-size: 15px; padding: 5px 10px; border-radius: 999px; background: {{r.pillBg}}; box-shadow: inset 0 0 0 1.5px {{r.pillRing}}">{{r.value}}</span>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="{{c.text2}}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"></path></svg>
+              </button>
+            </sc-for>
+            <div style="border-top: 0.5px solid {{c.sep}}; height: 56px; display: flex; align-items: center; gap: 8px; padding: 0 8px 0 16px">
+              <span style="flex: 1; font-size: 17px">Pago por</span>
+              <div role="radiogroup" aria-label="Pago por" style="display: flex; padding: 3px; border-radius: 12px; background: {{c.fill}}">
+                <sc-for list="{{payers}}" as="p" hint-placeholder-count="2">
+                  <button type="button" role="radio" aria-checked="{{p.on}}" onClick="{{p.pick}}" style="height: 40px; padding: 0 12px 0 6px; border: 0; border-radius: 9px; background: {{p.bg}}; box-shadow: {{p.shadow}}; color: {{c.text}}; font: inherit; font-size: 15px; font-weight: {{p.fw}}; display: flex; align-items: center; gap: 6px; cursor: pointer">
+                    <span style="width: 28px; height: 28px; border-radius: 14px; background: {{p.color}}; color: #FFFFFF; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center">{{p.ini}}</span>
+                    {{p.name}}
+                  </button>
+                </sc-for>
+              </div>
+            </div>
+            <button type="button" aria-label="Mais detalhes: divisão e nota" style="width: 100%; height: 46px; border: 0; border-top: 0.5px solid {{c.sep}}; background: {{c.moreBg}}; color: {{c.link}}; font: inherit; display: flex; align-items: center; justify-content: center; gap: 6px; padding: 0 16px; cursor: pointer">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 8v8M8 12h8"></path></svg>
+              <span style="font-size: 15px; font-weight: 600">Mais detalhes</span>
+              <span style="font-size: 13px; color: {{c.text2}}">· divisão, nota</span>
+            </button>
           </div>
           <div style="flex: 1"></div>
           <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px">
             <sc-for list="{{keys}}" as="k" hint-placeholder-count="12">
-              <button type="button" aria-label="{{k.aria}}" style="height: 56px; border: 0; border-radius: 14px; background: {{c.card}}; color: {{c.text}}; font: inherit; font-size: 26px; font-weight: 500; display: flex; align-items: center; justify-content: center; cursor: pointer">{{k.label}}</button>
+              <button type="button" aria-label="{{k.aria}}" style="height: 50px; border: 0; border-radius: 14px; background: {{c.card}}; color: {{c.text}}; font: inherit; font-size: 26px; font-weight: 500; display: flex; align-items: center; justify-content: center; cursor: pointer">{{k.label}}</button>
             </sc-for>
           </div>
         </div>
@@ -63,7 +82,7 @@ body{margin:0}
             <sc-for list="{{v.rows}}" as="r" hint-placeholder-count="3">
               <button type="button" style="width: 100%; height: 48px; border: 0; border-top: {{r.border}}; background: transparent; color: {{c.text}}; font: inherit; display: flex; align-items: center; gap: 8px; padding: 0 12px 0 16px; cursor: pointer; text-align: left">
                 <span style="flex: 1; font-size: 17px">{{r.label}}</span>
-                <span style="font-size: 15px; padding: 5px 10px; border-radius: 999px; background: {{c.fill}}">{{r.value}}</span>
+                <span style="font-size: 15px; padding: 5px 10px; border-radius: 999px; background: {{r.pillBg}}; box-shadow: inset 0 0 0 1.5px {{r.pillRing}}">{{r.value}}</span>
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="{{c.text2}}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"></path></svg>
               </button>
             </sc-for>
@@ -189,21 +208,21 @@ class Component extends DCLogic {
     const c = dark ? {
       bg: '#000000', card: '#1C1C1E', fill: '#2C2C2E', text: '#F5F5F7', text2: '#A1A1AA', sep: '#38383A',
       link: '#A893FF', accent: '#7B5CFA', ghost: '#1C1C1E', grabber: '#545458', segOn: '#636366', segShadow: 'none',
-      pos: '#3DD6A3', danger: '#FF6B5E', disabled: '#5A5A60'
+      pos: '#3DD6A3', danger: '#FF6B5E', disabled: '#5A5A60', text3: '#8E8E93', moreBg: '#211B36'
     } : {
       bg: '#F2F2F7', card: '#FFFFFF', fill: '#EEEEF3', text: '#111114', text2: '#6B6B76', sep: '#E6E6EC',
       link: '#5B3FD9', accent: '#6847F0', ghost: '#8E8E93', grabber: '#C7C7CC', segOn: '#FFFFFF', segShadow: '0 1px 3px rgba(0,0,0,0.12)',
-      pos: '#0B7A5C', danger: '#C42B1C', disabled: '#B4B4BC'
+      pos: '#0B7A5C', danger: '#C42B1C', disabled: '#B4B4BC', text3: '#8A8A94', moreBg: '#F8F6FF'
     };
     const fmt = (n) => {
       const parts = n.toFixed(2).split('.');
       return parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, '.') + ',' + parts[1] + ' €';
     };
     const V = {
-      nova: { title: 'Nova despesa', amount: 40, desc: 'Jantar na Tasca', cat: '🍽️ Restaurantes', date: 'Hoje', payer: 'mi', edit: false, recurring: false, showNote: true },
-      editar: { title: 'Editar despesa', amount: 40, desc: 'Passe Navegante', cat: '🚗 Transportes', date: '03/10/2026', payer: 'ma', edit: true, recurring: false, showNote: true,
+      nova: { title: 'Nova despesa', amount: 40, desc: 'Jantar na Tasca', cat: '🍽️ Restaurantes', catColor: '#1A9E8F', date: 'Hoje', payer: 'mi', edit: false, recurring: false, showNote: true },
+      editar: { title: 'Editar despesa', amount: 40, desc: 'Passe Navegante', cat: '🚗 Transportes', catColor: '#C99A06', date: '03/10/2026', payer: 'ma', edit: true, recurring: false, showNote: true,
         meta1: 'Criada pela Mara a 03/10/2026', meta2: 'Editada por ti a 04/10/2026', deleteLabel: 'Apagar despesa' },
-      recorrente: { title: 'Despesa recorrente', amount: 1150, desc: 'Renda', cat: '🏠 Renda', date: null, payer: 'mi', edit: true, recurring: true, showNote: false,
+      recorrente: { title: 'Despesa recorrente', amount: 1150, desc: 'Renda', cat: '🏠 Renda', catColor: '#6847F0', date: null, payer: 'mi', edit: true, recurring: true, showNote: false,
         meta1: 'Próxima: 01/11/2026', meta2: 'Criada por ti a 02/01/2026', deleteLabel: 'Apagar' }
     }[variant];
     const A = V.amount;
@@ -214,8 +233,12 @@ class Component extends DCLogic {
       amountRest: keypad ? '€' : ',' + amtStr.split(',')[1],
       desc: keypad ? '' : V.desc
     });
-    const rowsRaw = [{ label: 'Categoria', value: V.cat }, { label: 'Lista', value: '🏠 Casa' }];
-    if (V.date) rowsRaw.push({ label: 'Data', value: V.date });
+    const tint = (hex, a) => 'rgba(' + [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16)).join(', ') + ', ' + a + ')';
+    const rowsRaw = [
+      { label: 'Categoria', value: V.cat, pillBg: tint(V.catColor, dark ? 0.24 : 0.14), pillRing: tint(V.catColor, dark ? 0.7 : 0.55) },
+      { label: 'Lista', value: '🏠 Casa', pillBg: c.fill, pillRing: 'transparent' }
+    ];
+    if (V.date) rowsRaw.push({ label: 'Data', value: V.date, pillBg: c.fill, pillRing: 'transparent' });
     v.rows = rowsRaw.map((r, i) => Object.assign(r, { border: i === 0 ? 'none' : '0.5px solid ' + c.sep }));
 
     let a, b, inA, inB, suffix = '', status, invalid = false, summary;

@@ -14,14 +14,14 @@ body{margin:0}
 </helmet>
 <div style="width: 390px; height: 844px; position: relative; overflow: hidden; background: {{c.bg}}; color: {{c.text}}; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', sans-serif">
 
-  <div style="position: absolute; inset: 0; padding: 54px 16px 120px; box-sizing: border-box; display: flex; flex-direction: column; gap: 14px">
+  <div style="position: absolute; inset: 0; overflow-y: auto; scrollbar-width: none; padding: 54px 16px 120px; box-sizing: border-box; display: flex; flex-direction: column; gap: 14px">
 
     <div style="height: 44px; display: flex; align-items: center; justify-content: space-between; margin: 0 -8px">
       <a href="Main.dc.html" style="height: 44px; display: flex; align-items: center; gap: 2px; padding-right: 8px; color: {{c.link}}; text-decoration: none; font-size: 17px">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 5-7 7 7 7"></path></svg>
         Início
       </a>
-      <button type="button" aria-label="Opções da lista: editar, arquivar, despesas recorrentes" style="width: 44px; height: 44px; border: 0; background: transparent; display: flex; align-items: center; justify-content: center; cursor: pointer; padding: 0">
+      <button type="button" aria-label="Opções da lista: editar, arquivar" style="width: 44px; height: 44px; border: 0; background: transparent; display: flex; align-items: center; justify-content: center; cursor: pointer; padding: 0">
         <span style="width: 34px; height: 34px; border-radius: 17px; background: {{c.card}}; display: flex; align-items: center; justify-content: center; color: {{c.link}}">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="5" cy="12" r="2"></circle><circle cx="12" cy="12" r="2"></circle><circle cx="19" cy="12" r="2"></circle></svg>
         </span>
@@ -44,7 +44,7 @@ body{margin:0}
       </div>
     </sc-if>
 
-    <section aria-label="Saldo da lista" style="border-radius: 20px; background: {{c.card}}; box-shadow: {{c.shadow}}; padding: 16px; display: flex; flex-direction: column; gap: 12px">
+    <section aria-label="Saldo da lista" style="border-radius: 20px; background: {{c.card}}; box-shadow: {{c.shadow}}; padding: 16px 16px 4px; display: flex; flex-direction: column; gap: 12px; flex: none">
       <div style="display: flex; align-items: center; gap: 12px">
         <div style="flex: 1; display: flex; flex-direction: column; gap: 2px">
           <span style="font-size: 15px; color: {{c.text2}}">{{d.balLabel}}</span>
@@ -66,6 +66,14 @@ body{margin:0}
         <span style="display: flex; height: 6px; width: 48px; border-radius: 3px; overflow: hidden"><span style="width: {{d.splitA}}; background: #2563EB"></span><span style="flex: 1; background: #C0367A"></span></span>
         <span>{{d.splitText}}</span>
       </div>
+      <a href="Recorrentes.dc.html" aria-label="Despesas recorrentes desta lista, {{d.recCount}}" style="margin: -6px -16px 0; padding: 0 16px; border-top: 0.5px solid {{c.sep}}; height: 48px; display: flex; align-items: center; gap: 10px; color: inherit; text-decoration: none">
+        <span aria-hidden="true" style="width: 28px; height: 28px; border-radius: 8px; background: {{c.accentSoft}}; color: {{c.link}}; display: flex; align-items: center; justify-content: center; flex: none">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 2l4 4-4 4M3 11V9a3 3 0 0 1 3-3h15M7 22l-4-4 4-4M21 13v2a3 3 0 0 1-3 3H3"></path></svg>
+        </span>
+        <span style="flex: 1; font-size: 15px">Despesas recorrentes</span>
+        <span style="font-size: 15px; color: {{c.text2}}">{{d.recCount}}</span>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="{{c.text2}}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"></path></svg>
+      </a>
     </section>
 
     <div style="display: flex; gap: 8px">
@@ -195,11 +203,11 @@ class Component extends DCLogic {
     if (variant === 'vazia') {
       d = { icon: '🎄', name: 'Natal 2026', sub: '20/12 – 26/12/2026', archived: false, empty: true,
         balLabel: 'Estão quites', balAmount: '0,00 €', balColor: c.text2, owed: false, settled: true, canSettle: false,
-        splitA: '50%', splitText: 'Divisão predefinida: 50 / 50', months: [] };
+        splitA: '50%', splitText: 'Divisão predefinida: 50 / 50', recCount: '0', months: [] };
     } else if (variant === 'arquivada') {
       d = { icon: '🏕️', name: 'Gerês', sub: '14/06 – 16/06/2026', archived: true, empty: false,
         balLabel: 'Estão quites', balAmount: '0,00 €', balColor: c.text2, owed: false, settled: true, canSettle: false,
-        splitA: '50%', splitText: 'Divisão predefinida: 50 / 50',
+        splitA: '50%', splitText: 'Divisão predefinida: 50 / 50', recCount: '0',
         months: [{ label: 'Junho 2026', total: '222,60 €', rows: sepd([
           settle('A Mara pagou-te', '18 jun', '68,70 €'),
           exp('🛒', 'Pingo Doce', '15 jun', false, '42,60 €', '21,30 €'),
@@ -208,7 +216,7 @@ class Component extends DCLogic {
     } else {
       d = { icon: '🏠', name: 'Casa', sub: 'Lista principal', archived: false, empty: false,
         balLabel: 'A Mara deve-te', balAmount: '84,90 €', balColor: c.pos, owed: true, settled: false, canSettle: true,
-        splitA: '60%', splitText: 'Divisão predefinida: 60 / 40 (Miguel / Mara)',
+        splitA: '60%', splitText: 'Divisão predefinida: 60 / 40 (Miguel / Mara)', recCount: '5',
         months: [
           { label: 'Outubro 2026', total: '1.411,55 €', rows: sepd([
             exp('🛒', 'Continente', '10 out', true, '86,35 €', '34,54 €'),

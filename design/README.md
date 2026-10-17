@@ -26,8 +26,8 @@ Several files are small wrappers that show a variant of a main file. The variant
 |---|---|---|
 | 1 Login | `Login.dc.html` | `LoginErro` (prop `error`) |
 | 2 Início | `Main.dc.html` | `InicioOffline` (`offline`), `InicioLoading` (`loading`), `InicioEscuro` (`dark`) |
-| 3 List detail | `Lista.dc.html` | `ListaVazia` (`variant="vazia"`), `ListaArquivada` (`variant="arquivada"`), `ListaEscuro` (`dark`) |
-| 4 Add / edit expense (sheet) | `Despesa.dc.html` | `DespesaTeclado` (on open, keypad), `DespesaIgual`, `DespesaPercentagem`, `DespesaExatoErro` (validation error), `DespesaPartes`, `DespesaEditar` (`variant="editar"`), `DespesaRecorrente` (`variant="recorrente"`), `DespesaEscuro` (`dark`) |
+| 3 List detail | `Lista.dc.html` (balance card has the "Despesas recorrentes" row) | `ListaVazia` (`variant="vazia"`), `ListaArquivada` (`variant="arquivada"`), `ListaEscuro` (`dark`) |
+| 4 Add / edit expense (sheet) | `Despesa.dc.html` | `DespesaTeclado` (on open, keypad + quick details card), `DespesaIgual`, `DespesaPercentagem`, `DespesaExatoErro` (validation error), `DespesaPartes`, `DespesaEditar` (`variant="editar"`), `DespesaRecorrente` (`variant="recorrente"`), `DespesaEscuro` (`dark`) |
 | 5 Settle up (sheet) | `Acerto.dc.html` | `AcertarTudo` (`variant="tudo"`), `AcertoSucesso` (`variant="sucesso"`) |
 | 6 Create / edit list (sheet) | `NovaLista.dc.html` | `EditarLista` (`edit`) |
 | 7 Recurring expenses | `Recorrentes.dc.html` | `RecorrentesVazio` (`empty`); the editor is `DespesaRecorrente` |
@@ -58,7 +58,7 @@ Several files are small wrappers that show a variant of a main file. The variant
 ### Add-expense sheet
 - iOS sheet header: "Cancelar" (left), title (centre), "Guardar" (right). There is no Save button at the bottom, because the keyboard would hide it. "Guardar" is disabled while the split is invalid.
 - The amount field uses an **in-app numeric keypad** with a "," key (`DespesaTeclado`), not the system keyboard. The iOS decimal keypad shows "," or "." depending on the phone's region setting. Also accept both "," and "." when parsing.
-- On open, the sheet shows amount, description, quick chips (category, list, payer, split) and the keypad, so the user can save after amount, description and one tap. Closing the keypad shows the full form.
+- On open, the sheet shows amount, description, a **quick details card** (see "Add expense — quick details card" below) and the keypad, so the user can save after amount, description and one tap. Closing the keypad shows the full form.
 - The split row is collapsed by default ("60 / 40 · 24,00 € / 16,00 €"). Tapping it expands the editor with three modes: Igual, Percentagem, Valor exato. The "Partes" mode was removed from the app; ignore `DespesaPartes` and the "Partes" segment in the mockups.
 
 ### Sample data correction
@@ -213,6 +213,57 @@ Title + list filter ("Todas as listas") · month selector · "Total do mês" ove
 - Tap a row to open the expense detail (`DespesaDetalhe`).
 - Tap the card header (name, split, balance) or "Ver todas" to open the Casa list (`Lista`). The header has no chevron.
 - If the list has fewer than 3 expenses, show only the ones that exist. If it has none, hide the label and the "Ver todas" link.
+
+## Add expense — quick details card
+
+Replaces the old quick chips on `DespesaTeclado` (keypad open). The chips confused users, and the payer chip changed width ("Pago por ti" → "Pago pela Mara") and wrapped to a new line.
+
+Order of the sheet when the keypad is open: amount card → quick details card → flexible space → keypad.
+
+The quick details card is one white card (20px radius). It uses **the same rows, in the same order and with the same look as the full form**, so the two views feel like one form:
+
+1. **Categoria** row (48px): label left (17px), value in a grey pill (`fill`, 15px, padding 5px 10px), chevron (14px, secondary colour). Opens the category picker.
+2. **Lista** row (48px): same style, for example "🏠 Casa". Opens the list picker.
+3. **Data** row (48px): same style, default "Hoje". Opens the date picker.
+4. **Pago por** row (56px): the same segmented control as the full form, with avatar (28px) and first name ("Miguel" / "Mara") in each segment. Both names are always visible, so a tap only moves the white selection and the layout never moves. Default: the viewer.
+5. **Mais detalhes · divisão, nota** button (46px): full width, background `#F8F6FF` (dark `#211B36`), accent text, ⊕ icon. Closes the keypad and shows the full form.
+
+**Category colour:** the Categoria pill (quick card and full form) uses the category's own colour (`categories.color`; the mockup uses the chart colours in `--ks-cat-*`): background = colour at 14% opacity (dark: 24%), inset 1.5px ring = colour at 55% (dark: 70%), text stays the normal text colour for contrast. The Lista and Data pills stay grey (`fill`).
+
+**Divisão is not in the quick card.** Most expenses use the list's default split, so the split is only on the full form ("Mais detalhes"). An expense saved from the quick view uses the default split of the selected list. If the user changes the list, the split follows that list's default.
+
+Keypad keys are **50px** high (were 56px) so everything fits on a 390×844 screen.
+
+## Lista — recurring expenses entry
+
+The balance card on `Lista` has a **"Despesas recorrentes"** row below the default split line: icon tile, label, count of recurring expenses in this list, and a chevron. It opens `Recorrentes`, filtered to this list. "Despesas recorrentes" is no longer in the ⋯ menu.
+
+## Scrolling screens
+
+`Main` and `Lista` scroll vertically under the tab bar. Cards in a scrolling column must not shrink (`flex: none` / `flex-shrink: 0`). If they can shrink, `overflow: hidden` cards collapse (the Saldo total card collapsed when the Casa card got taller).
+
+## To implement — design changes of 17 Oct 2026
+
+Do these in order. Each item points to its spec section in this file and to the mockup.
+
+1. **Quick details card on the new-expense sheet** (`web/src/sheets/ExpenseSheet.tsx`, keypad mode).
+   Mockup: `DespesaTeclado` (light) and `Despesa` with `keypad` + `dark`. Spec: "Add expense — quick details card".
+   - Remove the row of chips (category, list, payer, split, "Mais"). Remove the split chip (`splitChip`) from keypad mode.
+   - Add one card with the rows Categoria, Lista, Data and Pago por. Use the same row component as the full form, so both views look the same.
+   - Add the "Mais detalhes · divisão, nota" button at the bottom of the card. It does `setKeypad(false)`.
+   - Make the keypad keys 50px high.
+   - When the list changes, set the split to that list's default split. Saving from keypad mode uses that split.
+2. **Category colour on the Categoria pill** (quick card and full form). Spec: "Category colour".
+   Use `categories.color`: background 14% alpha (24% dark), inset 1.5px ring 55% alpha (70% dark), normal text colour.
+3. **"Despesas recorrentes" row on the list balance card** (`web/src/screens/ListDetail.tsx`). Mockup: `Lista`. Spec: "Lista — recurring expenses entry".
+   - Show the row below the default split line, with the count of recurring expenses in this list (active and paused).
+   - It opens `recorrentes` filtered to this list. Add a list filter to `Recurring` (for example `recorrentes?lista=<id>`). Show the list name in the title or as a removable filter chip, so the user can see all lists again.
+   - Remove "Despesas recorrentes" from the list's ⋯ menu.
+4. **Scrolling and no collapsing cards** on Início and Lista. Spec: "Scrolling screens". Cards in a scrolling column use `shrink-0`. Check Início with 3 recent expenses on a 390×844 screen: the "Saldo total" card must keep its full height.
+5. **Check Estatísticas against the mockup.** `Estatisticas` and `EstatisticasCalendario` were out of date in this folder until now. The order is: Total do mês → Por categoria → Calendário. Spec: "Statistics — calendar".
+6. Add a changelog entry (see `CLAUDE.md`).
+
+Screenshots in `design/screenshots/` are not yet updated for these changes. The `.dc.html` files are the source of truth.
 
 ## Not shown in the mockups
 
