@@ -1,5 +1,6 @@
 // Stroke icons taken from the mockups (24 × 24 grid).
 const paths = {
+  tag: 'M20.6 13.4 13.4 20.6a2 2 0 0 1-2.8 0L3 13V3h10l7.6 7.6a2 2 0 0 1 0 2.8zM7.5 7.5h.01',
   home: 'M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z',
   activity: 'M12 3a9 9 0 1 0 0 18a9 9 0 1 0 0-18M12 7v5l3 2',
   stats: 'M5 20V12M12 20V5M19 20v-9M3 20h18',

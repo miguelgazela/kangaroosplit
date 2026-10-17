@@ -4,6 +4,7 @@ import { Avatar } from '../components/Avatar'
 import { BalanceAmount } from '../components/Balance'
 import { Icon } from '../components/Icon'
 import { Screen } from '../components/Screen'
+import { WhatsNewSheet } from '../components/WhatsNewSheet'
 import { t } from '../i18n/pt'
 import type { List, Member } from '../lib/database.types'
 import { formatDateRange, formatDayMonth, formatMoney, splitMoney } from '../lib/format'
@@ -331,6 +332,7 @@ export function Home({ onSettleAll, onNewList }: { onSettleAll: () => void; onNe
           )}
         </div>
       )}
+      <WhatsNewSheet />
     </Screen>
   )
 }

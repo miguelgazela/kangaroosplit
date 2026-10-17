@@ -4,6 +4,7 @@ import { useOnline } from '../lib/online'
 import { nameForms } from '../lib/people'
 import { isStandalone, readFlag, writeFlag } from '../lib/platform'
 import { usePush } from '../lib/usePush'
+import { useWhatsNew } from '../lib/whatsNew'
 import { useCurrentMember } from '../query/hooks'
 import { Guru } from './Guru'
 import { Icon } from './Icon'
@@ -19,8 +20,10 @@ export function NotificationPrompt() {
   const { partner } = useCurrentMember()
   const { state, busy, enable } = usePush()
   const [dismissed, setDismissed] = useState(() => readFlag(DISMISSED_KEY))
+  // What's new goes first; this follows once it is closed.
+  const { pending: whatsNew } = useWhatsNew()
 
-  if (!partner || !online || !isStandalone() || state !== 'off' || dismissed) return null
+  if (!partner || !online || !isStandalone() || state !== 'off' || dismissed || whatsNew) return null
 
   const close = () => {
     writeFlag(DISMISSED_KEY)

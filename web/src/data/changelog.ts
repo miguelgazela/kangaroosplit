@@ -1,12 +1,34 @@
+import type { IconName } from '../components/Icon'
+
 // What was added to the app, newest first. The first entry is the version the
 // Definições screen shows, so add an entry here with every push.
+// Add `highlights` to an entry whose changes users should hear about: they
+// make up the "what's new" sheet shown once after an update.
+export type Highlight = {
+  title: string
+  text: string
+  icon: IconName
+  tone: 'accent' | 'teal' | 'orange'
+}
+
 export type ChangelogEntry = {
   version: string
   date: string
   changes: string[]
+  // Up to three things worth showing in the "what's new" sheet after an update.
+  // Small fixes leave this out, so they show no sheet.
+  highlights?: Highlight[]
 }
 
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '1.5.0',
+    date: '2026-10-17',
+    changes: [
+      'Depois de uma atualização, uma folha mostra as novidades da versão',
+      'A cor escolhida por ti já aparece logo ao abrir a app',
+    ],
+  },
   {
     version: '1.4.0',
     date: '2026-10-17',
@@ -14,6 +36,26 @@ export const CHANGELOG: ChangelogEntry[] = [
       'Nova despesa: cartão com categoria, lista, data e quem pagou, tudo à vista com o teclado aberto',
       'A categoria aparece com a sua cor',
       'Despesas recorrentes de cada lista a partir do cartão da lista, com filtro por lista',
+    ],
+    highlights: [
+      {
+        title: 'Detalhes rápidos ao adicionar',
+        text: 'Categoria, lista, data e quem pagou ficam logo por cima do teclado.',
+        icon: 'plus',
+        tone: 'accent',
+      },
+      {
+        title: 'Categorias com cor',
+        text: 'Cada categoria aparece com a sua cor, como nas estatísticas.',
+        icon: 'tag',
+        tone: 'teal',
+      },
+      {
+        title: 'Recorrentes de cada lista',
+        text: 'Vê as despesas recorrentes no cartão de saldo de cada lista.',
+        icon: 'repeat',
+        tone: 'orange',
+      },
     ],
   },
   {

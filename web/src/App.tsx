@@ -86,9 +86,11 @@ function Content() {
   const { status, me } = useCurrentMember()
 
   // Accents take the signed-in person's colour; signing out restores the default.
-  const brand = session ? me?.color : null
+  // While the session is still being read at launch there is no session yet,
+  // which must not look like signing out and wipe the cached colour.
+  const brand = loading ? undefined : session ? me?.color : null
   useEffect(() => {
-    // Undefined: signed in but profile not loaded yet, so keep the cached colour.
+    // Undefined: not known yet (session or profile loading), so keep the cached colour.
     if (brand !== undefined) applyBrand(brand)
   }, [brand])
 

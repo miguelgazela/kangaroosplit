@@ -295,6 +295,12 @@ export const t = {
     settledAria: 'acerto de contas',
   },
 
+  whatsNew: {
+    title: 'O que há de novo',
+    close: 'Fechar',
+    seeAll: 'Ver todas as novidades',
+  },
+
   settings: {
     profile: 'Perfil',
     name: 'Nome',

@@ -25,6 +25,10 @@
   /* Strength of a category colour used as a background and as a ring. */
   --ks-tint-bg: 14%;
   --ks-tint-ring: 55%;
+  --ks-teal-bg: #e3f6f3;
+  --ks-teal-fg: #0f6e63;
+  --ks-orange-bg: #fff1e6;
+  --ks-orange-fg: #a3520f;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -42,6 +46,10 @@
     --ks-segment-on: #636366;
     --ks-tint-bg: 24%;
     --ks-tint-ring: 70%;
+    --ks-teal-bg: color-mix(in srgb, #1a9e8f 24%, transparent);
+    --ks-teal-fg: #5fd3c4;
+    --ks-orange-bg: color-mix(in srgb, #e07020 24%, transparent);
+    --ks-orange-fg: #ffb06b;
   }
 }
 
@@ -59,6 +67,10 @@
   --ks-segment-on: #636366;
   --ks-tint-bg: 24%;
   --ks-tint-ring: 70%;
+  --ks-teal-bg: color-mix(in srgb, #1a9e8f 24%, transparent);
+  --ks-teal-fg: #5fd3c4;
+  --ks-orange-bg: color-mix(in srgb, #e07020 24%, transparent);
+  --ks-orange-fg: #ffb06b;
 }
 
 @theme inline {
