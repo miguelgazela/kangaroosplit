@@ -26,7 +26,7 @@ import { todayISO } from '../lib/dates'
 import { formatAmountInput, formatDate, formatMoney, parseMoney } from '../lib/format'
 import { OfflineError } from '../lib/online'
 import { ruleStatus } from '../lib/ruleStatus'
-import { descriptionHistory, knownCategory, suggestDescriptions, type Suggestion } from '../lib/suggest'
+import { descriptionHistory, knownCategory, suggestDescriptions, topForCategory, type Suggestion } from '../lib/suggest'
 import { nameForms } from '../lib/people'
 import { compressPhoto, removeReceipt, uploadReceipt } from '../lib/receipts'
 import {
@@ -124,6 +124,7 @@ export function ExpenseSheet(props: ExpenseSheetProps) {
       categories={categories}
       defaultShares={defaultShares}
       history={history}
+      expenses={expenses ?? []}
     />
   )
 }
@@ -142,6 +143,7 @@ function ExpenseForm({
   categories,
   defaultShares,
   history,
+  expenses: allExpenses,
 }: ExpenseSheetProps & {
   me: Member
   partner: Member
@@ -150,6 +152,7 @@ function ExpenseForm({
   categories: Category[]
   defaultShares: ListDefaultShare[]
   history: Suggestion[]
+  expenses: ExpenseWithShares[]
 }) {
   const queryClient = useQueryClient()
   const toast = useToast()
@@ -248,7 +251,13 @@ function ExpenseForm({
     uploading || save.isPending || setDeleted.isPending || createRule.isPending || updateRule.isPending || setRulePaused.isPending || deleteRule.isPending
   const canSave = amountCents > 0 && description.trim() !== '' && result.ok && !scheduleInvalid && !pending
 
-  const suggestions = describing ? suggestDescriptions(history, description) : []
+  // Nothing typed yet: the descriptions this category is most used with, which
+  // follow the category as it changes. Once there is text, what matches it.
+  const typedNothing = description.trim() === ''
+  const suggestions = useMemo(
+    () => (typedNothing ? topForCategory(allExpenses, categoryId) : describing ? suggestDescriptions(history, description) : []),
+    [typedNothing, allExpenses, categoryId, describing, history, description],
+  )
   const isSelectable = (id: string) => selectableCategories.some((candidate) => candidate.id === id)
 
   const changeDescription = (value: string) => {
@@ -488,7 +497,7 @@ function ExpenseForm({
             <div
               role="listbox"
               aria-label={t.expense.suggestions}
-              className="flex gap-2 overflow-x-auto border-t-[0.5px] border-separator px-4 py-2.5"
+              className="flex gap-2 overflow-x-auto border-t-[0.5px] border-separator px-4 py-2.5 [scrollbar-width:none]"
             >
               {suggestions.map((suggestion) => {
                 const usual = categories.find((candidate) => candidate.id === suggestion.categoryId)

@@ -31,6 +31,23 @@ export function descriptionHistory(expenses: ExpenseWithShares[]): Suggestion[] 
   }))
 }
 
+// The descriptions most often filed under one category, most used first; on a
+// tie the most recent one wins. For offering something before anything is
+// typed. Expects expenses newest first, like `descriptionHistory`.
+export function topForCategory(expenses: ExpenseWithShares[], categoryId: string, limit = 3): Suggestion[] {
+  const groups = new Map<string, Suggestion>()
+  for (const expense of expenses) {
+    if (expense.category_id !== categoryId) continue
+    const key = normalize(expense.description.trim())
+    if (key === '') continue
+    const group = groups.get(key)
+    if (group) group.count += 1
+    else groups.set(key, { description: expense.description.trim(), categoryId, count: 1 })
+  }
+  // Map keeps first-seen (newest) order and the sort is stable, so ties stay newest first.
+  return [...groups.values()].sort((a, b) => b.count - a.count).slice(0, limit)
+}
+
 // Past descriptions matching what has been typed: those starting with it
 // first, then those containing it, most used first. Empty when nothing is
 // typed, or when the only match is exactly what is already there.

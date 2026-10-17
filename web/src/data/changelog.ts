@@ -22,6 +22,22 @@ export type ChangelogEntry = {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '1.6.0',
+    date: '2026-10-17',
+    changes: [
+      'Nova despesa sugere logo as três descrições mais usadas na categoria escolhida',
+      'As sugestões mudam com a categoria e, se começares a escrever, passam a seguir o que escreves',
+    ],
+    highlights: [
+      {
+        title: 'Sugestões logo ao abrir',
+        text: 'Ao adicionar uma despesa vês as três descrições que mais usas na categoria, e podes mudar de categoria para ver outras.',
+        icon: 'plus',
+        tone: 'accent',
+      },
+    ],
+  },
+  {
     version: '1.5.1',
     date: '2026-10-17',
     changes: ['Os valores aparecem sempre numa só cor, sem os cêntimos mais claros'],
