@@ -12,7 +12,8 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.svg', 'icons/apple-touch-icon.png'],
       // Push and notification-click handlers live in public/push-sw.js.
-      workbox: { importScripts: ['push-sw.js'] },
+      // The Guru images are cached too, so the offline screen can show him.
+      workbox: { importScripts: ['push-sw.js'], globPatterns: ['**/*.{js,css,html,webp}'] },
       manifest: {
         name: 'KangarooSplit',
         short_name: 'KangarooSplit',

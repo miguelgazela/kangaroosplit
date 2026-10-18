@@ -22,6 +22,22 @@ export type ChangelogEntry = {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '1.7.0',
+    date: '2026-10-18',
+    changes: [
+      'O Guru ganhou um novo visual em 3D, com o lenço roxo ao pescoço',
+      'Aparece assim a acenar, a espreitar a bolsa vazia, a saltar de alegria e a dormir',
+    ],
+    highlights: [
+      {
+        title: 'O Guru está mais fofo',
+        text: 'Agora é um canguru em 3D, com o lenço ao pescoço. Vais encontrá-lo nos ecrãs vazios, ao acertar contas e quando estás sem ligação.',
+        icon: 'heart',
+        tone: 'accent',
+      },
+    ],
+  },
+  {
     version: '1.6.0',
     date: '2026-10-17',
     changes: [

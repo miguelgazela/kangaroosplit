@@ -1,6 +1,10 @@
 // Guru, the mascot: a kangaroo with a pouch of coins ("canGURU"). Shown only
 // at special moments (empty states, success, welcome, no connection), never on
 // working screens. See design/README.md.
+//
+// The four poses the app uses are 3D renders (transparent WebP in
+// public/guru). `normal` and the head-only `crop` avatar are still the flat
+// vector drawing below.
 
 type Pose = 'normal' | 'ola' | 'vazio' | 'sucesso' | 'dormir'
 
@@ -16,6 +20,10 @@ type PoseParts = {
   jump?: boolean
   zzz?: boolean
 }
+
+type PhotoPose = 'ola' | 'vazio' | 'sucesso' | 'dormir'
+
+const PHOTO_POSES: readonly Pose[] = ['ola', 'vazio', 'sucesso', 'dormir']
 
 const POSES: Record<Pose, PoseParts> = {
   normal: { label: 'Guru, o canguru, com moedas na bolsa', coins: true, left: 'hold', right: 'hold', eyes: 'open', mouth: 'smile' },
@@ -34,7 +42,9 @@ const EAR_INNER = '#F2AFA6'
 const COIN = '#FFC94A'
 const COIN_EDGE = '#E0A21A'
 const INK = '#3A2A22'
-const ACCENT = 'var(--ks-brand)'
+// The bandana in the 3D renders is always this violet, so the extras drawn on
+// top (zzz, sparkles) use it too instead of the signed-in person's colour.
+const ACCENT = '#6847F0'
 
 function Coin({ cx, cy, r, edge = 1.8 }: { cx: number; cy: number; r: number; edge?: number }) {
   return (
@@ -42,6 +52,27 @@ function Coin({ cx, cy, r, edge = 1.8 }: { cx: number; cy: number; r: number; ed
       <circle cx={cx} cy={cy} r={r} fill={COIN} />
       <circle cx={cx} cy={cy} r={r * 0.62} fill="none" stroke={COIN_EDGE} strokeWidth={edge} />
     </>
+  )
+}
+
+function Flying() {
+  return (
+    <g>
+      <Coin cx={34} cy={46} r={9} />
+      <Coin cx={166} cy={34} r={10} />
+      <Coin cx={160} cy={80} r={7} edge={1.6} />
+      <path d="M46 18v10M41 23h10M178 62v8M174 66h8M24 84v7M20.5 87.5h7" stroke={ACCENT} strokeWidth="2.4" strokeLinecap="round" />
+    </g>
+  )
+}
+
+function Zzz() {
+  return (
+    <g fill={ACCENT} fontWeight="700">
+      <text x="146" y="44" fontSize="18">z</text>
+      <text x="160" y="26" fontSize="13">z</text>
+      <text x="171" y="12" fontSize="10">z</text>
+    </g>
   )
 }
 
@@ -53,7 +84,7 @@ export function Guru({
   className,
 }: {
   pose?: Pose
-  // Width in pixels; height follows.
+  // Width in pixels; height follows (square for the 3D poses).
   size?: number
   // Head only, for a small round avatar.
   crop?: boolean
@@ -64,6 +95,28 @@ export function Guru({
   const parts = POSES[pose]
   const pupilY = parts.eyes === 'down' ? 80 : 76
 
+  if (!crop && PHOTO_POSES.includes(pose)) {
+    return (
+      <span className={`relative inline-block ${className ?? ''}`} style={{ width: size, height: size }}>
+        <img
+          src={`${import.meta.env.BASE_URL}guru/${pose as PhotoPose}.webp`}
+          width={size}
+          height={size}
+          alt={decorative ? '' : parts.label}
+          draggable={false}
+          className="block size-full object-contain"
+          {...(decorative ? { 'aria-hidden': true } : {})}
+        />
+        {(parts.flying || parts.zzz) && (
+          <svg viewBox="0 0 200 200" aria-hidden="true" className="pointer-events-none absolute inset-0 size-full">
+            {parts.flying && <Flying />}
+            {parts.zzz && <Zzz />}
+          </svg>
+        )}
+      </span>
+    )
+  }
+
   return (
     <svg
       width={size}
@@ -72,21 +125,8 @@ export function Guru({
       className={className}
       {...(decorative ? { 'aria-hidden': true } : { role: 'img', 'aria-label': parts.label })}
     >
-      {parts.flying && (
-        <g>
-          <Coin cx={34} cy={46} r={9} />
-          <Coin cx={166} cy={34} r={10} />
-          <Coin cx={160} cy={80} r={7} edge={1.6} />
-          <path d="M46 18v10M41 23h10M178 62v8M174 66h8M24 84v7M20.5 87.5h7" stroke={ACCENT} strokeWidth="2.4" strokeLinecap="round" />
-        </g>
-      )}
-      {parts.zzz && (
-        <g fill={ACCENT} fontWeight="700">
-          <text x="146" y="44" fontSize="18">z</text>
-          <text x="160" y="26" fontSize="13">z</text>
-          <text x="171" y="12" fontSize="10">z</text>
-        </g>
-      )}
+      {parts.flying && <Flying />}
+      {parts.zzz && <Zzz />}
 
       {/* Tail, feet, legs, body, belly */}
       <path d="M62 196C22 206 6 176 16 144C20 130 34 132 33 146C30 170 46 186 72 182Z" fill={FUR_DARK} />

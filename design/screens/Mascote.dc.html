@@ -23,12 +23,12 @@ body{margin:0}
       <div style="width: 440px; height: 460px; border-radius: 40px; background: #EFEAFE; display: flex; align-items: flex-end; justify-content: center; padding-bottom: 24px; box-sizing: border-box; position: relative; overflow: hidden">
         <div aria-hidden="true" style="position: absolute; left: 70px; top: 50px; width: 300px; height: 300px; border-radius: 150px; background: #E2D9FD"></div>
         <div style="position: relative">
-          <dc-import name="Guru" pose="normal" size="{{ 330 }}" hint-size="330px,396px"></dc-import>
+          <dc-import name="Guru" pose="ola" size="{{ 330 }}" hint-size="330px,330px"></dc-import>
         </div>
       </div>
       <div style="display: flex; flex-direction: column; gap: 10px">
         <p style="margin: 0; font-size: 22px; font-weight: 700">O canguru que guarda as contas dos dois.</p>
-        <p style="margin: 0; font-size: 16px; line-height: 23px; color: #4A4A55">O nome vem de “canGURU”. Na bolsa guarda as moedas da casa, a mesma bolsa e a mesma moeda do ícone. Aparece só em momentos especiais: estados vazios, sucesso, sem ligação e boas-vindas. Nunca nos ecrãs de trabalho.</p>
+        <p style="margin: 0; font-size: 16px; line-height: 23px; color: #4A4A55">O nome vem de “canGURU”. Na bolsa guarda as moedas da casa, a mesma bolsa e a mesma moeda do ícone. Aparece só em momentos especiais: estados vazios, sucesso, sem ligação e boas-vindas. Nunca nos ecrãs de trabalho. Desenhado em 3D, com o lenço roxo da app ao pescoço.</p>
         <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-top: 4px">
           <sc-for list="{{swatches}}" as="s" hint-placeholder-count="5">
             <span style="display: flex; align-items: center; gap: 6px; font-size: 12px; color: #6B6B76; font-family: ui-monospace, Menlo, monospace">
@@ -44,7 +44,7 @@ body{margin:0}
         <sc-for list="{{poses}}" as="p" hint-placeholder-count="4">
           <div style="border-radius: 28px; background: #FFFFFF; padding: 18px 20px 20px; display: flex; flex-direction: column; align-items: center; gap: 10px">
             <div style="height: 204px; display: flex; align-items: flex-end">
-              <dc-import name="Guru" pose="{{p.pose}}" size="{{ 170 }}" hint-size="170px,204px"></dc-import>
+              <dc-import name="Guru" pose="{{p.pose}}" size="{{ 200 }}" hint-size="200px,200px"></dc-import>
             </div>
             <span style="font-size: 17px; font-weight: 600">{{p.title}}</span>
             <span style="font-size: 13px; line-height: 18px; color: #6B6B76; text-align: center">{{p.use}}</span>
@@ -53,10 +53,10 @@ body{margin:0}
       </div>
 
       <div style="border-radius: 28px; background: #1C1C1E; color: #F5F5F7; padding: 18px 24px; display: flex; align-items: center; gap: 28px">
-        <dc-import name="Guru" pose="vazio" size="{{ 110 }}" hint-size="110px,132px"></dc-import>
+        <dc-import name="Guru" pose="vazio" size="{{ 132 }}" hint-size="132px,132px"></dc-import>
         <div style="flex: 1; display: flex; flex-direction: column; gap: 4px">
           <span style="font-size: 17px; font-weight: 600">Funciona no modo escuro</span>
-          <span style="font-size: 13px; line-height: 18px; color: #A1A1AA">As cores são as mesmas nos dois modos. O pelo quente contrasta com o fundo preto.</span>
+          <span style="font-size: 13px; line-height: 18px; color: #A1A1AA">As imagens têm fundo transparente e são as mesmas nos dois modos. O pelo quente contrasta com o fundo preto.</span>
         </div>
         <div style="display: flex; align-items: flex-end; gap: 14px">
           <sc-for list="{{avatars}}" as="a" hint-placeholder-count="3">

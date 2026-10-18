@@ -25,7 +25,7 @@ Several files are small wrappers that show a variant of a main file. The variant
 | Screen (brief §) | Main file | Variants |
 |---|---|---|
 | 1 Login | `Login.dc.html` | `LoginErro` (prop `error`) |
-| 2 Início | `Main.dc.html` (immersive header with parallax; interactive, prop `scroll`) | `InicioScroll` (`scroll=170`, halfway through the parallax), `InicioOffline` (`offline`), `InicioLoading` (`loading`), `InicioEscuro` (`dark`) |
+| 2 Início | `Main.dc.html` | `InicioOffline` (`offline`), `InicioLoading` (`loading`), `InicioEscuro` (`dark`) |
 | 3 List detail | `Lista.dc.html` (balance card has the "Despesas recorrentes" row) | `ListaVazia` (`variant="vazia"`), `ListaArquivada` (`variant="arquivada"`), `ListaEscuro` (`dark`) |
 | 4 Add / edit expense (sheet) | `Despesa.dc.html` | `DespesaTeclado` (on open, keypad + quick details card), `DespesaIgual`, `DespesaPercentagem`, `DespesaExatoErro` (validation error), `DespesaPartes`, `DespesaEditar` (`variant="editar"`), `DespesaRecorrente` (`variant="recorrente"`), `DespesaEscuro` (`dark`) |
 | 5 Settle up (sheet) | `Acerto.dc.html` | `AcertarTudo` (`variant="tudo"`), `AcertoSucesso` (`variant="sucesso"`) |
@@ -36,7 +36,7 @@ Several files are small wrappers that show a variant of a main file. The variant
 | 10 Definições | `Definicoes.dc.html` | — (includes the profile photo upload) |
 | 11 System states | `Notificacoes`, `Instalar`, `ConfirmarApagar` (iOS action sheet), `Toast`, `Novidades` (what's new after an update) | offline and loading: see Início |
 | Shared | `TabBar.dc.html` (tab bar + raised "+"), `Componentes.dc.html` (component sheet), `Icone.dc.html` (app icon) | |
-| Mascot | `Guru.dc.html` (the mascot component, prop `pose` = `normal` / `ola` / `vazio` / `sucesso` / `dormir`, prop `crop` for a head-only avatar), `Mascote.dc.html` (mascot sheet) | |
+| Mascot | `Guru.dc.html` (the mascot component, prop `pose` = `normal` / `ola` / `vazio` / `sucesso` / `dormir`, prop `crop` for a head-only avatar; `ola`, `vazio`, `sucesso`, `dormir` are 3D images from `assets/guru/`), `Mascote.dc.html` (mascot sheet) | |
 | Comments and reactions | `DespesaDetalhe.dc.html` (expense detail sheet: summary, reactions, comment thread) | `DetalheVazio` (`variant="vazia"`), `DetalheAcoes` (long-press on own comment), `ReacaoRapida` (long-press on a list row), `DetalheEscuro` (`dark`). `Lista` and `Atividade` also changed. |
 | Shopping list (Compras tab) | `Compras.dc.html` (interactive; prop `variant`) | `ComprasEscrever` (typing, suggestions), `ComprasArtigo` (edit item sheet), `ComprasVazia` (empty), `ComprasOffline` (no signal). `Navegacao` shows the chosen tab layout. |
 
@@ -71,10 +71,12 @@ Several files are small wrappers that show a variant of a main file. The variant
 
 Guru is a kangaroo with a pouch full of coins. The name comes from "canGURU". The pouch and coins match the app icon.
 
-- Build it as one React component, `<Guru pose="..." size={...} crop? />`, from the inline SVG in `screens/Guru.dc.html`. Keep it as inline SVG (no image files), so it stays sharp at all sizes.
-- Each `<sc-if>` in that file shows or hides one part of the drawing (arms, eyes, mouth, coins, "zzz"). `renderVals()` lists which parts each pose uses.
-- The colours are fixed and the same in light and dark mode: fur `#E3A465`, darker fur `#C98448`, belly `#F7DEC2`, coins `#FFC94A`, bandana = accent `#6847F0`.
-- Give the SVG a pt-PT `aria-label` (the labels are in `renderVals()`), or `aria-hidden="true"` when it is only decoration next to text.
+- Guru is a **3D character** (cute, Pixar-style, caramel fur, cream belly, a pouch of gold coins and a **violet bandana `#6847F0`** round the neck). The four poses used in the app are transparent WebP images in `assets/guru/` (`ola`, `vazio`, `sucesso`, `dormir`, square, 640 px). In the web app they live in `web/public/guru/`. All four are the same character, so keep them looking the same: if a pose is added, generate it from one of these as a reference.
+- Build it as one React component, `<Guru pose="..." size={...} crop? />`, from `screens/Guru.dc.html`. `size` is the width in pixels and, for the 3D poses, also the height (the images are square).
+- The 3D poses are drawn with `<img>` plus a small SVG on top that adds the extras the image does not contain: the `zzz` for `dormir` and the floating coins and sparkles for `sucesso`, in `#6847F0` and `#FFC94A`. Each `<sc-if>` in that file shows or hides one part. `renderVals()` lists the poses and which ones are 3D (`photo`).
+- `normal` and the head-only `crop` avatar are **not drawn in 3D yet**. They keep the older flat vector drawing in the same file, with the same colours (fur `#E3A465`, darker fur `#C98448`, belly `#F7DEC2`, coins `#FFC94A`, bandana `#6847F0`). `normal` is not used on any screen. `crop` is used only for the small offline avatar in the Início mockup (`Main.dc.html`); the web app shows the full `dormir` image there.
+- The bandana is always `#6847F0`. It does not follow the signed-in person's colour. The images are the same in light and dark mode (transparent background).
+- Give the image a pt-PT `alt` (the labels are in `renderVals()`), or an empty `alt` with `aria-hidden="true"` when it is only decoration next to text.
 - Use Guru only in these places. Never use it on work screens (lists, forms, statistics):
 
 | Pose | Where | Screen file |
@@ -82,7 +84,7 @@ Guru is a kangaroo with a pouch full of coins. The name comes from "canGURU". Th
 | `vazio` | Empty list, empty recurring expenses | `Lista.dc.html` (`variant="vazia"`), `Recorrentes.dc.html` (`empty`) |
 | `sucesso` | "Contas acertadas!" after a settlement | `Acerto.dc.html` (`variant="sucesso"`) |
 | `ola` | Login, "Ativar notificações" prompt | `Login.dc.html`, `Notificacoes.dc.html` |
-| `dormir` (`crop`) | Offline banner | `Main.dc.html` (`offline`) |
+| `dormir` (`crop`, vector head) | Offline banner | `Main.dc.html` (`offline`) |
 | `dormir` | Month with no expenses in Estatísticas (not drawn) | — |
 
 ## Comments and reactions
@@ -240,7 +242,7 @@ The balance card on `Lista` has a **"Despesas recorrentes"** row below the defau
 
 ## Scrolling screens
 
-`Main` and `Lista` scroll vertically under the tab bar. Cards in a scrolling column must not shrink (`flex: none` / `flex-shrink: 0`). If they can shrink, `overflow: hidden` cards collapse (this happened to the old Saldo total card when the Casa card got taller).
+`Main` and `Lista` scroll vertically under the tab bar. Cards in a scrolling column must not shrink (`flex: none` / `flex-shrink: 0`). If they can shrink, `overflow: hidden` cards collapse (the Saldo total card collapsed when the Casa card got taller).
 
 ## To implement — design changes of 17 Oct 2026
 
@@ -272,7 +274,7 @@ Mockup: `Novidades.dc.html` (shown over Início). It tells the user about the ne
 **Layout** (same sheet style as `Notificacoes`: white, 32px radius, 8px from the screen edges, 38% black scrim):
 
 - **Close button** at the top right: 44×44 touch area, 30px grey circle (`fill`) with a × icon (secondary text colour). There is no "Continuar" button.
-- **Guru** (`sucesso` pose, 80px wide, about 96px high) with a **version badge** at its top right ("1.4.0", accent background, white text, 3px white border).
+- **Guru** (`sucesso` pose, 3D, 96px square) with a **version badge** at its top right ("1.4.0", accent background, white text, 3px white border).
 - **Title:** "O que há de novo" (22px, bold, centred).
 - **Up to 3 rows:** a 40px icon tile (12px radius, soft colour + matching icon colour), a title (16px semibold) and one line of text (14px, secondary colour).
 - **"Ver todas as novidades"** text button (accent, 15px semibold, 44px high). It opens the Novidades screen (the `novidades` route, the existing `Changelog` screen) and closes the sheet.
@@ -309,45 +311,13 @@ Mockup copy for 1.4.0 (you can use it as the first `highlights`):
 3. Show it from Início with the "last seen version" logic. Add tests for the version compare and for the first-use case.
 4. Add a changelog entry for this feature (see `CLAUDE.md`). That entry has no `highlights`, so the sheet does not show for it.
 
-## Início — immersive header with parallax
-
-Mockups: `Main` (top of the page; you can scroll it in Play mode), `InicioScroll` (halfway), `InicioEscuro`, `InicioOffline`, `InicioLoading`. This replaces the "Saldo total" card and the "Início" large title.
-
-**Structure** (from back to front):
-
-1. **Header layer** (fixed, behind everything). Full width, from the top edge of the screen, 380px high, background `linear-gradient(165deg, #8A6DFB 0%, #6847F0 52%, #5534DD 100%)`. Dark: `#5B44C8 → #4A34B8 → #3A2799`. Offline: grey `#A8A8B2 → #8E8E98` (dark `#4A4A50 → #3A3A3D`). Decoration: 3 thin white circles at 16% opacity at the top right, and a soft white glow at the bottom left.
-   - **Top row** at the safe-area top + 10px (54px in the mockup), 44px high: the Mi/Ma avatars (38px, 2px white 85% border) on the left, and the bell on the right (38px circle, white 18%, red badge with the count). There is no screen title.
-   - **Balance block**, centred, starts 64px under the top row, 8px gap:
-     - "Saldo total · 3 listas ativas" (15px, white 86%).
-     - **Direction pill**: 30px high, white 16%, with the Ma → Mi mini avatars (22px) and "A Mara deve-te" (14px semibold).
-     - **Amount**: 52px / 60px bold, letter-spacing −1.2px, tabular numbers, **all in solid white (the decimals too)**.
-     - **"Acertar tudo"**: white pill button, 40px high, accent text `#4B2FD0`, swap icon, soft shadow. Disabled when offline.
-2. **Scroll container** (the whole screen). It starts with a transparent spacer of **312px**, so the header shows through. Then comes the **content sheet**: background `bg` (`#F2F2F7` / dark `#000`), top corners 28px, shadow `0 -8px 24px rgba(40,20,120,0.12)`, a 36×5px grabber, padding 18px 16px, and the bottom padding of the tab bar. The sheet has the offline banner (when offline), the "Listas" header, the Casa card with "Últimas despesas", the other lists and "Listas arquivadas", as before.
-3. **Tab bar** on top, as before.
-
-**Parallax** (`y` = scroll offset in px):
-
-- Header layer: `translateY(-0.45 × y)`, so it moves at about half the speed of the sheet.
-- Balance block: extra `translateY(0.12 × y)` and `scale(1 − min(y, 240) / 1200)`, from the top centre.
-- Top row and balance block: `opacity = clamp(1 − y / 220, 0, 1)`.
-- There is **no compact header**. When the sheet reaches the top, it continues up under the status bar. Put a thin translucent band (`backdrop-filter: blur`) behind the status bar (height = `env(safe-area-inset-top)`), so the clock stays easy to read over the content.
-- Use one passive scroll listener and `requestAnimationFrame`, and change only `transform` and `opacity` (no layout changes). If the user turns on `prefers-reduced-motion`, do not use the parallax: the header scrolls with the content.
-- **Touch on the header:** a swipe that starts on the purple area must scroll the page. Do not put the header in a separate scroll area. For example, put the header inside the scroll container with `position: sticky; top: 0` and `z-index` under the sheet, or let touch events go through the spacer. The buttons in the header (bell, "Acertar tudo") must still work.
-- **Overscroll at the top (iOS bounce):** extend the gradient upwards, so no white gap shows.
-
-**Loading:** in the header, show 2 white 22% skeleton bars (150×26 and 210×48) in place of the pill and the amount. In the sheet, show the existing list skeletons.
-
 ## Amounts — no lighter decimals
 
-Show every amount in one colour. Do not show the decimals ("…,40 €") in a lighter colour or a lighter weight. This applies to the Início header, the "Total do mês" card in Estatísticas, the amount field in Acertar contas and the amount on the new-expense sheet.
+Show every amount in one colour. Do not show the decimals ("…,40 €") in a lighter colour or a lighter weight. This applies to the "Saldo total" card on Início, the "Total do mês" card in Estatísticas, the amount field in Acertar contas and the amount on the new-expense sheet.
 
-### To implement — immersive header and amounts
+### Status
 
-1. Replace the Saldo total card and the "Início" title in `web/src/screens/Home.tsx` with the header layer, the 312px spacer and the content sheet described above. Keep all the data and actions of the old card.
-2. Add the parallax with the rules above (passive listener, transform and opacity only, reduced motion, touch on the header, overscroll, status-bar band).
-3. Support the dark, offline and loading states (see the mockups).
-4. Remove the lighter decimals everywhere (search for `text-white/70` on the amount `rest` and similar classes in Stats, the settle sheet and the expense sheet).
-5. Add a changelog entry (see `CLAUDE.md`). Think about `highlights` for the what's-new sheet, because this is a visible change.
+The immersive Início header was tried and dropped (17 Oct 2026). Início keeps the "Saldo total" card. Only the single-colour amounts stay. The app already has both changes (1.5.1), so there is nothing to implement here. `InicioScroll.dc.html` belongs to the dropped design: ignore it, or delete it.
 
 ## Not shown in the mockups
 

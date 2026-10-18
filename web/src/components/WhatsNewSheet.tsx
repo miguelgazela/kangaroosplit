@@ -64,7 +64,7 @@ export function WhatsNewSheet() {
         </button>
 
         <div className="relative -mt-1.5 flex h-[98px] w-32 items-end justify-center">
-          <Guru pose="sucesso" size={80} decorative />
+          <Guru pose="sucesso" size={96} decorative />
           <span className="absolute -top-0 -right-1 box-content flex h-7 items-center rounded-[17px] border-[3px] border-surface bg-accent px-2.5 text-xs font-bold text-white">
             {pending.version}
           </span>

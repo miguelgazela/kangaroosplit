@@ -296,11 +296,10 @@
     },
     "Main.dc.html": {
       "h": 844,
-      "title": "Início (desliza para ver o parallax)",
+      "title": "Início",
       "w": 390,
       "x": 0,
-      "y": 0,
-      "is_interactive": true
+      "y": 0
     },
     "Mascote.dc.html": {
       "h": 1000,
@@ -371,13 +370,6 @@
       "w": 390,
       "x": 3760,
       "y": 3660
-    },
-    "InicioScroll.dc.html": {
-      "h": 844,
-      "title": "Início — a meio do deslize",
-      "w": 390,
-      "x": 3290,
-      "y": 0
     }
   },
   "createdOnFiles": {
@@ -391,7 +383,7 @@
   "notes": {
     "r1": {
       "kind": "title1",
-      "maxW": 3680,
+      "maxW": 3210,
       "text": "Ecrãs principais",
       "w": 240,
       "x": 0,
@@ -472,7 +464,6 @@
   },
   "order": [
     "Main.dc.html",
-    "InicioScroll.dc.html",
     "Lista.dc.html",
     "Despesa.dc.html",
     "Acerto.dc.html",
