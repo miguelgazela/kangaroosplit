@@ -22,6 +22,14 @@ export type ChangelogEntry = {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '1.7.1',
+    date: '2026-10-19',
+    changes: [
+      'A lista de compras vazia mostra o Guru com o carrinho vazio',
+      'O Guru ficou mais limpo, sem a moeda solta ao saltar de alegria',
+    ],
+  },
+  {
     version: '1.7.0',
     date: '2026-10-18',
     changes: [

@@ -317,7 +317,7 @@ export function Shopping() {
 
       {items && all.length === 0 && (
         <div className="flex flex-1 flex-col items-center justify-center gap-2 pb-5 text-center">
-          <Guru pose="vazio" size={130} />
+          <Guru pose="compras" size={170} />
           <p className="text-body font-semibold">{t.shopping.emptyTitle}</p>
           <p className="text-subhead text-text-2">{t.shopping.emptyBody}</p>
         </div>

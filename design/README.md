@@ -36,7 +36,7 @@ Several files are small wrappers that show a variant of a main file. The variant
 | 10 Definições | `Definicoes.dc.html` | — (includes the profile photo upload) |
 | 11 System states | `Notificacoes`, `Instalar`, `ConfirmarApagar` (iOS action sheet), `Toast`, `Novidades` (what's new after an update) | offline and loading: see Início |
 | Shared | `TabBar.dc.html` (tab bar + raised "+"), `Componentes.dc.html` (component sheet), `Icone.dc.html` (app icon) | |
-| Mascot | `Guru.dc.html` (the mascot component, prop `pose` = `normal` / `ola` / `vazio` / `sucesso` / `dormir`, prop `crop` for a head-only avatar; `ola`, `vazio`, `sucesso`, `dormir` are 3D images from `assets/guru/`), `Mascote.dc.html` (mascot sheet) | |
+| Mascot | `Guru.dc.html` (the mascot component, prop `pose` = `normal` / `ola` / `vazio` / `compras` / `sucesso` / `dormir`, prop `crop` for a head-only avatar; every pose is a 3D image from `assets/guru/`; `crop` is still vector), `Mascote.dc.html` (mascot sheet) | |
 | Comments and reactions | `DespesaDetalhe.dc.html` (expense detail sheet: summary, reactions, comment thread) | `DetalheVazio` (`variant="vazia"`), `DetalheAcoes` (long-press on own comment), `ReacaoRapida` (long-press on a list row), `DetalheEscuro` (`dark`). `Lista` and `Atividade` also changed. |
 | Shopping list (Compras tab) | `Compras.dc.html` (interactive; prop `variant`) | `ComprasEscrever` (typing, suggestions), `ComprasArtigo` (edit item sheet), `ComprasVazia` (empty), `ComprasOffline` (no signal). `Navegacao` shows the chosen tab layout. |
 
@@ -71,16 +71,17 @@ Several files are small wrappers that show a variant of a main file. The variant
 
 Guru is a kangaroo with a pouch full of coins. The name comes from "canGURU". The pouch and coins match the app icon.
 
-- Guru is a **3D character** (cute, Pixar-style, caramel fur, cream belly, a pouch of gold coins and a **violet bandana `#6847F0`** round the neck). The four poses used in the app are transparent WebP images in `assets/guru/` (`ola`, `vazio`, `sucesso`, `dormir`, square, 640 px). In the web app they live in `web/public/guru/`. All four are the same character, so keep them looking the same: if a pose is added, generate it from one of these as a reference.
+- Guru is a **3D character** (cute, Pixar-style, caramel fur, cream belly, a pouch of gold coins and a **violet bandana `#6847F0`** round the neck). All six poses are transparent WebP images in `assets/guru/` (`normal`, `ola`, `vazio`, `compras`, `sucesso`, `dormir`, square, 640 px). `compras` is Guru behind an empty shopping cart; the wire basket is semi-transparent in places, so it looks best on the normal backgrounds. In the web app they live in `web/public/guru/`. All of them are the same character, so keep them looking the same: if a pose is added, generate it from one of these as a reference.
 - Build it as one React component, `<Guru pose="..." size={...} crop? />`, from `screens/Guru.dc.html`. `size` is the width in pixels and, for the 3D poses, also the height (the images are square).
 - The 3D poses are drawn with `<img>` plus a small SVG on top that adds the extras the image does not contain: the `zzz` for `dormir` and the floating coins and sparkles for `sucesso`, in `#6847F0` and `#FFC94A`. Each `<sc-if>` in that file shows or hides one part. `renderVals()` lists the poses and which ones are 3D (`photo`).
-- `normal` and the head-only `crop` avatar are **not drawn in 3D yet**. They keep the older flat vector drawing in the same file, with the same colours (fur `#E3A465`, darker fur `#C98448`, belly `#F7DEC2`, coins `#FFC94A`, bandana `#6847F0`). `normal` is not used on any screen. `crop` is used only for the small offline avatar in the Início mockup (`Main.dc.html`); the web app shows the full `dormir` image there.
+- The head-only `crop` avatar is **not drawn in 3D yet**. It keeps the older flat vector drawing in the same file, with the same colours (fur `#E3A465`, darker fur `#C98448`, belly `#F7DEC2`, coins `#FFC94A`, bandana `#6847F0`). It is used only for the small offline avatar in the Início mockup (`Main.dc.html`); the web app shows the full `dormir` image there. `normal` is not used on any screen.
 - The bandana is always `#6847F0`. It does not follow the signed-in person's colour. The images are the same in light and dark mode (transparent background).
 - Give the image a pt-PT `alt` (the labels are in `renderVals()`), or an empty `alt` with `aria-hidden="true"` when it is only decoration next to text.
 - Use Guru only in these places. Never use it on work screens (lists, forms, statistics):
 
 | Pose | Where | Screen file |
 |---|---|---|
+| `compras` | Empty shopping list (Compras tab) | `Compras.dc.html` (`variant="vazia"`), `ComprasVazia.dc.html` |
 | `vazio` | Empty list, empty recurring expenses | `Lista.dc.html` (`variant="vazia"`), `Recorrentes.dc.html` (`empty`) |
 | `sucesso` | "Contas acertadas!" after a settlement | `Acerto.dc.html` (`variant="sucesso"`) |
 | `ola` | Login, "Ativar notificações" prompt | `Login.dc.html`, `Notificacoes.dc.html` |
@@ -172,7 +173,7 @@ Fixed order (store route): Frutas e legumes · Padaria · Laticínios e ovos · 
 - Changes from the other person appear live.
 
 ### Empty
-Guru (`vazio`), "A lista está vazia.", "Escreve acima ou toca num artigo habitual.", plus the "Habituais" chips.
+Guru (`compras`, behind an empty cart), "A lista está vazia.", "Escreve acima ou toca num artigo habitual.", plus the "Habituais" chips.
 
 ### Offline — different from the rest of the app
 Shops often have no signal, so **this tab stays fully usable offline**. Queue the changes locally and send them when the connection returns. Show the banner "Sem rede. Podes continuar. As alterações são enviadas quando voltares a ter ligação." and a small "a enviar" marker on changed items. If both people changed the same item, the last change wins.

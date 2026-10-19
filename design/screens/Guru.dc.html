@@ -130,7 +130,7 @@ body{margin:0}
   </sc-if>
 </div>
 </x-dc>
-<script type="text/x-dc" data-dc-script data-props='{"pose":{"editor":"enum","options":["normal","ola","vazio","sucesso","dormir"],"default":"normal"},"size":{"editor":"int","min":40,"max":800,"default":200},"crop":{"editor":"boolean","default":false},"$preview":{"width":200,"height":240}}'>
+<script type="text/x-dc" data-dc-script data-props='{"pose":{"editor":"enum","options":["normal","ola","vazio","compras","sucesso","dormir"],"default":"normal"},"size":{"editor":"int","min":40,"max":800,"default":200},"crop":{"editor":"boolean","default":false},"$preview":{"width":200,"height":240}}'>
 class Component extends DCLogic {
   renderVals() {
     const pose = this.props.pose ?? 'normal';
@@ -144,13 +144,14 @@ class Component extends DCLogic {
       normal:  { label: 'Guru, o canguru, com moedas na bolsa', coins: true,  left: 'hold', right: 'hold', eyes: 'open', mouth: 'smile' },
       ola:     { label: 'Guru a acenar',                       coins: true,  left: 'hold', right: 'up',   eyes: 'open', mouth: 'big' },
       vazio:   { label: 'Guru a espreitar a bolsa vazia',      coins: false, left: 'hold', right: 'hold', eyes: 'down', mouth: 'o', tilt: true },
+      compras: { label: 'Guru com o carrinho de compras vazio', coins: true,  left: 'hold', right: 'hold', eyes: 'down', mouth: 'o', tilt: true },
       sucesso: { label: 'Guru a saltar de alegria',            coins: true,  left: 'up',   right: 'up',   eyes: 'happy', mouth: 'big', flying: true, jump: true },
       dormir:  { label: 'Guru a dormir',                       coins: true,  left: 'hold', right: 'hold', eyes: 'closed', mouth: 'smile', zzz: true, tilt: true }
     }[pose] || {};
     const viewBox = crop ? '46 6 108 116' : '0 0 200 240';
-    // The four poses used in the app are 3D renders (transparent WebP, square).
-    // `normal` and the head-only `crop` avatar still use the vector drawing.
-    const photo = !crop && ['ola', 'vazio', 'sucesso', 'dormir'].includes(pose);
+    // Every pose is a 3D render (transparent WebP, square). Only the head-only
+    // `crop` avatar still uses the vector drawing.
+    const photo = !crop && ['normal', 'ola', 'vazio', 'compras', 'sucesso', 'dormir'].includes(pose);
     const w = size;
     const h = photo ? size : crop ? Math.round(size * 116 / 108) : Math.round(size * 1.2);
     return {

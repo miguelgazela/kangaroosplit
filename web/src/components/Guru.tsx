@@ -2,11 +2,10 @@
 // at special moments (empty states, success, welcome, no connection), never on
 // working screens. See design/README.md.
 //
-// The four poses the app uses are 3D renders (transparent WebP in
-// public/guru). `normal` and the head-only `crop` avatar are still the flat
-// vector drawing below.
+// Every pose is a 3D render (transparent WebP in public/guru). Only the
+// head-only `crop` avatar is still the flat vector drawing below.
 
-type Pose = 'normal' | 'ola' | 'vazio' | 'sucesso' | 'dormir'
+type Pose = 'normal' | 'ola' | 'vazio' | 'compras' | 'sucesso' | 'dormir'
 
 type PoseParts = {
   label: string
@@ -21,14 +20,13 @@ type PoseParts = {
   zzz?: boolean
 }
 
-type PhotoPose = 'ola' | 'vazio' | 'sucesso' | 'dormir'
-
-const PHOTO_POSES: readonly Pose[] = ['ola', 'vazio', 'sucesso', 'dormir']
+const PHOTO_POSES: readonly Pose[] = ['normal', 'ola', 'vazio', 'compras', 'sucesso', 'dormir']
 
 const POSES: Record<Pose, PoseParts> = {
   normal: { label: 'Guru, o canguru, com moedas na bolsa', coins: true, left: 'hold', right: 'hold', eyes: 'open', mouth: 'smile' },
   ola: { label: 'Guru a acenar', coins: true, left: 'hold', right: 'up', eyes: 'open', mouth: 'big' },
   vazio: { label: 'Guru a espreitar a bolsa vazia', coins: false, left: 'hold', right: 'hold', eyes: 'down', mouth: 'o', tilt: true },
+  compras: { label: 'Guru com o carrinho de compras vazio', coins: true, left: 'hold', right: 'hold', eyes: 'down', mouth: 'o', tilt: true },
   sucesso: { label: 'Guru a saltar de alegria', coins: true, left: 'up', right: 'up', eyes: 'happy', mouth: 'big', flying: true, jump: true },
   dormir: { label: 'Guru a dormir', coins: true, left: 'hold', right: 'hold', eyes: 'closed', mouth: 'smile', zzz: true, tilt: true },
 }
@@ -99,7 +97,7 @@ export function Guru({
     return (
       <span className={`relative inline-block ${className ?? ''}`} style={{ width: size, height: size }}>
         <img
-          src={`${import.meta.env.BASE_URL}guru/${pose as PhotoPose}.webp`}
+          src={`${import.meta.env.BASE_URL}guru/${pose}.webp`}
           width={size}
           height={size}
           alt={decorative ? '' : parts.label}
