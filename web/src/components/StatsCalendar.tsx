@@ -1,7 +1,8 @@
 import { useState } from 'react'
 import { Icon } from './Icon'
+import { Skeleton } from './Skeleton'
 import { t } from '../i18n/pt'
-import { leadingBlanks, tintLevel, type CalendarDay } from '../lib/calendar'
+import { daysInMonth, leadingBlanks, tintLevel, type CalendarDay } from '../lib/calendar'
 import type { Category, Member } from '../lib/database.types'
 import { formatMoney, formatMonthName, formatWeekday, formatWholeEuros } from '../lib/format'
 import { nameForms } from '../lib/people'
@@ -232,6 +233,47 @@ export function StatsCalendar({
           })}
         </div>
       )}
+    </section>
+  )
+}
+
+// The calendar while data loads: real title and weekdays, grey day cells
+// with their number only. Nothing can be picked.
+export function StatsCalendarSkeleton({ month }: { month: string }) {
+  return (
+    <section
+      aria-label={t.stats.calendarLabel(formatMonthName(month))}
+      className="rounded-card bg-surface px-1.5 pt-3 pb-2.5 shadow-card"
+    >
+      <div className="flex items-baseline justify-between px-2.5 pb-2">
+        <h2 className="text-headline font-bold">{t.stats.calendar}</h2>
+        <div className="flex h-[18px] items-center">
+          <Skeleton className="h-3 w-[70px] rounded-full" />
+        </div>
+      </div>
+
+      <div aria-hidden="true" className="grid grid-cols-7 gap-1.5 px-[3px] pt-0.5 pb-1">
+        {t.stats.weekdays.map((weekday, index) => (
+          <span key={index} className="text-center text-[11px] font-semibold text-text-2">
+            {weekday}
+          </span>
+        ))}
+      </div>
+
+      <div aria-label={t.system.loadingCalendar} aria-busy="true" className="grid grid-cols-7 gap-1.5 px-[3px]">
+        {Array.from({ length: leadingBlanks(month) }, (_, index) => (
+          <span key={`blank-${index}`} aria-hidden="true" />
+        ))}
+        {Array.from({ length: daysInMonth(month) }, (_, index) => (
+          <div
+            key={index}
+            aria-hidden="true"
+            className="ks-skel flex h-[52px] items-center justify-center rounded-[10px] bg-skel-cell"
+          >
+            <span className="text-base leading-[18px] font-medium text-skel-day">{index + 1}</span>
+          </div>
+        ))}
+      </div>
     </section>
   )
 }

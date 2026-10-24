@@ -22,6 +22,14 @@ export type ChangelogEntry = {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '1.7.2',
+    date: '2026-10-24',
+    changes: [
+      'A lista e as Estatísticas mostram blocos a carregar em vez de um ecrã vazio enquanto os dados chegam',
+      'Se algo falhar ao carregar, aparece um aviso para tentares outra vez',
+    ],
+  },
+  {
     version: '1.7.1',
     date: '2026-10-19',
     changes: [

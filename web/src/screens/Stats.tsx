@@ -6,12 +6,14 @@ import { Icon } from '../components/Icon'
 import { OptionSheet } from '../components/OptionSheet'
 import { Screen } from '../components/Screen'
 import { Segmented } from '../components/Segmented'
-import { StatsCalendar } from '../components/StatsCalendar'
+import { Skeleton } from '../components/Skeleton'
+import { StatsCalendar, StatsCalendarSkeleton } from '../components/StatsCalendar'
 import { TrendBars } from '../components/TrendBars'
 import { t } from '../i18n/pt'
 import { buildCalendar } from '../lib/calendar'
 import { todayISO } from '../lib/dates'
 import { formatMoney, formatPercent } from '../lib/format'
+import { useFirstLoad } from '../lib/useFirstLoad'
 import { nameForms } from '../lib/people'
 import {
   currentMonth,
@@ -30,6 +32,91 @@ import { useCategories, useCurrentMember, useExpenses, useLists, useMembers, use
 
 const ALL = 'all'
 const FALLBACK_COLOR = '#64748b'
+
+// Line-height boxes keep each bar where the real text sits, so nothing moves
+// when the data arrives.
+function Bar({ line, className, width }: { line: string; className: string; width?: string }) {
+  return (
+    <div className={`flex items-center ${line}`}>
+      <Skeleton className={`rounded-full ${className}`} style={width ? { width } : undefined} />
+    </div>
+  )
+}
+
+function TotalSkeleton({ yearly }: { yearly: boolean }) {
+  return (
+    <section
+      aria-label={t.system.loadingTotal}
+      aria-busy="true"
+      className="flex flex-col gap-3.5 rounded-card bg-surface p-4 shadow-card"
+    >
+      <div className={yearly ? 'flex flex-col gap-3.5' : 'flex items-end gap-3'}>
+        <div className="flex min-w-0 flex-1 flex-col">
+          <Bar line="h-5" className="h-3.5 w-24" />
+          <div className="flex h-10 items-center">
+            <Skeleton className="h-[34px] w-[168px] rounded-[10px]" />
+          </div>
+          <Bar line="h-[18px]" className="h-3 w-[140px]" />
+        </div>
+        <div className={`flex flex-col gap-1.5 ${yearly ? '' : 'flex-none items-end'}`}>
+          <Bar line="h-4" className="h-2.5 w-20" />
+          <div className="flex items-end gap-1" style={{ height: (yearly ? 88 : 64) + 19 }}>
+            {['47%', '59%', '41%', '78%', '50%', '56%'].map((height, index) => (
+              <div key={index} className="flex h-full w-[18px] flex-col justify-end pb-[19px]">
+                <Skeleton className="w-full rounded-t-[4px]" style={{ height }} />
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+      <Skeleton className="h-2.5 rounded-full" />
+      <div className="flex gap-3">
+        {[0, 1].map((index) => (
+          <div key={index} className="flex min-w-0 flex-1 items-center gap-2">
+            <Skeleton className="size-7 rounded-full" />
+            <div className="flex flex-col">
+              <Bar line="h-[18px]" className="h-2.5 w-[70px]" />
+              <Bar line="h-5" className="h-3.5 w-[82px]" />
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+  )
+}
+
+function CategoriesSkeleton() {
+  return (
+    <section
+      aria-label={t.system.loadingCategories}
+      aria-busy="true"
+      className="flex flex-col gap-3 rounded-card bg-surface px-4 pt-4 pb-1 shadow-card"
+    >
+      <div className="flex items-baseline justify-between">
+        <h2 className="text-headline font-bold">{t.stats.byCategory}</h2>
+        <Bar line="h-[18px]" className="h-3 w-[76px]" />
+      </div>
+      <Skeleton className="h-3 rounded-full" />
+      <div>
+        {['46%', '62%', '38%', '54%'].map((width, index) => (
+          <div
+            key={width}
+            className={`flex h-11 items-center gap-2.5 ${index > 0 ? 'border-t-[0.5px] border-separator' : ''}`}
+          >
+            <Skeleton className="size-2.5 rounded-[3px]" />
+            <Skeleton className="size-[22px] rounded-[7px]" />
+            <div className="min-w-0 flex-1">
+              <Skeleton className="h-[13px] rounded-full" style={{ width }} />
+            </div>
+            <Skeleton className="h-[11px] w-10 rounded-full" />
+            <Skeleton className="h-[13px] w-[72px] rounded-full" />
+            <span className="w-3 flex-none" />
+          </div>
+        ))}
+      </div>
+    </section>
+  )
+}
 
 export function Stats() {
   const { me, partner } = useCurrentMember()
@@ -52,27 +139,10 @@ export function Stats() {
       <h1 className="text-large-title font-bold tracking-[0.4px]">{t.tabs.stats}</h1>
     </div>
   )
-  if (!me || !partner || !members || !lists || !expenses || !categories || !settlements || !recurring) return <Screen>{header}</Screen>
-
-  const scopeList = lists.find((list) => list.id === scope)
-  const scoped = scopeList ? filterExpenses(expenses, { listId: scopeList.id }) : expenses
-  const inPeriod = expensesInPeriod(scoped, period)
-  const total = totalCents(inPeriod)
   const previousPeriod = shiftPeriod(period, -1)
-  const previous = totalCents(expensesInPeriod(scoped, previousPeriod))
-  const window = trendWindow(period)
-  const trend = monthlyTrend(scoped, window.endMonth, window.months)
-  const shares = sharesByUser(inPeriod)
-  const byCategory = totalsByCategory(inPeriod)
-  const change = previous > 0 ? (total - previous) / previous : null
-  const months = elapsedMonths(period)
-  const inScope = <T extends { list_id: string }>(rows: T[]) => (scopeList ? rows.filter((row) => row.list_id === scopeList.id) : rows)
-  const today = todayISO()
-
-  return (
-    <Screen>
-      {header}
-
+  const scopeList = lists?.find((list) => list.id === scope)
+  const controls = (
+    <>
       <Segmented
         label={t.stats.period}
         options={[
@@ -90,10 +160,14 @@ export function Stats() {
       <div className="flex gap-2">
         <button
           type="button"
-          onClick={() => setPickingScope(true)}
+          onClick={() => lists && setPickingScope(true)}
           className="flex h-11 min-w-0 items-center gap-1.5 rounded-full bg-surface px-3.5 text-subhead font-medium shadow-card"
         >
-          <span className="truncate">{scopeList ? `${scopeList.icon} ${scopeList.name}` : t.stats.allLists}</span>
+          {scope && !lists ? (
+            <Skeleton className="h-3.5 w-24 rounded-full" />
+          ) : (
+            <span className="truncate">{scopeList ? `${scopeList.icon} ${scopeList.name}` : t.stats.allLists}</span>
+          )}
           <Icon name="chevronDown" size={14} strokeWidth={2.5} className="flex-none text-text-2" />
         </button>
         <div className="ml-auto flex h-11 flex-none items-center rounded-full bg-surface shadow-card">
@@ -119,6 +193,43 @@ export function Stats() {
           </button>
         </div>
       </div>
+    </>
+  )
+
+  // Skeleton on first load only; cached data shows at once.
+  const loading = useFirstLoad(
+    Boolean(me && partner && members && lists && expenses && categories && settlements && recurring),
+  )
+  if (loading || !me || !partner || !members || !lists || !expenses || !categories || !settlements || !recurring) {
+    return (
+      <Screen>
+        {header}
+        {controls}
+        <TotalSkeleton yearly={yearly} />
+        <CategoriesSkeleton />
+        {!yearly && <StatsCalendarSkeleton month={period} />}
+      </Screen>
+    )
+  }
+
+  const scoped = scopeList ? filterExpenses(expenses, { listId: scopeList.id }) : expenses
+  const inPeriod = expensesInPeriod(scoped, period)
+  const total = totalCents(inPeriod)
+  const previous = totalCents(expensesInPeriod(scoped, previousPeriod))
+  const window = trendWindow(period)
+  const trend = monthlyTrend(scoped, window.endMonth, window.months)
+  const shares = sharesByUser(inPeriod)
+  const byCategory = totalsByCategory(inPeriod)
+  const change = previous > 0 ? (total - previous) / previous : null
+  const months = elapsedMonths(period)
+  const inScope = <T extends { list_id: string }>(rows: T[]) => (scopeList ? rows.filter((row) => row.list_id === scopeList.id) : rows)
+  const today = todayISO()
+
+  return (
+    <Screen>
+      {header}
+
+      {controls}
 
       <section className="flex flex-col gap-3.5 rounded-card bg-surface p-4 shadow-card">
         <div className={yearly ? 'flex flex-col gap-3.5' : 'flex items-end gap-3'}>

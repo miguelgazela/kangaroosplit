@@ -9,6 +9,7 @@ import { ReactionBar } from '../components/ReactionBar'
 import { Guru } from '../components/Guru'
 import { Icon } from '../components/Icon'
 import { Screen } from '../components/Screen'
+import { Skeleton } from '../components/Skeleton'
 import { useToast } from '../components/ToastContext'
 import { t } from '../i18n/pt'
 import type { Category, ExpenseWithShares, List, Member, Settlement } from '../lib/database.types'
@@ -18,6 +19,7 @@ import { OfflineError, useOnline } from '../lib/online'
 import { nameForms, ratio } from '../lib/people'
 import { expensePosition, filterExpenses, listBalance, scheduledImpact, totalCents } from '../lib/stats'
 import { nextReaction, rowReactions, socialFor, type Social } from '../lib/social'
+import { useFirstLoad } from '../lib/useFirstLoad'
 import { useIncremental } from '../lib/useIncremental'
 import { useLongPress } from '../lib/useLongPress'
 import {
@@ -174,6 +176,89 @@ function SettlementRow({
   )
 }
 
+// Line-height boxes keep each bar where the real text sits, so nothing moves
+// when the data arrives.
+function Bar({ line, className, width }: { line: string; className: string; width?: string }) {
+  return (
+    <div className={`flex items-center ${line}`}>
+      <Skeleton className={`rounded-full ${className}`} style={width ? { width } : undefined} />
+    </div>
+  )
+}
+
+function BalanceSkeleton() {
+  return (
+    <section
+      aria-label={t.system.loadingBalance}
+      aria-busy="true"
+      className="flex flex-col gap-3 rounded-card bg-surface p-4 shadow-card"
+    >
+      <div className="flex items-center gap-3">
+        <div className="flex flex-1 flex-col gap-0.5">
+          <Bar line="h-5" className="h-3.5 w-[110px]" />
+          <div className="flex h-9 items-center">
+            <Skeleton className="h-[30px] w-[150px] rounded-[10px]" />
+          </div>
+        </div>
+        <Skeleton className="h-11 w-32 rounded-button" />
+      </div>
+      <div className="border-t-[0.5px] border-separator pt-2.5">
+        <div className="flex h-[18px] items-center gap-2">
+          <Skeleton className="h-1.5 w-12 rounded-full" />
+          <Skeleton className="h-3 w-[190px] max-w-full rounded-full" />
+        </div>
+      </div>
+      <div className="-mx-4 -mt-1.5 flex h-12 items-center gap-2.5 border-t-[0.5px] border-separator px-4">
+        <Skeleton className="size-7 rounded-lg" />
+        <Skeleton className="h-3.5 w-40 rounded-full" />
+      </div>
+    </section>
+  )
+}
+
+const SKELETON_ROWS = [
+  ['62%', '38%'],
+  ['48%', '44%'],
+  ['70%', '34%'],
+  ['54%', '40%'],
+]
+
+function ExpensesSkeleton() {
+  return (
+    <div aria-label={t.system.loadingExpenses} aria-busy="true" className="flex flex-col gap-3.5">
+      {[
+        { width: 'w-[110px]', rows: 4 },
+        { width: 'w-24', rows: 2 },
+      ].map(({ width, rows }) => (
+        <section key={width} className="flex flex-col gap-2">
+          <div className="flex justify-between px-1 pt-1">
+            <Bar line="h-[18px]" className={`h-3 ${width}`} />
+            <Bar line="h-[18px]" className="h-3 w-16" />
+          </div>
+          <div className="overflow-hidden rounded-card bg-surface shadow-card">
+            {SKELETON_ROWS.slice(0, rows).map(([left, sub], index) => (
+              <div
+                key={left}
+                className={`flex min-h-16 items-center gap-3 px-3.5 py-2.5 ${index > 0 ? 'border-t-[0.5px] border-separator' : ''}`}
+              >
+                <Skeleton className="size-[42px] rounded-xl" />
+                <div className="flex min-w-0 flex-1 flex-col gap-0.5">
+                  <Bar line="h-6" className="h-3.5" width={left} />
+                  <Bar line="h-[18px]" className="h-[11px]" width={sub} />
+                </div>
+                <div className="flex flex-none flex-col items-end gap-0.5">
+                  <Bar line="h-6" className="h-3.5 w-[62px]" />
+                  <Bar line="h-[18px]" className="h-[11px] w-[84px]" />
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+      ))}
+    </div>
+  )
+}
+
 function EmptyList({ onAdd, disabled }: { onAdd: () => void; disabled: boolean }) {
   return (
     <div className="flex flex-1 flex-col items-center justify-center gap-3 px-6 pb-10 text-center">
@@ -273,6 +358,9 @@ export function ListDetail({
   // Month totals always cover the whole month, drawn or not.
   const rowCount = months.reduce((sum, month) => sum + month.rows.length, 0)
   const { count, hasMore, sentinel } = useIncremental(rowCount, `${id}|${search}|${JSON.stringify(filter)}`)
+  const loading = useFirstLoad(
+    Boolean(me && partner && members && lists && balances && defaultShares && expenses && settlements),
+  )
   let budget = count
   const visibleMonths = months.flatMap((month) => {
     if (budget <= 0) return []
@@ -281,8 +369,89 @@ export function ListDetail({
     return [{ ...month, rows }]
   })
 
-  if (!me || !partner || !members || !lists || !balances || !defaultShares || !expenses || !settlements) {
-    return <Screen gap={14}>{null}</Screen>
+  const topBar = (list: List | undefined) => (
+    <div className="-mx-2 flex h-11 items-center justify-between">
+      <BackLink to="/" label={t.tabs.home} />
+      <button
+        type="button"
+        aria-label={t.lists.options}
+        disabled={!online || !list}
+        onClick={() => list && onOptions(list)}
+        className="flex size-11 items-center justify-center"
+      >
+        <span className={`flex size-[34px] items-center justify-center rounded-full bg-surface ${online && list ? 'text-accent-text' : 'text-disabled'}`}>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <circle cx="5" cy="12" r="2" />
+            <circle cx="12" cy="12" r="2" />
+            <circle cx="19" cy="12" r="2" />
+          </svg>
+        </span>
+      </button>
+    </div>
+  )
+  const titleBlock = (list: List) => (
+    <div className="flex items-center gap-3">
+      <span className="flex size-12 flex-none items-center justify-center rounded-button bg-accent-soft text-[26px]">
+        {list.icon}
+      </span>
+      <div className="flex min-w-0 flex-col gap-px">
+        <h1 className="truncate text-[30px] leading-9 font-bold tracking-[0.2px]">{list.name}</h1>
+        <span className="text-footnote text-text-2">
+          {list.is_default ? t.lists.mainList : formatDateRange(list.starts_on, list.ends_on)}
+        </span>
+      </div>
+    </div>
+  )
+  const searchRow = (
+    <div className="flex gap-2">
+      <label className="flex h-10 flex-1 items-center gap-2 rounded-xl bg-fill px-3 text-text-2">
+        <Icon name="search" size={18} strokeWidth={2.2} />
+        <input
+          type="search"
+          placeholder={t.lists.search}
+          aria-label={t.lists.searchLabel}
+          value={search}
+          onChange={(event) => setSearch(event.target.value)}
+          className="min-w-0 flex-1 appearance-none bg-transparent text-base text-text outline-none placeholder:text-text-2"
+        />
+      </label>
+      <button
+        type="button"
+        aria-label={filterCount > 0 ? `${t.lists.filter} (${t.filter.active})` : t.lists.filter}
+        onClick={() => !loading && setFiltering(true)}
+        className={`relative flex h-10 w-11 items-center justify-center rounded-xl ${filterCount > 0 ? 'bg-accent text-white' : 'bg-fill text-accent-text'}`}
+      >
+        <Icon name="filter" size={20} />
+        {filterCount > 0 && (
+          <span className="absolute -top-1 -right-1 flex size-[18px] items-center justify-center rounded-full border-2 border-bg bg-accent-text text-[10px] font-bold text-white">
+            {filterCount}
+          </span>
+        )}
+      </button>
+    </div>
+  )
+
+  // Skeleton on first load only; cached data shows at once.
+  if (loading || !me || !partner || !members || !lists || !balances || !defaultShares || !expenses || !settlements) {
+    return (
+      <Screen gap={14}>
+        {topBar(list)}
+        {list ? (
+          titleBlock(list)
+        ) : (
+          <div className="flex items-center gap-3">
+            <Skeleton className="size-12 rounded-button" />
+            <div className="flex flex-col gap-px">
+              <Bar line="h-9" className="h-[26px] w-44" />
+              <Bar line="h-[18px]" className="h-3 w-24" />
+            </div>
+          </div>
+        )}
+        <BalanceSkeleton />
+        {searchRow}
+        <ExpensesSkeleton />
+      </Screen>
+    )
   }
 
   if (!list) {
@@ -322,36 +491,8 @@ export function ListDetail({
 
   return (
     <Screen gap={14}>
-      <div className="-mx-2 flex h-11 items-center justify-between">
-        <BackLink to="/" label={t.tabs.home} />
-        <button
-          type="button"
-          aria-label={t.lists.options}
-          disabled={!online}
-          onClick={() => onOptions(list)}
-          className="flex size-11 items-center justify-center"
-        >
-          <span className={`flex size-[34px] items-center justify-center rounded-full bg-surface ${online ? 'text-accent-text' : 'text-disabled'}`}>
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-              <circle cx="5" cy="12" r="2" />
-              <circle cx="12" cy="12" r="2" />
-              <circle cx="19" cy="12" r="2" />
-            </svg>
-          </span>
-        </button>
-      </div>
-
-      <div className="flex items-center gap-3">
-        <span className="flex size-12 flex-none items-center justify-center rounded-button bg-accent-soft text-[26px]">
-          {list.icon}
-        </span>
-        <div className="flex min-w-0 flex-col gap-px">
-          <h1 className="truncate text-[30px] leading-9 font-bold tracking-[0.2px]">{list.name}</h1>
-          <span className="text-footnote text-text-2">
-            {list.is_default ? t.lists.mainList : formatDateRange(list.starts_on, list.ends_on)}
-          </span>
-        </div>
-      </div>
+      {topBar(list)}
+      {titleBlock(list)}
 
       {archived && (
         <div role="status" className="flex items-center gap-2.5 rounded-cta bg-fill py-2 pr-2 pl-3.5">
@@ -429,34 +570,7 @@ export function ListDetail({
         </Link>
       </section>
 
-      {hasRows && (
-        <div className="flex gap-2">
-          <label className="flex h-10 flex-1 items-center gap-2 rounded-xl bg-fill px-3 text-text-2">
-            <Icon name="search" size={18} strokeWidth={2.2} />
-            <input
-              type="search"
-              placeholder={t.lists.search}
-              aria-label={t.lists.searchLabel}
-              value={search}
-              onChange={(event) => setSearch(event.target.value)}
-              className="min-w-0 flex-1 appearance-none bg-transparent text-base text-text outline-none placeholder:text-text-2"
-            />
-          </label>
-          <button
-            type="button"
-            aria-label={filterCount > 0 ? `${t.lists.filter} (${t.filter.active})` : t.lists.filter}
-            onClick={() => setFiltering(true)}
-            className={`relative flex h-10 w-11 items-center justify-center rounded-xl ${filterCount > 0 ? 'bg-accent text-white' : 'bg-fill text-accent-text'}`}
-          >
-            <Icon name="filter" size={20} />
-            {filterCount > 0 && (
-              <span className="absolute -top-1 -right-1 flex size-[18px] items-center justify-center rounded-full border-2 border-bg bg-accent-text text-[10px] font-bold text-white">
-                {filterCount}
-              </span>
-            )}
-          </button>
-        </div>
-      )}
+      {hasRows && searchRow}
 
       {!hasRows && <EmptyList onAdd={() => onAddExpense(list.id)} disabled={readOnly} />}
 

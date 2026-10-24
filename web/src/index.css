@@ -29,6 +29,9 @@
   --ks-teal-fg: #0f6e63;
   --ks-orange-bg: #fff1e6;
   --ks-orange-fg: #a3520f;
+  /* Calendar day cells while Estatísticas loads. */
+  --ks-skel-cell: #f4f4f7;
+  --ks-skel-day: #b4b4bc;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -50,6 +53,8 @@
     --ks-teal-fg: #5fd3c4;
     --ks-orange-bg: color-mix(in srgb, #e07020 24%, transparent);
     --ks-orange-fg: #ffb06b;
+    --ks-skel-cell: #232325;
+    --ks-skel-day: #5a5a60;
   }
 }
 
@@ -71,6 +76,8 @@
   --ks-teal-fg: #5fd3c4;
   --ks-orange-bg: color-mix(in srgb, #e07020 24%, transparent);
   --ks-orange-fg: #ffb06b;
+  --ks-skel-cell: #232325;
+  --ks-skel-day: #5a5a60;
 }
 
 @theme inline {
@@ -82,6 +89,8 @@
   --color-tabbar: var(--ks-tabbar);
   --color-segment-on: var(--ks-segment-on);
   --shadow-fab: var(--ks-fab-shadow);
+  --color-skel-cell: var(--ks-skel-cell);
+  --color-skel-day: var(--ks-skel-day);
 }
 
 /* The page itself never scrolls: each screen owns its scroll area, so the
@@ -138,5 +147,22 @@ input[type='search']::-webkit-search-cancel-button {
   from {
     opacity: 0;
     transform: translateY(12px);
+  }
+}
+
+/* Loading skeletons: a slow pulse, none with reduced motion. */
+@keyframes ks-pulse {
+  50% {
+    opacity: 0.45;
+  }
+}
+
+.ks-skel {
+  animation: ks-pulse 1.4s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ks-skel {
+    animation: none;
   }
 }
