@@ -22,6 +22,19 @@ export type ChangelogEntry = {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '1.8.0',
+    date: '2026-10-24',
+    changes: ['Novo ícone da app em 3D, com a moeda a cair na bolsa do canguru, a combinar com o Guru'],
+    highlights: [
+      {
+        title: 'Ícone novo',
+        text: 'A bolsa e a moeda ganharam volume, a combinar com o Guru. Se não o vires no ecrã principal, remove a app e volta a adicioná-la.',
+        icon: 'grid',
+        tone: 'accent',
+      },
+    ],
+  },
+  {
     version: '1.7.2',
     date: '2026-10-24',
     changes: [
