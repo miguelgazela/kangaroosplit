@@ -26,12 +26,12 @@ Several files are small wrappers that show a variant of a main file. The variant
 |---|---|---|
 | 1 Login | `Login.dc.html` | `LoginErro` (prop `error`) |
 | 2 Início | `Main.dc.html` | `InicioOffline` (`offline`), `InicioLoading` (`loading`), `InicioEscuro` (`dark`) |
-| 3 List detail | `Lista.dc.html` (balance card has the "Despesas recorrentes" row) | `ListaVazia` (`variant="vazia"`), `ListaArquivada` (`variant="arquivada"`), `ListaEscuro` (`dark`) |
+| 3 List detail | `Lista.dc.html` (balance card has the "Despesas recorrentes" row) | `ListaVazia` (`variant="vazia"`), `ListaArquivada` (`variant="arquivada"`), `ListaEscuro` (`dark`), `ListaLoading` (`loading`) |
 | 4 Add / edit expense (sheet) | `Despesa.dc.html` | `DespesaTeclado` (on open, keypad + quick details card), `DespesaIgual`, `DespesaPercentagem`, `DespesaExatoErro` (validation error), `DespesaPartes`, `DespesaEditar` (`variant="editar"`), `DespesaRecorrente` (`variant="recorrente"`), `DespesaEscuro` (`dark`) |
 | 5 Settle up (sheet) | `Acerto.dc.html` | `AcertarTudo` (`variant="tudo"`), `AcertoSucesso` (`variant="sucesso"`) |
 | 6 Create / edit list (sheet) | `NovaLista.dc.html` | `EditarLista` (`edit`) |
 | 7 Recurring expenses | `Recorrentes.dc.html` | `RecorrentesVazio` (`empty`); the editor is `DespesaRecorrente` |
-| 8 Estatísticas | `EstatisticasCalendario.dc.html` (full scrolled page, interactive; prop `day`, `full`) | `Estatisticas` (top of the page, no day selected), `EstatisticasPrevista` (15 Oct selected: future recurring expense) |
+| 8 Estatísticas | `EstatisticasCalendario.dc.html` (full scrolled page, interactive; prop `day`, `full`) | `Estatisticas` (top of the page, no day selected), `EstatisticasPrevista` (15 Oct selected: future recurring expense), `EstatisticasLoading` (`loading`) |
 | 9 Atividade | `Atividade.dc.html` (now a pushed screen, opened from the bell on Início) | — |
 | 10 Definições | `Definicoes.dc.html` | — (includes the profile photo upload) |
 | 11 System states | `Notificacoes`, `Instalar`, `ConfirmarApagar` (iOS action sheet), `Toast`, `Novidades` (what's new after an update) | offline and loading: see Início |
@@ -319,6 +319,38 @@ Show every amount in one colour. Do not show the decimals ("…,40 €") in a li
 ### Status
 
 The immersive Início header was tried and dropped (17 Oct 2026). Início keeps the "Saldo total" card. Only the single-colour amounts stay. The app already has both changes (1.5.1), so there is nothing to implement here. `InicioScroll.dc.html` belongs to the dropped design: ignore it, or delete it.
+
+## Loading states — Lista and Estatísticas
+
+Mockups: `ListaLoading` (`Lista` with `loading`) and `EstatisticasLoading` (`EstatisticasCalendario` with `loading`). They follow the skeleton style of `InicioLoading`.
+
+**Common rules**
+
+- Skeleton colour: `skel` = `#ECECF1` (dark `#2C2C2E`), on the normal white / dark cards. The cards, their radii, their padding and the gaps stay the same as in the loaded screen, so nothing moves when the data arrives.
+- Keep everything that is already known as real UI: the navigation, the screen title, the list name and icon (they come from Início), the search and filter row, the "Todas as listas" picker, the month selector, the section titles ("Por categoria", "Calendário") and the weekday letters.
+- Animation: a slow pulse, opacity 1 → 0.45 → 1 over 1.4 s, ease-in-out, on every skeleton block. When `prefers-reduced-motion` is on, use no animation.
+- Show the skeleton only for the first load, when there is no data yet. When the data is cached (for example after you go back to the screen), show the cached data at once and refresh it in the background without a skeleton. Do not show the skeleton for less than about 300 ms, so the screen does not flash.
+- Accessibility: put `aria-busy="true"` on each loading section and give it a label ("A carregar o saldo", "A carregar as categorias", "A carregar o calendário"). The skeleton blocks themselves are `aria-hidden`.
+- If loading fails, show the existing error toast ("Algo correu mal. Tenta outra vez.") and keep the skeleton until the user pulls to refresh, or until the app is online again.
+
+**Lista**
+
+- Balance card: 2 bars for the label (110×14) and the amount (150×30), a 128×44 block in place of "Acertar contas", the split bar (48×6) with a 190×12 text bar, and the "Despesas recorrentes" row as a 28px square plus a 160×14 bar.
+- Expenses: 2 month groups. Each group has a header with 2 bars (month name and total) and a card with skeleton rows (4 rows, then 2 rows). Each row: a 42px rounded square, 2 text lines on the left (14px and 11px high, different widths) and 2 short lines on the right. Row height and separators are the same as the real rows.
+- Do not show the empty state (Guru "vazio") while the list loads.
+
+**Estatísticas**
+
+- Total do mês: bars for the label, the amount (168×34) and the comparison line, 6 grey bars in place of the 6-month chart, the full-width split bar, and 2 person rows (28px circle + 2 lines).
+- Por categoria: real title, a grey count bar, a grey stacked bar and 4 skeleton rows (colour square, icon square, name bar, % bar, amount bar).
+- Calendário: real title and weekday letters, a grey "N despesas" bar, and the 31 day cells in `#F4F4F7` with the day number in `#B4B4BC`. There are no amounts or dots, the cells cannot be selected and no day panel shows.
+
+### To implement — loading states
+
+1. Add a shared `Skeleton` block component (the colour, the radius and the pulse above) if there is not one yet.
+2. Lista (`ListDetail.tsx`): skeleton balance card and expense groups for the first load.
+3. Estatísticas (`Stats.tsx`): skeleton Total do mês, Por categoria and calendar cells for the first load and when the month changes with no cached data.
+4. Add a changelog entry (see `CLAUDE.md`).
 
 ## Not shown in the mockups
 

@@ -10,6 +10,9 @@
 <helmet>
 <style>
 body{margin:0}
+@keyframes ks-pulse{0%,100%{opacity:1}50%{opacity:.45}}
+.ks-skel{animation:ks-pulse 1.4s ease-in-out infinite}
+@media (prefers-reduced-motion: reduce){.ks-skel{animation:none}}
 </style>
 </helmet>
 <div style="width: 390px; height: 844px; position: relative; overflow: hidden; background: {{c.bg}}; color: {{c.text}}; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', sans-serif">
@@ -44,6 +47,26 @@ body{margin:0}
       </div>
     </sc-if>
 
+    <sc-if value="{{loading}}" hint-placeholder-val="{{ false }}">
+      <section aria-label="A carregar o saldo" aria-busy="true" style="border-radius: 20px; background: {{c.card}}; box-shadow: {{c.shadow}}; padding: 16px 16px 4px; display: flex; flex-direction: column; gap: 12px; flex: none">
+        <div style="display: flex; align-items: center; gap: 12px">
+          <div style="flex: 1; display: flex; flex-direction: column; gap: 8px">
+            <div class="ks-skel" style="width: 110px; height: 14px; border-radius: 7px; background: {{c.skel}}"></div>
+            <div class="ks-skel" style="width: 150px; height: 30px; border-radius: 10px; background: {{c.skel}}"></div>
+          </div>
+          <div class="ks-skel" style="width: 128px; height: 44px; border-radius: 14px; background: {{c.skel}}"></div>
+        </div>
+        <div style="border-top: 0.5px solid {{c.sep}}; padding-top: 12px; display: flex; align-items: center; gap: 8px">
+          <div class="ks-skel" style="width: 48px; height: 6px; border-radius: 3px; background: {{c.skel}}"></div>
+          <div class="ks-skel" style="width: 190px; height: 12px; border-radius: 6px; background: {{c.skel}}"></div>
+        </div>
+        <div style="margin: -6px -16px 0; padding: 0 16px; border-top: 0.5px solid {{c.sep}}; height: 48px; display: flex; align-items: center; gap: 10px">
+          <div class="ks-skel" style="width: 28px; height: 28px; border-radius: 8px; background: {{c.skel}}"></div>
+          <div class="ks-skel" style="width: 160px; height: 14px; border-radius: 7px; background: {{c.skel}}"></div>
+        </div>
+      </section>
+    </sc-if>
+    <sc-if value="{{notLoading}}" hint-placeholder-val="{{ true }}">
     <section aria-label="Saldo da lista" style="border-radius: 20px; background: {{c.card}}; box-shadow: {{c.shadow}}; padding: 16px 16px 4px; display: flex; flex-direction: column; gap: 12px; flex: none">
       <div style="display: flex; align-items: center; gap: 12px">
         <div style="flex: 1; display: flex; flex-direction: column; gap: 2px">
@@ -75,6 +98,7 @@ body{margin:0}
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="{{c.text2}}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"></path></svg>
       </a>
     </section>
+    </sc-if>
 
     <div style="display: flex; gap: 8px">
       <label style="flex: 1; height: 40px; border-radius: 12px; background: {{c.fill}}; display: flex; align-items: center; gap: 8px; padding: 0 12px; color: {{c.text2}}">
@@ -97,6 +121,34 @@ body{margin:0}
       </div>
     </sc-if>
 
+    <sc-if value="{{loading}}" hint-placeholder-val="{{ false }}">
+      <div aria-hidden="true" style="display: flex; flex-direction: column; gap: 14px">
+        <sc-for list="{{skelMonths}}" as="m" hint-placeholder-count="2">
+          <section style="display: flex; flex-direction: column; gap: 8px">
+            <div style="display: flex; justify-content: space-between; padding: 6px 4px 0">
+              <div class="ks-skel" style="width: {{m.w}}; height: 12px; border-radius: 6px; background: {{c.skel}}"></div>
+              <div class="ks-skel" style="width: 64px; height: 12px; border-radius: 6px; background: {{c.skel}}"></div>
+            </div>
+            <div style="border-radius: 20px; background: {{c.card}}; box-shadow: {{c.shadow}}; overflow: hidden">
+              <sc-for list="{{m.rows}}" as="r" hint-placeholder-count="3">
+                <div style="min-height: 64px; padding: 10px 14px; display: flex; align-items: center; gap: 12px; box-sizing: border-box; border-top: {{r.border}}">
+                  <div class="ks-skel" style="width: 42px; height: 42px; border-radius: 12px; background: {{c.skel}}; flex: none"></div>
+                  <div style="flex: 1; display: flex; flex-direction: column; gap: 8px">
+                    <div class="ks-skel" style="width: {{r.w1}}; height: 14px; border-radius: 7px; background: {{c.skel}}"></div>
+                    <div class="ks-skel" style="width: {{r.w2}}; height: 11px; border-radius: 6px; background: {{c.skel}}"></div>
+                  </div>
+                  <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 8px">
+                    <div class="ks-skel" style="width: 62px; height: 14px; border-radius: 7px; background: {{c.skel}}"></div>
+                    <div class="ks-skel" style="width: 84px; height: 11px; border-radius: 6px; background: {{c.skel}}"></div>
+                  </div>
+                </div>
+              </sc-for>
+            </div>
+          </section>
+        </sc-for>
+      </div>
+    </sc-if>
+    <sc-if value="{{notLoading}}" hint-placeholder-val="{{ true }}">
     <sc-for list="{{d.months}}" as="m" hint-placeholder-count="2">
       <section style="display: flex; flex-direction: column; gap: 8px">
         <div style="display: flex; justify-content: space-between; padding: 4px 4px 0; font-size: 13px; font-weight: 600; color: {{c.text2}}; text-transform: uppercase; letter-spacing: 0.4px">
@@ -159,6 +211,7 @@ body{margin:0}
         </div>
       </section>
     </sc-for>
+    </sc-if>
   </div>
 
   <div style="position: absolute; left: 0; bottom: 0; width: 390px; height: 100px">
@@ -166,19 +219,20 @@ body{margin:0}
   </div>
 </div>
 </x-dc>
-<script type="text/x-dc" data-dc-script data-props='{"dark":{"editor":"boolean","default":false},"variant":{"editor":"enum","options":["casa","vazia","arquivada"],"default":"casa"},"$preview":{"width":390,"height":844}}'>
+<script type="text/x-dc" data-dc-script data-props='{"dark":{"editor":"boolean","default":false},"variant":{"editor":"enum","options":["casa","vazia","arquivada"],"default":"casa"},"loading":{"editor":"boolean","default":false},"$preview":{"width":390,"height":844}}'>
 class Component extends DCLogic {
   renderVals() {
     const dark = !!this.props.dark;
     const variant = this.props.variant ?? 'casa';
+    const loading = !!this.props.loading;
     const c = dark ? {
       bg: '#000000', card: '#1C1C1E', fill: '#2C2C2E', text: '#F5F5F7', text2: '#A1A1AA', sep: '#38383A',
       link: '#A893FF', accent: '#7B5CFA', accentSoft: '#2A2342', pos: '#3DD6A3', neg: '#FF9A5C',
-      shadow: 'none', settleBg: '#211B36', coin: '#2A2342', pouch: '#1C1C1E'
+      shadow: 'none', settleBg: '#211B36', coin: '#2A2342', pouch: '#1C1C1E', skel: '#2C2C2E'
     } : {
       bg: '#F2F2F7', card: '#FFFFFF', fill: '#F2F2F7', text: '#111114', text2: '#6B6B76', sep: '#E6E6EC',
       link: '#5B3FD9', accent: '#6847F0', accentSoft: '#EFEAFE', pos: '#0B7A5C', neg: '#B93D0B',
-      shadow: '0 1px 2px rgba(17,17,20,0.04)', settleBg: '#F7F4FF', coin: '#FFFFFF', pouch: '#EFEAFE'
+      shadow: '0 1px 2px rgba(17,17,20,0.04)', settleBg: '#F7F4FF', coin: '#FFFFFF', pouch: '#EFEAFE', skel: '#ECECF1'
     };
     const exp = (icon, desc, date, mine, amount, position, extra) => {
       const r = Object.assign({
@@ -231,7 +285,12 @@ class Component extends DCLogic {
           ]) }
         ] };
     }
-    return { c, dark, d };
+    const W = [['62%', '38%'], ['48%', '44%'], ['70%', '34%'], ['54%', '40%']];
+    const skelMonths = [['110px', 4], ['96px', 2]].map(([w, n]) => ({
+      w, rows: W.slice(0, n).map(([w1, w2], i) => ({ w1, w2, border: i === 0 ? 'none' : '0.5px solid ' + c.sep }))
+    }));
+    if (loading) d = Object.assign({}, d, { empty: false });
+    return { c, dark, d, loading, notLoading: !loading, skelMonths };
   }
 }
 </script>

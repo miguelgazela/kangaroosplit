@@ -370,6 +370,20 @@
       "w": 390,
       "x": 3760,
       "y": 3660
+    },
+    "ListaLoading.dc.html": {
+      "h": 844,
+      "title": "Lista — a carregar",
+      "w": 390,
+      "x": 3760,
+      "y": 2440
+    },
+    "EstatisticasLoading.dc.html": {
+      "h": 1360,
+      "title": "Estatísticas — a carregar",
+      "w": 390,
+      "x": 940,
+      "y": 11480
     }
   },
   "createdOnFiles": {
@@ -391,7 +405,7 @@
     },
     "r10": {
       "kind": "title1",
-      "maxW": 860,
+      "maxW": 1330,
       "text": "Estatísticas com calendário",
       "w": 240,
       "x": 0,
@@ -407,7 +421,7 @@
     },
     "r3": {
       "kind": "title1",
-      "maxW": 3680,
+      "maxW": 4150,
       "text": "Listas, acertos e recorrentes",
       "w": 240,
       "x": 0,
@@ -485,6 +499,7 @@
     "AcertoSucesso.dc.html",
     "Recorrentes.dc.html",
     "RecorrentesVazio.dc.html",
+    "ListaLoading.dc.html",
     "Login.dc.html",
     "LoginErro.dc.html",
     "InicioOffline.dc.html",
@@ -514,7 +529,8 @@
     "ComprasOffline.dc.html",
     "Navegacao.dc.html",
     "EstatisticasCalendario.dc.html",
-    "EstatisticasPrevista.dc.html"
+    "EstatisticasPrevista.dc.html",
+    "EstatisticasLoading.dc.html"
   ],
   "pages": [],
   "title": "KangarooSplit UI"
