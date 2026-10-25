@@ -20,6 +20,8 @@ export function nameForms(member: Member) {
     to: `${feminine ? 'à' : 'ao'} ${name}`,
     // "Parte da Mara"
     of: `${feminine ? 'da' : 'do'} ${name}`,
+    // "Dividir com a Mara"
+    with: `com ${feminine ? 'a' : 'o'} ${name}`,
   }
 }
 

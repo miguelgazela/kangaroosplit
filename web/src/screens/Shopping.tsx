@@ -35,6 +35,7 @@ import {
   useUpdateShoppingItem,
 } from '../query/hooks'
 import { ShoppingItemSheet } from '../sheets/ShoppingItemSheet'
+import { useSheets } from '../sheets/SheetContext'
 
 const SECTION_LABELS = Object.fromEntries(SECTIONS.map(({ id, label }) => [id, label])) as Record<
   ShoppingSection,
@@ -69,7 +70,7 @@ function ItemRow({
         className="flex size-11 flex-none items-center justify-center"
       >
         <span
-          className={`flex size-6 items-center justify-center rounded-full text-white ${done ? 'bg-pos' : 'border-2 border-checkbox-off'}`}
+          className={`flex size-6 items-center justify-center rounded-full text-white ${done ? 'bg-accent' : 'border-2 border-checkbox-off'}`}
         >
           {done && <Icon name="check" size={14} strokeWidth={3.4} />}
         </span>
@@ -122,11 +123,19 @@ export function Shopping() {
   const [editing, setEditing] = useState<string | null>(null)
   const [menu, setMenu] = useState(false)
   const [confirmDeleteAll, setConfirmDeleteAll] = useState(false)
+  // Shown after "Remover comprados" until dismissed or used.
+  const [donePrompt, setDonePrompt] = useState(false)
+  // Undo for the last "Remover comprados", shown with the notice.
+  const [undo, setUndo] = useState<ShoppingItem[] | null>(null)
+  const { addExpense } = useSheets()
 
   // The notice is a passing remark, not a state.
   useEffect(() => {
     if (!notice) return
-    const timer = setTimeout(() => setNotice(''), 4000)
+    const timer = setTimeout(() => {
+      setNotice('')
+      setUndo(null)
+    }, 4000)
     return () => clearTimeout(timer)
   }, [notice])
 
@@ -171,14 +180,10 @@ export function Shopping() {
     const removed = cart
     clear.mutate(undefined, {
       onSuccess: () => {
-        setNotice('')
-        toast({
-          message: t.shopping.cartCleared(removed.length),
-          action: {
-            label: t.actions.undo,
-            onClick: () => restore.mutate(removed, { onError: failed }),
-          },
-        })
+        // A notice line, not a toast: the toast would sit on the prompt card.
+        setNotice(t.shopping.cartCleared(removed.length))
+        setUndo(removed)
+        setDonePrompt(true)
       },
       onError: failed,
     })
@@ -200,7 +205,7 @@ export function Shopping() {
   return (
     <Screen gap={12}>
       <div className="mt-1 flex h-[52px] flex-none items-center justify-between">
-        <h1 className="text-large-title font-bold tracking-[0.4px]">{t.tabs.shopping}</h1>
+        <h1 className="font-rounded text-large-title font-bold tracking-[0.2px]">{t.tabs.shopping}</h1>
         <button
           type="button"
           aria-label={t.shopping.options}
@@ -213,7 +218,7 @@ export function Shopping() {
         </button>
       </div>
       <span className="-mt-2.5 text-subhead text-text-2">
-        {open === 0 ? t.shopping.nothingToBuy : t.shopping.toBuy(open, nameForms(partner).name)}
+        {open === 0 ? t.shopping.nothingToBuy : t.shopping.toBuy(open)}
       </span>
 
       <form onSubmit={submit} className="relative flex-none">
@@ -285,19 +290,19 @@ export function Shopping() {
                 )}
               </button>
             ))}
-            <div className="border-t-[0.5px] border-separator px-3.5 py-2 text-xs text-text-2">{t.shopping.tip}</div>
           </div>
         )}
       </form>
 
       {chips.length > 0 && (
         <div className="flex flex-none flex-col gap-1.5">
-          <span className="px-1 text-footnote font-semibold text-text-2">{t.shopping.usual}</span>
+          <h2 className="px-1 text-subhead font-semibold">{t.shopping.usual}</h2>
           <div className="-mx-4 flex gap-2 overflow-x-auto px-4">
             {chips.map((chip) => (
               <button
                 key={chip.name_key}
                 type="button"
+                aria-label={t.shopping.addUsual(chip.name)}
                 onClick={() => addKnown({ name: chip.name, emoji: chip.emoji, section: chip.section }, 1)}
                 className="flex h-9 flex-none items-center gap-1.5 rounded-full bg-surface px-3 text-subhead whitespace-nowrap"
               >
@@ -310,8 +315,22 @@ export function Shopping() {
       )}
 
       {notice && (
-        <div role="status" className="flex-none px-1 text-footnote text-pos">
-          {notice}
+        <div role="status" className="flex flex-none items-center gap-2 px-1 text-footnote text-text-2">
+          <span className="flex-1">{notice}</span>
+          {undo && (
+            <button
+              type="button"
+              onClick={() => {
+                restore.mutate(undo, { onError: failed })
+                setUndo(null)
+                setNotice('')
+                setDonePrompt(false)
+              }}
+              className="-my-3 h-11 px-1 font-semibold text-link"
+            >
+              {t.actions.undo}
+            </button>
+          )}
         </div>
       )}
 
@@ -325,9 +344,9 @@ export function Shopping() {
 
       {groups.map((group) => (
         <section key={group.section} className="flex flex-none flex-col gap-1.5">
-          <h2 className="flex justify-between px-1 text-footnote font-semibold tracking-[0.4px] text-text-2 uppercase">
+          <h2 className="flex justify-between px-1 text-subhead font-semibold">
             <span>{group.label}</span>
-            <span className="tracking-normal normal-case">{group.items.length}</span>
+            <span className="font-medium text-text-2 tabular-nums">{group.items.length}</span>
           </h2>
           <div className="overflow-hidden rounded-card bg-surface">
             {group.items.map((item, index) => (
@@ -348,9 +367,9 @@ export function Shopping() {
 
       {cart.length > 0 && (
         <section className="flex flex-none flex-col gap-1.5 pb-[76px]">
-          <h2 className="flex justify-between px-1 text-footnote font-semibold tracking-[0.4px] text-text-2 uppercase">
+          <h2 className="flex justify-between px-1 text-subhead font-semibold">
             <span>{t.shopping.inCart}</span>
-            <span className="tracking-normal normal-case">{cart.length}</span>
+            <span className="font-medium text-text-2 tabular-nums">{cart.length}</span>
           </h2>
           <div className="overflow-hidden rounded-card bg-surface/60">
             {cart.map((item, index) => (
@@ -371,7 +390,6 @@ export function Shopping() {
 
       {cart.length > 0 && (
         <div className="fixed inset-x-3 bottom-[calc(env(safe-area-inset-bottom)+64px)] z-10 flex h-[60px] items-center gap-2.5 rounded-[20px] bg-surface pr-2 pl-4 shadow-fab">
-          <Icon name="cart" size={22} className="text-pos" />
           <span className="flex-1 text-subhead font-semibold">{t.shopping.inCartCount(cart.length)}</span>
           <button
             type="button"
@@ -380,6 +398,36 @@ export function Shopping() {
             className="h-11 rounded-[14px] bg-accent px-4 text-subhead font-semibold text-white disabled:bg-disabled"
           >
             {t.shopping.clearCart}
+          </button>
+        </div>
+      )}
+
+      {cart.length === 0 && donePrompt && (
+        <div className="fixed inset-x-3 bottom-[calc(env(safe-area-inset-bottom)+64px)] z-10 flex items-center gap-3 rounded-[20px] bg-surface py-3 pr-1 pl-3.5 shadow-[0_10px_30px_rgba(17,17,20,0.16)]">
+          <span aria-hidden="true" className="flex size-10 flex-none items-center justify-center rounded-xl bg-fill text-xl">
+            🧾
+          </span>
+          <span className="flex min-w-0 flex-1 flex-col">
+            <span className="text-subhead font-semibold">{t.shopping.doneTitle}</span>
+            <span className="text-footnote text-text-2">{t.shopping.doneBody(nameForms(partner).with)}</span>
+          </span>
+          <button
+            type="button"
+            onClick={() => {
+              setDonePrompt(false)
+              addExpense()
+            }}
+            className="h-10 flex-none rounded-xl bg-accent px-3 text-subhead font-semibold whitespace-nowrap text-white"
+          >
+            {t.shopping.logExpense}
+          </button>
+          <button
+            type="button"
+            aria-label={t.shopping.notNow}
+            onClick={() => setDonePrompt(false)}
+            className="flex h-11 w-9 flex-none items-center justify-center text-text-2"
+          >
+            <Icon name="close" size={16} strokeWidth={2.4} />
           </button>
         </div>
       )}
