@@ -410,7 +410,12 @@ export const t = {
   settings: {
     profile: 'Perfil',
     name: 'Nome',
-    color: 'Cor',
+    color: 'A tua cor',
+    colorHelp: 'Aparece no teu avatar e nos botões da app.',
+    // "A rosa é da Mara."
+    colorTaken: (colour: string, of: string) => `A ${colour.toLowerCase()} é ${of}.`,
+    // "Rosa (é a cor da Mara)"
+    colorTakenLabel: (colour: string, of: string) => `${colour} (é a cor ${of})`,
     categories: 'Categorias',
     version: (version: string) => `Versão ${version}`,
     changelog: 'Novidades',

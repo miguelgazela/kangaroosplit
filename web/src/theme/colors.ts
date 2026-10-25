@@ -16,10 +16,10 @@ export type UserColor = { key: string; name: string; hex: string }
 
 // The colours a person can choose in Definições ("A tua cor").
 export const USER_COLORS: UserColor[] = [
-  { key: 'violeta', name: 'Violeta', hex: '#6847F0' },
   { key: 'azul', name: 'Azul', hex: '#2563EB' },
   { key: 'verde', name: 'Verde', hex: '#0B7A5C' },
   { key: 'laranja', name: 'Laranja', hex: '#B85A12' },
+  { key: 'violeta', name: 'Violeta', hex: '#6847F0' },
   { key: 'petroleo', name: 'Petróleo', hex: '#0E7490' },
   { key: 'grafite', name: 'Grafite', hex: '#4A4A55' },
   { key: 'rosa', name: 'Rosa', hex: '#C0367A' },

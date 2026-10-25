@@ -13,6 +13,9 @@ import { todayISO } from '../lib/dates'
 import { buildCsv, saveCsv } from '../lib/export'
 import { OfflineError, useOnline } from '../lib/online'
 import { usePush } from '../lib/usePush'
+import { applyBrand } from '../lib/brand'
+import { initials, nameForms } from '../lib/people'
+import { USER_COLORS, userColorName } from '../theme/colors'
 import {
   useCategories,
   useCurrentMember,
@@ -28,7 +31,7 @@ export function Settings() {
   const online = useOnline()
   const toast = useToast()
   const { session, signOut } = useAuth()
-  const { me } = useCurrentMember()
+  const { me, partner } = useCurrentMember()
   const { data: categories } = useCategories()
   const { data: rules } = useRecurring()
   const updateProfile = useUpdateProfile()
@@ -70,16 +73,42 @@ export function Settings() {
   }
 
   const activeCategories = categories?.filter((category) => !category.archived_at) ?? []
+  // The other person's colour cannot be picked (two people, two colours).
+  const partnerColour = partner ? userColorName(partner.color) : undefined
+  const taken =
+    partner && partnerColour
+      ? {
+          hex: partner.color,
+          mark: initials(partner.display_name),
+          label: t.settings.colorTakenLabel(partnerColour, nameForms(partner).of),
+        }
+      : undefined
+
+  const pickColour = (color: string) => {
+    if (!me) return
+    const previous = me.color
+    // The whole app changes at once; the profile follows.
+    applyBrand(color)
+    updateProfile.mutate(
+      { userId: me.user_id, color },
+      {
+        onError: (error) => {
+          applyBrand(previous)
+          fail(error)
+        },
+      },
+    )
+  }
 
   return (
     <Screen>
       <div className="mt-1 flex h-[52px] items-center">
-        <h1 className="text-large-title font-bold tracking-[0.4px]">{t.tabs.settings}</h1>
+        <h1 className="font-rounded text-large-title font-bold tracking-[0.2px]">{t.tabs.settings}</h1>
       </div>
 
       {me && (
         <section className="flex flex-col gap-2">
-          <h2 className="px-4 text-footnote tracking-[0.4px] text-text-2 uppercase">{t.settings.profile}</h2>
+          <h2 className="px-1 text-subhead font-semibold">{t.settings.profile}</h2>
           <div className="overflow-hidden rounded-card bg-surface shadow-card">
             <div className="flex items-center gap-3.5 p-4">
               <Avatar member={me} size={56} />
@@ -108,37 +137,31 @@ export function Settings() {
                 label={t.settings.color}
                 value={me.color}
                 disabled={!online}
-                onChange={(color) => updateProfile.mutate({ userId: me.user_id, color }, { onError: fail })}
+                options={USER_COLORS.map(({ hex, name: colour }) => ({ hex, label: colour }))}
+                taken={taken}
+                describedBy="colour-help"
+                onChange={pickColour}
               />
+              <span id="colour-help" className="text-footnote text-text-2">
+                {t.settings.colorHelp}
+                {partner && partnerColour ? ` ${t.settings.colorTaken(partnerColour, nameForms(partner).of)}` : ''}
+              </span>
             </div>
           </div>
         </section>
       )}
 
       <div className="mt-1 overflow-hidden rounded-card bg-surface shadow-card">
-        <Link to="/categorias" className="flex flex-col gap-2.5 px-3.5 py-3">
-          <span className="flex items-center gap-3">
-            <span className="flex size-8 flex-none items-center justify-center rounded-lg bg-neg-soft text-neg">
-              <Icon name="grid" size={18} />
-            </span>
-            <span className="flex-1 text-body">{t.settings.categories}</span>
-            <span className="text-body text-text-2">{activeCategories.length}</span>
-            <Icon name="chevronRight" size={14} strokeWidth={2.5} className="text-text-2" />
+        <Link to="/categorias" className="flex h-[52px] items-center gap-3 px-3.5">
+          <span className="flex size-8 flex-none items-center justify-center rounded-lg bg-fill text-text-2">
+            <Icon name="grid" size={18} />
           </span>
-          <span className="flex flex-wrap gap-1.5 pl-11">
-            {activeCategories.map((category) => (
-              <span
-                key={category.id}
-                className="flex size-[30px] items-center justify-center rounded-lg text-base"
-                style={{ background: `${category.color}26` }}
-              >
-                {category.icon}
-              </span>
-            ))}
-          </span>
+          <span className="flex-1 text-body">{t.settings.categories}</span>
+          <span className="text-body text-text-2">{activeCategories.length}</span>
+          <Icon name="chevronRight" size={14} strokeWidth={2.5} className="text-text-2" />
         </Link>
         <Link to="/recorrentes" className="flex h-[52px] items-center gap-3 border-t-[0.5px] border-separator px-3.5">
-          <span className="flex size-8 flex-none items-center justify-center rounded-lg bg-accent-soft text-link">
+          <span className="flex size-8 flex-none items-center justify-center rounded-lg bg-fill text-text-2">
             <Icon name="repeat" size={18} />
           </span>
           <span className="flex-1 text-body">{t.recurring.title}</span>
@@ -146,7 +169,7 @@ export function Settings() {
           <Icon name="chevronRight" size={14} strokeWidth={2.5} className="text-text-2" />
         </Link>
         <div className="flex min-h-[52px] items-center gap-3 border-t-[0.5px] border-separator px-3.5 py-2">
-          <span className="flex size-8 flex-none items-center justify-center rounded-lg bg-pos-soft text-pos">
+          <span className="flex size-8 flex-none items-center justify-center rounded-lg bg-fill text-text-2">
             <Icon name="bell" size={18} />
           </span>
           <span className="flex min-w-0 flex-1 flex-col">
@@ -163,7 +186,7 @@ export function Settings() {
             aria-label={t.notifications.title}
             disabled={!online || push.busy || push.state === null || push.state === 'unsupported' || push.state === 'blocked'}
             onClick={() => void togglePush()}
-            className={`relative h-[31px] w-[51px] flex-none rounded-full transition-colors disabled:opacity-40 ${push.state === 'on' ? 'bg-pos' : 'bg-fill'}`}
+            className={`relative h-[31px] w-[51px] flex-none rounded-full transition-colors disabled:opacity-40 ${push.state === 'on' ? 'bg-accent' : 'bg-fill'}`}
           >
             <span
               className={`absolute top-0.5 left-0.5 size-[27px] rounded-full bg-white shadow-[0_2px_4px_rgba(0,0,0,0.2)] transition-transform ${push.state === 'on' ? 'translate-x-5' : ''}`}
