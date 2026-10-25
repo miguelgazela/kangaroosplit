@@ -19,7 +19,8 @@ export const t = {
     email: 'Email',
     password: 'Palavra-passe',
     submit: 'Entrar',
-    invalid: 'Email ou palavra-passe incorretos.',
+    invalid: 'O email ou a palavra-passe não estão certos. Confirma os dois e tenta outra vez.',
+    forgot: 'Esqueci-me da palavra-passe',
   },
 
   noAccess: {
