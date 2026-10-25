@@ -37,7 +37,6 @@ export const t = {
     settledShort: 'quites',
     settleUp: 'Acertar contas',
     settleAll: 'Acertar tudo',
-    activeLists: (count: number) => (count === 1 ? '1 lista ativa' : `${count} listas ativas`),
     // Under the balance: expenses dated in the future do not count yet.
     // `date` is when the last one starts counting; with several, by then all do.
     scheduled: (impact: { subject: string; to: string; cents: number; count: number; date: string; money: string }) => {

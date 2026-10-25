@@ -47,7 +47,7 @@ function HeroBalance({ cents, me, partner }: { cents: number; me: Member; partne
           {cents > 0 ? t.balance.owesYou(names.subject) : cents < 0 ? t.balance.youOwe(names.to) : t.balance.settled}
         </span>
       </div>
-      <div className="text-hero font-bold tracking-[-1px] tabular-nums">
+      <div className="font-rounded text-[52px] leading-[60px] font-bold tracking-[-0.5px] tabular-nums">
         {formatMoney(Math.abs(cents))}
       </div>
     </div>
@@ -57,7 +57,9 @@ function HeroBalance({ cents, me, partner }: { cents: number; me: Member; partne
 function ListRow({ list, subtitle, balance }: { list: List; subtitle: string; balance: number }) {
   return (
     <>
-      <span className="flex size-12 flex-none items-center justify-center rounded-button bg-accent-soft text-2xl">
+      <span
+        className={`flex size-12 flex-none items-center justify-center rounded-button text-2xl ${list.is_default ? 'bg-accent-soft' : 'bg-fill'}`}
+      >
         {list.icon}
       </span>
       <span className="flex min-w-0 flex-1 flex-col gap-[3px]">
@@ -175,32 +177,24 @@ export function Home({ onSettleAll, onNewList }: { onSettleAll: () => void; onNe
   return (
     <Screen>
       <div className="mt-1 flex h-[52px] items-center justify-between">
-        <h1 className="text-large-title font-bold tracking-[0.4px]">{t.tabs.home}</h1>
-        <div className="flex items-center gap-1">
-          <Link
-            to="/atividade"
-            aria-label={news > 0 ? t.activity.bellNews(news) : t.tabs.activity}
-            className="relative flex size-11 items-center justify-center"
-          >
-            <span className="flex size-9 items-center justify-center rounded-full bg-surface text-link">
-              <Icon name="bell" size={20} />
+        <h1 className="font-rounded text-large-title font-bold tracking-[0.2px]">{t.tabs.home}</h1>
+        <Link
+          to="/atividade"
+          aria-label={news > 0 ? t.activity.bellNews(news) : t.tabs.activity}
+          className="relative flex size-11 items-center justify-center"
+        >
+          <span className="flex size-9 items-center justify-center rounded-full bg-surface text-link">
+            <Icon name="bell" size={20} />
+          </span>
+          {news > 0 && (
+            <span
+              aria-hidden="true"
+              className="absolute top-0.5 right-0.5 flex h-[18px] min-w-[18px] items-center justify-center rounded-full border-2 border-bg bg-danger px-1 text-[11px] leading-none font-bold text-white"
+            >
+              {news}
             </span>
-            {news > 0 && (
-              <span
-                aria-hidden="true"
-                className="absolute top-0.5 right-0.5 flex h-[18px] min-w-[18px] items-center justify-center rounded-full border-2 border-bg bg-danger px-1 text-[11px] leading-none font-bold text-white"
-              >
-                {news}
-              </span>
-            )}
-          </Link>
-          {me && partner && (
-            <div className="flex items-center" aria-label={`${me.display_name} e ${partner.display_name}`}>
-              <Avatar member={me} size={40} className="border-2 border-bg" />
-              <Avatar member={partner} size={40} className="-ml-2.5 border-2 border-bg" />
-            </div>
           )}
-        </div>
+        </Link>
       </div>
 
       <section
@@ -211,14 +205,7 @@ export function Home({ onSettleAll, onNewList }: { onSettleAll: () => void; onNe
           <circle cx="85" cy="85" r="84" fill="none" stroke="#FFFFFF" strokeWidth="2" />
           <circle cx="85" cy="85" r="58" fill="none" stroke="#FFFFFF" strokeWidth="2" />
         </svg>
-        <div className="flex items-center justify-between">
-          <span className="text-subhead font-medium text-white/85">{t.balance.total}</span>
-          {ready && (
-            <span className="rounded-full bg-white/15 px-2.5 py-1 text-footnote font-medium">
-              {t.balance.activeLists(active.length)}
-            </span>
-          )}
-        </div>
+        <span className="text-subhead font-medium text-white/86">{t.balance.total}</span>
         {ready ? (
           <>
             <HeroBalance cents={total} me={me} partner={partner} />
@@ -257,7 +244,7 @@ export function Home({ onSettleAll, onNewList }: { onSettleAll: () => void; onNe
       <YearReviewCard />
 
       <div className="mt-1.5 flex items-center justify-between">
-        <h2 className="text-title2 font-bold">{t.lists.title}</h2>
+        <h2 className="font-rounded text-title2 font-bold">{t.lists.title}</h2>
         <button
           type="button"
           disabled={!online}
@@ -274,13 +261,13 @@ export function Home({ onSettleAll, onNewList }: { onSettleAll: () => void; onNe
       ) : (
         <div className="flex flex-col gap-3">
           {main && (
-            <div className="overflow-hidden rounded-card bg-surface shadow-card outline-[1.5px] outline-main-ring">
+            <div className="overflow-hidden rounded-card bg-surface shadow-card">
               <Link to={`/lista/${main.id}`} className="flex items-center gap-3.5 px-4 py-3.5">
                 <ListRow list={main} subtitle={subtitle(main)} balance={balanceOf(main)} />
               </Link>
               {recent.length > 0 && (
                 <>
-                  <h3 className="mx-4 border-t-[0.5px] border-separator pt-2 pb-0.5 text-xs font-semibold tracking-[0.4px] text-text-2 uppercase">
+                  <h3 className="mx-4 border-t-[0.5px] border-separator pt-2.5 pb-0.5 text-footnote font-semibold text-text-2">
                     {t.lists.recentExpenses}
                   </h3>
                   {recent.map((expense) => (
