@@ -3,28 +3,19 @@ import { Icon } from './Icon'
 import { Skeleton } from './Skeleton'
 import { t } from '../i18n/pt'
 import { daysInMonth, leadingBlanks, tintLevel, type CalendarDay } from '../lib/calendar'
-import type { Category, Member } from '../lib/database.types'
+import type { Category, List, Member } from '../lib/database.types'
+import { fullDayLabel } from '../lib/dayLabel'
 import { formatMoney, formatMonthName, formatWeekday, formatWholeEuros } from '../lib/format'
 import { nameForms } from '../lib/people'
 import { expensePosition } from '../lib/stats'
 
-const TINTS = [
-  'transparent',
-  'color-mix(in srgb, var(--color-accent) 12%, transparent)',
-  'color-mix(in srgb, var(--color-accent) 26%, transparent)',
-  'color-mix(in srgb, var(--color-accent) 48%, transparent)',
-  'var(--color-accent)',
-]
-const SELECTED_RING = '0 0 0 2.5px #F59E0B'
+// Heat by day total (spec 2.10): mixes of the user colour with the card.
+const TINTS = ['transparent', 'var(--color-heat-1)', 'var(--color-heat-2)', 'var(--color-heat-3)', 'var(--color-accent)']
+const SELECTED_RING = '0 0 0 2.5px var(--color-text)'
 const TODAY_RING = 'inset 0 0 0 1.5px var(--color-link)'
 
 function weekdayName(iso: string): string {
   return formatWeekday(iso).split(',')[0]
-}
-
-function dayTitle(iso: string, today: string): string {
-  const label = formatWeekday(iso).replace(', 0', ', ')
-  return iso === today ? `${t.stats.today[0].toUpperCase()}${t.stats.today.slice(1)} · ${label}` : label
 }
 
 function ariaFor(day: CalendarDay, month: string, today: string): string {
@@ -43,6 +34,7 @@ export function StatsCalendar({
   me,
   partner,
   categories,
+  lists,
 }: {
   month: string
   days: CalendarDay[]
@@ -50,13 +42,14 @@ export function StatsCalendar({
   me: Member
   partner: Member
   categories: Category[]
+  lists: List[]
 }) {
   // No day is selected on open; tapping the selected day again clears it.
   const [selected, setSelected] = useState<string | null>(null)
   const blanks = leadingBlanks(month)
   const expenseCount = days.reduce((sum, day) => sum + day.expenses.length, 0)
   const picked = days.find((day) => day.date === selected)
-  const colorOf = (userId: string) => (userId === me.user_id ? me.color : partner.color)
+  const lower = (text: string) => text.charAt(0).toLowerCase() + text.slice(1)
 
   return (
     <section
@@ -87,7 +80,6 @@ export function StatsCalendar({
           const plannedCount = day.planned.length + day.scheduled.length
           const empty = day.expenses.length + day.settlements.length + plannedCount === 0
           const plannedOnly = day.totalCents === 0 && plannedCount > 0
-          const payers = [...new Set(day.expenses.map((expense) => expense.paid_by))]
           const shadows = [isToday && TODAY_RING, isSelected && SELECTED_RING].filter(Boolean).join(', ')
           return (
             <button
@@ -97,9 +89,9 @@ export function StatsCalendar({
               aria-pressed={isSelected}
               disabled={empty}
               onClick={() => setSelected(isSelected ? null : day.date)}
-              className={`flex h-[52px] flex-col items-center justify-center gap-0.5 rounded-[10px] ${
+              className={`relative flex h-[52px] flex-col items-center justify-center gap-0.5 rounded-[10px] ${
                 level === 4 ? 'text-white' : ''
-              } ${plannedOnly ? 'border-[1.5px] border-dashed border-accent' : ''}`}
+              } ${plannedOnly ? 'border-[1.5px] border-dashed border-link' : ''}`}
               style={{ background: TINTS[level], boxShadow: shadows || undefined }}
             >
               <span
@@ -108,7 +100,7 @@ export function StatsCalendar({
                 {day.day}
               </span>
               <span
-                className={`min-h-3 text-[10px] leading-3 font-semibold tracking-[-0.2px] whitespace-nowrap tabular-nums ${
+                className={`min-h-[13px] text-[11px] leading-[13px] font-semibold tracking-[-0.2px] whitespace-nowrap tabular-nums ${
                   plannedOnly ? 'opacity-75' : ''
                 }`}
               >
@@ -121,16 +113,12 @@ export function StatsCalendar({
                       )
                     : ''}
               </span>
-              <span aria-hidden="true" className="flex h-[5px] items-center gap-0.5">
-                {payers.map((userId) => (
-                  <span
-                    key={userId}
-                    className="size-[5px] rounded-full"
-                    style={{ background: colorOf(userId), boxShadow: `0 0 0 1px ${level === 4 ? '#fff' : 'transparent'}` }}
-                  />
-                ))}
-                {day.settlements.length > 0 && <span className="size-[5px] rounded-full bg-pos" />}
-              </span>
+              {day.settlements.length > 0 && (
+                <span
+                  aria-hidden="true"
+                  className="absolute top-1 right-1 size-[7px] rounded-full bg-coin shadow-[0_0_0_1px_var(--ks-coin-ring)]"
+                />
+              )}
             </button>
           )
         })}
@@ -139,11 +127,9 @@ export function StatsCalendar({
       {picked && (
         <div className="mx-1 mt-3 flex flex-col gap-1 border-t-[0.5px] border-separator pt-2.5">
           <div className="flex items-center justify-between px-1.5">
-            <span className="text-footnote font-semibold tracking-[0.4px] text-text-2 uppercase">
-              {dayTitle(picked.date, today)}
-            </span>
+            <h3 className="text-subhead font-semibold">{fullDayLabel(picked.date)}</h3>
             {picked.totalCents > 0 && (
-              <span className="text-footnote text-text-2 tabular-nums">{formatMoney(picked.totalCents)}</span>
+              <span className="text-subhead font-medium text-text-2 tabular-nums">{formatMoney(picked.totalCents)}</span>
             )}
           </div>
 
@@ -151,6 +137,8 @@ export function StatsCalendar({
             const category = categories.find((candidate) => candidate.id === expense.category_id)
             const mine = expense.paid_by === me.user_id
             const position = expensePosition(expense, me.user_id)
+            const list = lists.find((candidate) => candidate.id === expense.list_id)
+            const payer = lower(mine ? t.expense.paidByYou : t.expense.paidBy(nameForms(partner).by))
             return (
               <div key={expense.id} className="flex min-h-14 items-center gap-3 p-1.5">
                 <span className="flex size-10 flex-none items-center justify-center rounded-xl bg-fill text-xl">
@@ -159,14 +147,14 @@ export function StatsCalendar({
                 <span className="flex min-w-0 flex-1 flex-col gap-0.5">
                   <span className="truncate text-base font-semibold">{expense.description}</span>
                   <span className="truncate text-footnote text-text-2">
-                    {mine ? t.expense.paidByYou : t.expense.paidBy(nameForms(partner).by)}
-                    {expense.recurring_id ? ` · ${t.expense.recurring}` : ''}
+                    {list ? `${list.icon} ${list.name}, ${payer}` : payer}
+                    {expense.recurring_id ? `, ${lower(t.expense.recurring)}` : ''}
                   </span>
                 </span>
                 <span className="flex flex-none flex-col items-end gap-0.5">
                   <span className="text-base font-semibold tabular-nums">{formatMoney(expense.amount_cents)}</span>
                   {position !== 0 && (
-                    <span className={`text-footnote font-medium tabular-nums ${position > 0 ? 'text-pos' : 'text-neg'}`}>
+                    <span className={`text-footnote font-medium tabular-nums ${position > 0 ? 'text-pos' : 'text-neg-2'}`}>
                       {position > 0 ? t.expense.lent(formatMoney(position)) : t.expense.owe(formatMoney(-position))}
                     </span>
                   )}
@@ -177,18 +165,18 @@ export function StatsCalendar({
 
           {picked.settlements.map((settlement) => (
             <div key={settlement.id} className="flex min-h-14 items-center gap-3 rounded-xl bg-settle p-1.5">
-              <span className="flex size-10 flex-none items-center justify-center rounded-xl border-[1.5px] border-dashed border-accent bg-fill text-link">
+              <span aria-hidden="true" className="flex size-10 flex-none items-center justify-center rounded-full bg-coin text-coin-icon">
                 <Icon name="settle" size={20} strokeWidth={2.2} />
               </span>
               <span className="flex min-w-0 flex-1 flex-col gap-0.5">
-                <span className="truncate text-base font-semibold text-link">
+                <span className="truncate text-base font-semibold">
                   {settlement.to_user === me.user_id
                     ? t.settlement.paidYou(nameForms(partner).subject)
                     : t.settlement.youPaid(nameForms(partner).to)}
                 </span>
                 <span className="truncate text-footnote text-text-2">{t.settlement.label}</span>
               </span>
-              <span className="flex-none text-base font-semibold text-link tabular-nums">
+              <span className="flex-none text-base font-semibold tabular-nums">
                 {formatMoney(settlement.amount_cents)}
               </span>
             </div>
@@ -198,7 +186,7 @@ export function StatsCalendar({
             const category = categories.find((candidate) => candidate.id === expense.category_id)
             return (
               <div key={expense.id} className="flex min-h-14 items-center gap-3 p-1.5">
-                <span className="flex size-10 flex-none items-center justify-center rounded-xl border-[1.5px] border-dashed border-accent bg-fill text-xl">
+                <span className="flex size-10 flex-none items-center justify-center rounded-xl border-[1.5px] border-dashed border-link bg-fill text-xl">
                   {category?.icon ?? '📦'}
                 </span>
                 <span className="flex min-w-0 flex-1 flex-col gap-0.5">
@@ -218,7 +206,7 @@ export function StatsCalendar({
             const category = categories.find((candidate) => candidate.id === rule.category_id)
             return (
               <div key={rule.id} className="flex min-h-14 items-center gap-3 p-1.5">
-                <span className="flex size-10 flex-none items-center justify-center rounded-xl border-[1.5px] border-dashed border-accent bg-fill text-xl">
+                <span className="flex size-10 flex-none items-center justify-center rounded-xl border-[1.5px] border-dashed border-link bg-fill text-xl">
                   {category?.icon ?? '📦'}
                 </span>
                 <span className="flex min-w-0 flex-1 flex-col gap-0.5">

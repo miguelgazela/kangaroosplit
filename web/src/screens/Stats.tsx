@@ -167,7 +167,7 @@ export function Stats() {
   const header = (
     <>
       <div className="mt-1 flex h-[52px] items-center">
-        <h1 className="text-large-title font-bold tracking-[0.4px]">{t.tabs.stats}</h1>
+        <h1 className="font-rounded text-large-title font-bold tracking-[0.2px]">{t.tabs.stats}</h1>
       </div>
       {offeredYear !== null && <YearReviewRow year={offeredYear} />}
     </>
@@ -269,7 +269,7 @@ export function Stats() {
         <div className={yearly ? 'flex flex-col gap-3.5' : 'flex items-end gap-3'}>
           <div className="flex min-w-0 flex-1 flex-col">
             <span className="text-subhead text-text-2">{yearly ? t.stats.yearTotal : t.stats.monthTotal}</span>
-            <span className="text-[32px] leading-10 font-bold tracking-[-0.5px] tabular-nums">
+            <span className="font-rounded text-[36px] leading-[42px] font-bold tabular-nums">
               {formatMoney(total)}
             </span>
             {yearly && total > 0 && months > 0 && (
@@ -280,7 +280,8 @@ export function Stats() {
             {change !== null && (
               <span className="text-footnote text-text-2">
                 {t.stats.versus(
-                  `${change >= 0 ? '+' : '−'}${formatPercent(Math.abs(change))}`,
+                  change >= 0,
+                  formatPercent(Math.abs(change)),
                   formatPeriodInline(previousPeriod),
                 )}
               </span>
@@ -383,6 +384,7 @@ export function Stats() {
           me={me}
           partner={partner}
           categories={categories}
+          lists={lists}
         />
       )}
 

@@ -32,7 +32,7 @@ export function TrendBars({
           >
             <span className="flex w-full items-end" style={{ height }}>
               <span
-                className={`w-full rounded-[4px] ${solid ? 'bg-accent' : 'bg-accent/25'} ${point.totalCents === 0 ? 'opacity-30' : ''}`}
+                className={`w-full rounded-[4px] ${solid ? 'bg-accent' : 'bg-chart-dim'} ${point.totalCents === 0 ? 'opacity-30' : ''}`}
                 style={{ height: `${Math.max((point.totalCents / peak) * 100, 4)}%` }}
               />
             </span>

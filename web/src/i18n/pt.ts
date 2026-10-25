@@ -285,7 +285,7 @@ export const t = {
     emptyYear: 'Sem despesas neste ano.',
     emptyCategory: 'Sem despesas nesta categoria neste período.',
     lastSixMonths: 'Últimos 6 meses',
-    versus: (change: string, month: string) => `${change} do que em ${month}`,
+    versus: (up: boolean, change: string, month: string) => `${up ? 'Mais' : 'Menos'} ${change} do que em ${month}`,
     yourShare: 'A tua parte',
     shareOf: (of: string) => `Parte ${of}`,
     byCategory: 'Por categoria',
