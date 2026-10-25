@@ -1,0 +1,250 @@
+<!doctype html>
+<html lang="pt-PT">
+<head>
+<meta charset="utf-8">
+<title>O vosso 2026 — resumo do ano</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+@keyframes ks-snow{0%{transform:translate3d(0,-12px,0)}100%{transform:translate3d(var(--dx,8px),var(--fall,860px),0)}}
+@keyframes ks-rise{0%{opacity:0;transform:translateY(18px)}100%{opacity:1;transform:none}}
+@keyframes ks-grow{0%{transform:scaleX(0)}100%{transform:scaleX(1)}}
+@keyframes ks-growy{0%{transform:scaleY(0)}100%{transform:scaleY(1)}}
+.ks-flake{position:absolute;top:0;border-radius:50%;background:#FFFFFF;animation:ks-snow linear infinite}
+.ks-rise{animation:ks-rise .6s cubic-bezier(.2,.8,.2,1) both}
+.ks-grow{transform-origin:left center;animation:ks-grow .9s cubic-bezier(.2,.8,.2,1) both}
+.ks-growy{transform-origin:center bottom;animation:ks-growy .8s cubic-bezier(.2,.8,.2,1) both}
+@media (prefers-reduced-motion: reduce){.ks-flake,.ks-rise,.ks-grow,.ks-growy{animation:none}}
+</style>
+</helmet>
+<div role="dialog" aria-label="O vosso 2026, história {{num}} de 9" style="width: 390px; height: 844px; position: relative; overflow: hidden; background: {{bg}}; color: {{fg}}; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Helvetica Neue', sans-serif">
+
+  <div aria-hidden="true" style="position: absolute; width: 520px; height: 520px; border-radius: 260px; right: -230px; top: -170px; background: {{blobA}}"></div>
+  <div aria-hidden="true" style="position: absolute; width: 380px; height: 380px; border-radius: 190px; left: -190px; bottom: -120px; background: {{blobB}}"></div>
+  <sc-if value="{{snow}}" hint-placeholder-val="{{ false }}">
+    <div aria-hidden="true" style="position: absolute; inset: 0; overflow: hidden; pointer-events: none">
+      <sc-for list="{{flakes}}" as="f" hint-placeholder-count="26">
+        <span class="ks-flake" style="{{f.style}}"></span>
+      </sc-for>
+    </div>
+  </sc-if>
+
+  <div style="position: absolute; left: 12px; right: 12px; top: 54px; display: flex; gap: 4px; z-index: 3">
+    <sc-for list="{{bars}}" as="b" hint-placeholder-count="9">
+      <span style="flex: 1; height: 3px; border-radius: 2px; background: {{track}}; overflow: hidden"><span style="display: block; height: 100%; width: {{b.w}}; background: {{fg}}"></span></span>
+    </sc-for>
+  </div>
+  <div style="position: absolute; left: 16px; right: 8px; top: 66px; height: 44px; display: flex; align-items: center; gap: 8px; z-index: 3">
+    <span style="display: flex; align-items: center">
+      <span style="width: 26px; height: 26px; border-radius: 13px; background: #2563EB; color: #FFFFFF; font-size: 10px; font-weight: 700; display: flex; align-items: center; justify-content: center; border: 2px solid {{fg}}; box-sizing: border-box">Mi</span>
+      <span style="width: 26px; height: 26px; border-radius: 13px; background: #C0367A; color: #FFFFFF; font-size: 10px; font-weight: 700; display: flex; align-items: center; justify-content: center; border: 2px solid {{fg}}; box-sizing: border-box; margin-left: -8px">Ma</span>
+    </span>
+    <span style="flex: 1; font-size: 14px; font-weight: 600; opacity: 0.9">O vosso 2026</span>
+    <a href="Main.dc.html" aria-label="Fechar" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; color: {{fg}}">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"></path></svg>
+    </a>
+  </div>
+
+  <button type="button" aria-label="Anterior" onClick="{{prev}}" style="position: absolute; left: 0; top: 112px; bottom: 0; width: 35%; border: 0; background: transparent; z-index: 2; cursor: pointer; padding: 0"></button>
+  <button type="button" aria-label="Seguinte" onClick="{{next}}" style="position: absolute; right: 0; top: 112px; bottom: 0; width: 65%; border: 0; background: transparent; z-index: 2; cursor: pointer; padding: 0"></button>
+
+  <div style="position: absolute; left: 24px; right: 24px; top: 128px; bottom: 40px; display: flex; flex-direction: column; z-index: {{contentZ}}; pointer-events: none">
+
+    <sc-if value="{{s0}}" hint-placeholder-val="{{ true }}">
+      <div style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; gap: 10px">
+        <span class="ks-rise" style="font-size: 17px; font-weight: 600; opacity: 0.85; letter-spacing: 2px; text-transform: uppercase">Miguel &amp; Mara</span>
+        <span class="ks-rise" style="font-size: 72px; line-height: 72px; font-weight: 900; letter-spacing: -2px; animation-delay: .1s">O vosso<br>2026</span>
+        <div class="ks-rise" style="margin: 18px 0 6px; animation-delay: .25s"><dc-import name="Guru" pose="sucesso" size="{{ 220 }}" hint-size="220px,220px"></dc-import></div>
+        <span class="ks-rise" style="font-size: 17px; line-height: 23px; opacity: 0.9; max-width: 280px; animation-delay: .4s">Um ano de contas a dois, em 9 histórias.</span>
+        <span style="margin-top: 22px; font-size: 13px; font-weight: 600; opacity: 0.7">Toca para continuar →</span>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{s1}}" hint-placeholder-val="{{ false }}">
+      <div style="flex: 1; display: flex; flex-direction: column; justify-content: center; gap: 6px">
+        <span class="ks-rise" style="font-size: 26px; font-weight: 700">Este ano dividiram</span>
+        <span class="ks-rise" style="font-size: 88px; line-height: 92px; font-weight: 900; letter-spacing: -3px; font-variant-numeric: tabular-nums; animation-delay: .1s">9.870 €</span>
+        <span class="ks-rise" style="font-size: 26px; font-weight: 700; animation-delay: .2s">em <span style="color: #FFC94A">214 despesas</span>.</span>
+        <div class="ks-rise" style="margin-top: 36px; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; animation-delay: .35s">
+          <div style="border-radius: 20px; background: rgba(255,255,255,0.14); padding: 16px"><div style="font-size: 30px; font-weight: 800">27 €</div><div style="font-size: 14px; opacity: 0.85">por dia, em média</div></div>
+          <div style="border-radius: 20px; background: rgba(255,255,255,0.14); padding: 16px"><div style="font-size: 30px; font-weight: 800">4 listas</div><div style="font-size: 14px; opacity: 0.85">Casa, Açores, Natal…</div></div>
+        </div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{s2}}" hint-placeholder-val="{{ false }}">
+      <div style="flex: 1; display: flex; flex-direction: column; justify-content: center; gap: 8px">
+        <span class="ks-rise" style="font-size: 22px; font-weight: 700">A vossa categoria do ano</span>
+        <span class="ks-rise" style="font-size: 96px; line-height: 100px; animation-delay: .1s">🛒</span>
+        <span class="ks-rise" style="font-size: 52px; line-height: 56px; font-weight: 900; letter-spacing: -1.5px; animation-delay: .15s">Super&shy;mercado</span>
+        <span class="ks-rise" style="font-size: 20px; font-weight: 600; animation-delay: .2s">2.140 € em 96 idas às compras.<br>Quase duas por semana!</span>
+        <div style="margin-top: 26px; display: flex; flex-direction: column; gap: 10px">
+          <sc-for list="{{topCats}}" as="k" hint-placeholder-count="5">
+            <div style="display: flex; align-items: center; gap: 10px">
+              <span style="width: 22px; font-size: 15px; font-weight: 800; opacity: 0.7">{{k.n}}</span>
+              <span style="flex: 1; height: 30px; border-radius: 10px; background: rgba(17,17,20,0.12); position: relative; overflow: hidden">
+                <span class="ks-grow" style="position: absolute; left: 0; top: 0; bottom: 0; width: {{k.w}}; background: {{k.c}}; border-radius: 10px; animation-delay: {{k.d}}"></span>
+                <span style="position: absolute; left: 10px; top: 0; bottom: 0; display: flex; align-items: center; font-size: 14px; font-weight: 700; color: #111114">{{k.label}}</span>
+              </span>
+              <span style="width: 76px; text-align: right; font-size: 14px; font-weight: 700; font-variant-numeric: tabular-nums">{{k.v}}</span>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{s3}}" hint-placeholder-val="{{ false }}">
+      <div style="flex: 1; display: flex; flex-direction: column; justify-content: center; gap: 10px">
+        <span class="ks-rise" style="font-size: 22px; font-weight: 700">Quem pagou o quê</span>
+        <div class="ks-rise" style="display: flex; gap: 12px; margin: 10px 0 4px; animation-delay: .1s">
+          <div style="flex: 58; border-radius: 24px; background: #2563EB; padding: 18px 16px; display: flex; flex-direction: column; gap: 4px; min-height: 230px; justify-content: flex-end">
+            <span style="font-size: 15px; font-weight: 700; opacity: 0.9">Miguel</span>
+            <span style="font-size: 44px; font-weight: 900; letter-spacing: -1px">58 %</span>
+            <span style="font-size: 14px; opacity: 0.9">5.725 € · 131 vezes</span>
+          </div>
+          <div style="flex: 42; border-radius: 24px; background: #C0367A; padding: 18px 16px; display: flex; flex-direction: column; gap: 4px; min-height: 230px; justify-content: flex-end">
+            <span style="font-size: 15px; font-weight: 700; opacity: 0.9">Mara</span>
+            <span style="font-size: 44px; font-weight: 900; letter-spacing: -1px">42 %</span>
+            <span style="font-size: 14px; opacity: 0.9">4.145 € · 83 vezes</span>
+          </div>
+        </div>
+        <span class="ks-rise" style="font-size: 24px; line-height: 30px; font-weight: 800; animation-delay: .25s">O Miguel pagou mais vezes.<br>A Mara pagou as maiores.</span>
+        <span class="ks-rise" style="font-size: 16px; opacity: 0.85; animation-delay: .35s">A despesa média da Mara foi 50 €; a do Miguel, 44 €.</span>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{s4}}" hint-placeholder-val="{{ false }}">
+      <div style="flex: 1; display: flex; flex-direction: column; justify-content: center; gap: 8px">
+        <span class="ks-rise" style="font-size: 22px; font-weight: 700">O mês mais caro foi</span>
+        <span class="ks-rise" style="font-size: 72px; line-height: 76px; font-weight: 900; letter-spacing: -2px; animation-delay: .1s">agosto ✈️</span>
+        <span class="ks-rise" style="font-size: 20px; font-weight: 600; animation-delay: .2s">2.140 € — as férias nos Açores.</span>
+        <div style="margin-top: 34px; height: 210px; display: flex; align-items: flex-end; gap: 6px">
+          <sc-for list="{{months}}" as="m" hint-placeholder-count="12">
+            <div style="flex: 1; display: flex; flex-direction: column; align-items: center; gap: 6px; height: 100%; justify-content: flex-end">
+              <span class="ks-growy" style="width: 100%; height: {{m.h}}; border-radius: 8px 8px 3px 3px; background: {{m.c}}; animation-delay: {{m.d}}"></span>
+              <span style="font-size: 11px; font-weight: 700; opacity: {{m.op}}">{{m.l}}</span>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{s5}}" hint-placeholder-val="{{ false }}">
+      <div style="flex: 1; display: flex; flex-direction: column; justify-content: center; gap: 12px">
+        <span class="ks-rise" style="font-size: 30px; line-height: 36px; font-weight: 900; letter-spacing: -0.5px">Os momentos<br>do ano</span>
+        <sc-for list="{{moments}}" as="m" hint-placeholder-count="3">
+          <div class="ks-rise" style="border-radius: 22px; background: rgba(255,255,255,0.14); padding: 14px 16px; display: flex; align-items: center; gap: 14px; animation-delay: {{m.d}}">
+            <span style="width: 56px; height: 56px; border-radius: 16px; background: rgba(255,255,255,0.18); display: flex; align-items: center; justify-content: center; font-size: 30px; flex: none">{{m.icon}}</span>
+            <span style="flex: 1; display: flex; flex-direction: column; gap: 2px">
+              <span style="font-size: 13px; font-weight: 600; opacity: 0.8; text-transform: uppercase; letter-spacing: 0.6px">{{m.k}}</span>
+              <span style="font-size: 19px; font-weight: 800">{{m.t}}</span>
+              <span style="font-size: 14px; opacity: 0.85">{{m.s}}</span>
+            </span>
+          </div>
+        </sc-for>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{s6}}" hint-placeholder-val="{{ false }}">
+      <div style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; gap: 8px">
+        <span class="ks-rise" style="font-size: 22px; font-weight: 700">Trocaram</span>
+        <span class="ks-rise" style="font-size: 96px; line-height: 100px; font-weight: 900; letter-spacing: -3px; animation-delay: .1s">86</span>
+        <span class="ks-rise" style="font-size: 22px; font-weight: 700; animation-delay: .15s">reações e 41 comentários</span>
+        <div style="margin-top: 28px; display: flex; gap: 14px; align-items: flex-end">
+          <sc-for list="{{reacts}}" as="r" hint-placeholder-count="4">
+            <div class="ks-rise" style="display: flex; flex-direction: column; align-items: center; gap: 6px; animation-delay: {{r.d}}">
+              <span style="font-size: {{r.size}}; line-height: 1">{{r.e}}</span>
+              <span style="font-size: 15px; font-weight: 800">{{r.n}}</span>
+            </div>
+          </sc-for>
+        </div>
+        <span class="ks-rise" style="margin-top: 26px; font-size: 17px; line-height: 23px; opacity: 0.9; max-width: 290px; animation-delay: .5s">O mais comentado: “Jantar no Ramiro”, com 3 comentários. 😄</span>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{s7}}" hint-placeholder-val="{{ false }}">
+      <div style="flex: 1; display: flex; flex-direction: column; justify-content: center; gap: 8px">
+        <span class="ks-rise" style="font-size: 22px; font-weight: 700">Acertaram contas</span>
+        <span class="ks-rise" style="font-size: 96px; line-height: 100px; font-weight: 900; letter-spacing: -3px; animation-delay: .1s">12 vezes</span>
+        <span class="ks-rise" style="font-size: 20px; font-weight: 600; animation-delay: .2s">Uma por mês, quase como um relógio. ⏰</span>
+        <div class="ks-rise" style="margin-top: 30px; border-radius: 24px; background: #FFFFFF; color: #111114; padding: 18px; display: flex; align-items: center; gap: 14px; animation-delay: .35s">
+          <span style="width: 52px; height: 52px; border-radius: 26px; background: #1F7A4D; color: #FFFFFF; display: flex; align-items: center; justify-content: center; flex: none">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 5 5 9-10"></path></svg>
+          </span>
+          <span style="display: flex; flex-direction: column; gap: 2px">
+            <span style="font-size: 20px; font-weight: 800">Entram em 2027 quites</span>
+            <span style="font-size: 14px; color: #4A4A55">Último acerto: 23 de dezembro · 127,40 €</span>
+          </span>
+        </div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{s8}}" hint-placeholder-val="{{ false }}">
+      <div style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; gap: 12px">
+        <dc-import name="Guru" pose="ola" size="{{ 200 }}" hint-size="200px,200px"></dc-import>
+        <span class="ks-rise" style="font-size: 40px; line-height: 44px; font-weight: 900; letter-spacing: -1px">Obrigado por dividirem 2026 connosco!</span>
+        <span class="ks-rise" style="font-size: 17px; opacity: 0.9; animation-delay: .15s">Até para o ano. 🦘</span>
+        <div style="margin-top: 22px; width: 100%; display: flex; flex-direction: column; gap: 10px; pointer-events: auto; position: relative; z-index: 4">
+          <button type="button" style="height: 52px; border: 0; border-radius: 26px; background: #FFFFFF; color: #4B2FD0; font: inherit; font-size: 17px; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12M7 8l5-5 5 5M5 14v5a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-5"></path></svg>
+            Partilhar o vosso ano
+          </button>
+          <button type="button" onClick="{{restart}}" style="height: 48px; border: 0; border-radius: 24px; background: rgba(255,255,255,0.16); color: #FFFFFF; font: inherit; font-size: 16px; font-weight: 600; cursor: pointer">Ver outra vez</button>
+        </div>
+      </div>
+    </sc-if>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"slide":{"editor":"int","min":0,"max":8,"default":0},"festive":{"editor":"boolean","default":false},"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(props) { super(props); this.state = {}; }
+  renderVals() {
+    const N = 9;
+    const i = Math.max(0, Math.min(N - 1, this.state.i ?? Number(this.props.slide ?? 0)));
+    const T = [
+      { bg: 'linear-gradient(160deg, #7B5CFA 0%, #4A2FD0 55%, #2A1B7A 100%)', fg: '#FFFFFF', a: 'rgba(255,255,255,0.10)', b: 'rgba(200,50,60,0.35)', snow: true },
+      { bg: 'linear-gradient(165deg, #C8323C 0%, #8E1D27 100%)', fg: '#FFFFFF', a: 'rgba(255,201,74,0.22)', b: 'rgba(255,255,255,0.08)', snow: true },
+      { bg: 'linear-gradient(165deg, #FFD36A 0%, #F2A93B 100%)', fg: '#2B1A00', a: 'rgba(255,255,255,0.35)', b: 'rgba(224,112,32,0.30)', snow: false },
+      { bg: 'linear-gradient(165deg, #1B1B22 0%, #0E0E12 100%)', fg: '#FFFFFF', a: 'rgba(37,99,235,0.30)', b: 'rgba(192,54,122,0.30)', snow: false },
+      { bg: 'linear-gradient(165deg, #2F80ED 0%, #1452A8 100%)', fg: '#FFFFFF', a: 'rgba(255,255,255,0.12)', b: 'rgba(95,211,154,0.30)', snow: false },
+      { bg: 'linear-gradient(165deg, #6847F0 0%, #C0367A 100%)', fg: '#FFFFFF', a: 'rgba(255,201,74,0.22)', b: 'rgba(255,255,255,0.10)', snow: false },
+      { bg: 'linear-gradient(165deg, #FF8FB1 0%, #E0457B 100%)', fg: '#FFFFFF', a: 'rgba(255,255,255,0.22)', b: 'rgba(104,71,240,0.30)', snow: false },
+      { bg: 'linear-gradient(165deg, #1F7A4D 0%, #0D3B25 100%)', fg: '#FFFFFF', a: 'rgba(255,201,74,0.20)', b: 'rgba(255,255,255,0.08)', snow: true },
+      { bg: 'linear-gradient(160deg, #7B5CFA 0%, #4A2FD0 55%, #2A1B7A 100%)', fg: '#FFFFFF', a: 'rgba(200,50,60,0.30)', b: 'rgba(31,122,77,0.35)', snow: true }
+    ][i];
+    const flakes = Array.from({ length: 26 }, (_, k) => {
+      const r = (q) => { const x = Math.sin((k + 1) * (5 + q) * 12.9898) * 43758.5453; return x - Math.floor(x); };
+      const sz = 2 + Math.round(r(1) * 4); const dur = 9 + r(2) * 8;
+      return { style: 'left: ' + (r(3) * 100).toFixed(1) + '%; width: ' + sz + 'px; height: ' + sz + 'px; opacity: ' + (0.35 + r(4) * 0.5).toFixed(2) + '; --dx: ' + Math.round(r(5) * 30 - 15) + 'px; animation-duration: ' + dur.toFixed(1) + 's; animation-delay: -' + (r(6) * dur).toFixed(1) + 's' };
+    });
+    const bars = Array.from({ length: N }, (_, k) => ({ w: k < i ? '100%' : k === i ? '45%' : '0%' }));
+    const topCats = [['🛒 Supermercado', '2.140 €', 100], ['✈️ Viagens', '1.240 €', 58], ['🍽️ Restaurantes', '1.180 €', 55], ['💡 Contas', '760 €', 36], ['🎁 Presentes', '520 €', 24]]
+      .map(([label, v, w], k) => ({ n: String(k + 1), label, v, w: w + '%', c: k === 0 ? '#FFFFFF' : 'rgba(255,255,255,0.65)', d: (0.25 + k * 0.08).toFixed(2) + 's' }));
+    const mv = [['J', 690], ['F', 610], ['M', 720], ['A', 805], ['M', 690], ['J', 960], ['J', 1040], ['A', 2140], ['S', 780], ['O', 820], ['N', 760], ['D', 1080]];
+    const months = mv.map(([l, v], k) => ({ l, h: Math.round(v / 2140 * 100) + '%', c: k === 7 ? '#FFC94A' : 'rgba(255,255,255,0.45)', op: k === 7 ? 1 : 0.75, d: (0.2 + k * 0.04).toFixed(2) + 's' }));
+    const moments = [
+      { icon: '🏝️', k: 'A maior despesa', t: 'Casa nos Açores', s: '1.240 € · agosto', d: '.1s' },
+      { icon: '☕', k: 'A mais pequena', t: 'Café na estação', s: '0,80 € · março', d: '.2s' },
+      { icon: '🍽️', k: 'O restaurante favorito', t: 'Ramiro', s: '6 jantares · 412 €', d: '.3s' }
+    ];
+    const reacts = [['❤️', 41, '64px'], ['😂', 23, '52px'], ['😬', 12, '42px'], ['🙏', 10, '38px']].map(([e, n, size], k) => ({ e, n: String(n), size, d: (0.25 + k * 0.08).toFixed(2) + 's' }));
+    const flags = {}; for (let k = 0; k < N; k++) flags['s' + k] = k === i;
+    return Object.assign(flags, {
+      contentZ: i === N - 1 ? 3 : 1,
+      num: String(i + 1), bg: T.bg, fg: T.fg, blobA: T.a, blobB: T.b, snow: T.snow && !!this.props.festive, flakes, bars,
+      track: T.fg === '#FFFFFF' ? 'rgba(255,255,255,0.35)' : 'rgba(43,26,0,0.25)',
+      topCats, months, moments, reacts,
+      next: () => this.setState({ i: Math.min(N - 1, i + 1) }),
+      prev: () => this.setState({ i: Math.max(0, i - 1) }),
+      restart: () => this.setState({ i: 0 })
+    });
+  }
+}
+</script>
+</body>
+</html>

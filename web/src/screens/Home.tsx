@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Avatar } from '../components/Avatar'
+import { Guru } from '../components/Guru'
 import { BalanceAmount } from '../components/Balance'
 import { Icon } from '../components/Icon'
 import { Screen } from '../components/Screen'
@@ -14,6 +15,7 @@ import { todayISO } from '../lib/dates'
 import { isScheduled, listBalance, overallBalance, scheduledImpact } from '../lib/stats'
 import { unseenCount, useActivitySeenAt } from '../lib/activitySeen'
 import { useSheets } from '../sheets/SheetContext'
+import { useCardDismissed, useOfferedYear, useYearSummary } from '../lib/useYearReview'
 import {
   useActivity,
   useBalances,
@@ -76,6 +78,38 @@ function ListRow({ list, subtitle, balance }: { list: List; subtitle: string; ba
         </span>
       </span>
     </>
+  )
+}
+
+// From 24 December to 31 January: "O vosso {ano}", which opens the year in
+// review. The × hides it until next year's summary.
+function YearReviewCard() {
+  const year = useOfferedYear()
+  const summary = useYearSummary(year ?? 0)
+  const [dismissed, dismiss] = useCardDismissed(year)
+  if (year === null || dismissed || !summary) return null
+
+  return (
+    <div className="relative flex items-center rounded-card bg-surface shadow-card">
+      <Link to={`/resumo/${year}`} className="flex min-w-0 flex-1 items-center gap-3 py-2 pr-11 pl-3">
+        <Guru pose="sucesso" size={64} decorative className="flex-none" />
+        <span className="flex min-w-0 flex-1 flex-col gap-0.5">
+          <span className="text-headline font-bold">{t.yearReview.title(year)}</span>
+          <span className="text-footnote text-text-2">
+            {t.yearReview.cardSubtitle(summary.expenseCount, summary.settlementCount)}
+          </span>
+        </span>
+        <Icon name="chevronRight" size={14} strokeWidth={2.5} className="flex-none text-text-2" />
+      </Link>
+      <button
+        type="button"
+        aria-label={t.yearReview.hideCard}
+        onClick={dismiss}
+        className="absolute top-0 right-0 flex size-11 items-center justify-center text-text-2"
+      >
+        <Icon name="close" size={14} strokeWidth={2.5} />
+      </button>
+    </div>
   )
 }
 
@@ -219,6 +253,8 @@ export function Home({ onSettleAll, onNewList }: { onSettleAll: () => void; onNe
           </button>
         )}
       </section>
+
+      <YearReviewCard />
 
       <div className="mt-1.5 flex items-center justify-between">
         <h2 className="text-title2 font-bold">{t.lists.title}</h2>

@@ -35,6 +35,7 @@ Several files are small wrappers that show a variant of a main file. The variant
 | 9 Atividade | `Atividade.dc.html` (now a pushed screen, opened from the bell on Início) | — |
 | 10 Definições | `Definicoes.dc.html` | — (includes the profile photo upload) |
 | 11 System states | `Notificacoes`, `Instalar`, `ConfirmarApagar` (iOS action sheet), `Toast`, `Novidades` (what's new after an update) | offline and loading: see Início |
+| 12 Year in review | `ResumoAno.dc.html` (story player, interactive; prop `slide` 0–8, prop `festive`) | `ResumoAnoTotal` (1), `ResumoAnoCategoria` (2), `ResumoAnoPagamentos` (3), `ResumoAnoMes` (4), `ResumoAnoMomentos` (5), `ResumoAnoReacoes` (6), `ResumoAnoAcertos` (7), `ResumoAnoFim` (8) |
 | Shared | `TabBar.dc.html` (tab bar + raised "+"), `Componentes.dc.html` (component sheet), `Icone.dc.html` (app icon) | |
 | Mascot | `Guru.dc.html` (the mascot component, prop `pose` = `normal` / `ola` / `vazio` / `compras` / `sucesso` / `dormir`, prop `crop` for a head-only avatar; every pose is a 3D image from `assets/guru/`; `crop` is still vector), `Mascote.dc.html` (mascot sheet) | |
 | Comments and reactions | `DespesaDetalhe.dc.html` (expense detail sheet: summary, reactions, comment thread) | `DetalheVazio` (`variant="vazia"`), `DetalheAcoes` (long-press on own comment), `ReacaoRapida` (long-press on a list row), `DetalheEscuro` (`dark`). `Lista` and `Atividade` also changed. |
@@ -351,6 +352,53 @@ Mockups: `ListaLoading` (`Lista` with `loading`) and `EstatisticasLoading` (`Est
 2. Lista (`ListDetail.tsx`): skeleton balance card and expense groups for the first load.
 3. Estatísticas (`Stats.tsx`): skeleton Total do mês, Por categoria and calendar cells for the first load and when the month changes with no cached data.
 4. Add a changelog entry (see `CLAUDE.md`).
+
+## Year in review — "O vosso 2026"
+
+Mockups: `ResumoAno.dc.html` (interactive story player; open it in Play mode and tap) and the 8 static wrappers in the screen map. It is a full-screen summary of the couple's year, in the style of Spotify Wrapped. **Only this feature is in scope now.** The Christmas theme (snow, garland, Guru with a hat, "Boas festas" sheet) is a separate exploration on the canvas and is **not** part of this spec. The `festive` prop (snow) stays `false`.
+
+### Entry points
+
+- **Início card**, from 24 December to 31 January: a card under "Saldo total", in the style of the existing cards (white surface, 20px radius). It shows Guru `sucesso` (64px), the title "O vosso {ano}" and a subtitle "{N} despesas e {M} acertos · Ver o resumo do ano", with a chevron. A tap opens the story player. The card can be closed with a small ×, which hides it until the next year.
+- **Estatísticas**: in the same period, a row at the top, "Resumo de {ano}" ›, that opens the player. After 31 January the row moves to the year selector, so older summaries stay available (only for years with enough data).
+- There is no automatic pop-up.
+- Show the entry points only when the year has at least **20 expenses**.
+
+### Story player
+
+- Full screen, over everything (status bar light/dark to match each story). It has 9 stories, each with its own background gradient (the colours are in `ResumoAno.dc.html`, `T`).
+- Top: 9 progress segments (3px, 4px gap, 12px side margin), then the Mi/Ma avatars, "O vosso {ano}" and a close button (44×44).
+- **Navigation:** tap the right 65% to go forward and the left 35% to go back. Swipe down or tap × to close. Optional: the story advances by itself after about 6 s (the current segment fills); a long press pauses it. With VoiceOver, show "Seguinte" / "Anterior" buttons and do not auto-advance.
+- **Motion:** a short entrance per story (text rises 18px and fades in over 0.6 s with small delays, bars grow from 0). With `prefers-reduced-motion`, there is no animation and no auto-advance.
+- Typography: big numbers 72–96px, weight 900, tabular. Body 17–26px bold. All pt-PT; address the couple ("vocês" form: "dividiram", "trocaram").
+
+### The 9 stories and their data
+
+Year = calendar year of the summary, all lists (archived ones included). Ignore soft-deleted rows. Expenses do not include settlements.
+
+| # | Story | Data |
+|---|---|---|
+| 0 | Intro "Miguel & Mara · O vosso {ano}" + Guru `sucesso` | names of the 2 members |
+| 1 | "Este ano dividiram {total} em {N} despesas" + tiles "{total ÷ days} por dia" and "{L} listas" (first 3 names) | sum of `expenses.amount`; days = days elapsed in the year (365/366 after 31 Dec); lists with at least 1 expense in the year |
+| 2 | Category of the year (emoji, name, total, number of expenses, a friendly frequency line) + top-5 bars, relative to #1 | group by category |
+| 3 | Who paid what: 2 blocks in the person colours, % of the total, amount and count. A line that compares the count and the average ("pagou mais vezes" / "pagou as maiores"). | group by payer |
+| 4 | Most expensive month + 12-month bar chart (the top month in gold `#FFC94A`). The line names the list with most spend in that month, when it is not the main list ("as férias nos Açores"). | group by month |
+| 5 | Moments: biggest expense, smallest expense (> 0), favourite restaurant (most frequent description in the Restaurantes category, with count and total) | — |
+| 6 | Reactions: total reactions, total comments, top 4 emojis (size scales with count), most commented expense | `expense_reactions`, `expense_comments` |
+| 7 | Settle-ups: count, a fun line, and a white card: "Entram em {ano+1} quites" when the net balance across lists is 0, otherwise "Faltam {x} para ficarem quites". Last settlement date and amount. | `settlements`, `list_balances` |
+| 8 | Thank you + Guru `ola` + "Partilhar o vosso ano" + "Ver outra vez" | — |
+
+- **Skip a story** when it has no data (for example no reactions, no restaurants, or no settlements). The progress bar then has fewer segments.
+- **Share:** render a 1080×1920 image of a summary card (total, top category, months, quites) and use the Web Share API with a file. If the API cannot share files, download the PNG.
+- Compute everything on the client from data the app already loads, or with one Supabase RPC (`year_summary(year int)`) if that is simpler. Cache the result for the session.
+
+### To implement — year in review
+
+1. Add the year summary data (client helper or `year_summary` RPC) with unit tests for each number above, including leap years and archived lists.
+2. Build the story player component (progress, tap zones, close, motion, reduced motion, accessibility) and the 9 stories, following `ResumoAno.dc.html`.
+3. Add the Início card and the Estatísticas entry with the date rules and the 20-expense minimum.
+4. Add sharing (image + Web Share API, PNG fallback).
+5. Add a changelog entry (see `CLAUDE.md`).
 
 ## Not shown in the mockups
 

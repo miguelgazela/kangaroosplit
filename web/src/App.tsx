@@ -21,6 +21,7 @@ import { Recurring } from './screens/Recurring'
 import { Settings } from './screens/Settings'
 import { Shopping } from './screens/Shopping'
 import { Stats } from './screens/Stats'
+import { YearReview } from './screens/YearReview'
 import { useSheets } from './sheets/SheetContext'
 import { SheetHost } from './sheets/SheetHost'
 
@@ -124,6 +125,8 @@ function Content() {
           <Route path="novidades" element={<Changelog />} />
           <Route path="*" element={<HomeRoute />} />
         </Route>
+        {/* Full screen, over everything: no tab bar. */}
+        <Route path="resumo/:ano" element={<YearReview />} />
       </Routes>
         </SheetHost>
       </BrowserRouter>

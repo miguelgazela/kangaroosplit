@@ -22,6 +22,15 @@ export type ChangelogEntry = {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '1.9.0',
+    date: '2026-10-25',
+    changes: [
+      'Resumo do ano: “O vosso 2026” conta o vosso ano em histórias, com o total, a categoria do ano, quem pagou o quê, o mês mais caro, os momentos, as reações e os acertos',
+      'Aparece no Início e nas Estatísticas de 24 de dezembro a 31 de janeiro, quando o ano tem pelo menos 20 despesas',
+      'Podes partilhar uma imagem do vosso ano',
+    ],
+  },
+  {
     version: '1.8.0',
     date: '2026-10-24',
     changes: ['Novo ícone da app em 3D, com a moeda a cair na bolsa do canguru, a combinar com o Guru'],

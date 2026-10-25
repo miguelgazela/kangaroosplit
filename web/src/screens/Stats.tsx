@@ -14,6 +14,8 @@ import { buildCalendar } from '../lib/calendar'
 import { todayISO } from '../lib/dates'
 import { formatMoney, formatPercent } from '../lib/format'
 import { useFirstLoad } from '../lib/useFirstLoad'
+import { reviewToday, useOfferedYear } from '../lib/useYearReview'
+import { reviewableYears } from '../lib/yearSummary'
 import { nameForms } from '../lib/people'
 import {
   currentMonth,
@@ -31,6 +33,22 @@ import { expensesInPeriod, filterExpenses, monthlyTrend, sharesByUser, totalCent
 import { useCategories, useCurrentMember, useExpenses, useLists, useMembers, useRecurring, useSettlements } from '../query/hooks'
 
 const ALL = 'all'
+
+// Opens the year in review ("Resumo de 2026 ›").
+function YearReviewRow({ year }: { year: number }) {
+  return (
+    <Link
+      to={`/resumo/${year}`}
+      className="flex h-[52px] items-center gap-3 rounded-cta bg-surface px-4 shadow-card"
+    >
+      <span aria-hidden="true" className="flex size-8 flex-none items-center justify-center rounded-[10px] bg-accent-soft text-lg">
+        🎉
+      </span>
+      <span className="flex-1 text-body font-semibold">{t.yearReview.statsRow(year)}</span>
+      <Icon name="chevronRight" size={14} strokeWidth={2.5} className="text-text-2" />
+    </Link>
+  )
+}
 const FALLBACK_COLOR = '#64748b'
 
 // Line-height boxes keep each bar where the real text sits, so nothing moves
@@ -131,13 +149,27 @@ export function Stats() {
 
   const { scope, period } = readStatsParams(params)
   const yearly = isYear(period)
+  // From 24 December to 31 January the summary sits at the top. Later, a
+  // finished year with enough expenses offers it in the year view.
+  const offeredYear = useOfferedYear()
+  const pastYear =
+    yearly &&
+    Number(period) < Number(reviewToday().slice(0, 4)) &&
+    Number(period) !== offeredYear &&
+    expenses !== undefined &&
+    reviewableYears(expenses, reviewToday()).includes(Number(period))
+      ? Number(period)
+      : null
   const show = (nextScope: string | null, nextPeriod: string) =>
     setParams(statsQuery(nextScope, nextPeriod), { replace: true })
 
   const header = (
-    <div className="mt-1 flex h-[52px] items-center">
-      <h1 className="text-large-title font-bold tracking-[0.4px]">{t.tabs.stats}</h1>
-    </div>
+    <>
+      <div className="mt-1 flex h-[52px] items-center">
+        <h1 className="text-large-title font-bold tracking-[0.4px]">{t.tabs.stats}</h1>
+      </div>
+      {offeredYear !== null && <YearReviewRow year={offeredYear} />}
+    </>
   )
   const previousPeriod = shiftPeriod(period, -1)
   const scopeList = lists?.find((list) => list.id === scope)
@@ -193,6 +225,7 @@ export function Stats() {
           </button>
         </div>
       </div>
+      {pastYear !== null && <YearReviewRow year={pastYear} />}
     </>
   )
 

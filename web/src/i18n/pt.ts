@@ -295,6 +295,107 @@ export const t = {
     settledAria: 'acerto de contas',
   },
 
+  yearReview: {
+    title: (year: number) => `O vosso ${year}`,
+    dialog: (year: number, index: number, count: number) => `O vosso ${year}, história ${index} de ${count}`,
+    close: 'Fechar',
+    previous: 'Anterior',
+    next: 'Seguinte',
+    // Início card and Estatísticas row
+    cardSubtitle: (expenses: number, settlements: number) =>
+      `${expenses === 1 ? '1 despesa' : `${expenses} despesas`} e ${settlements === 1 ? '1 acerto' : `${settlements} acertos`} · Ver o resumo do ano`,
+    hideCard: 'Esconder o resumo do ano',
+    statsRow: (year: number) => `Resumo de ${year}`,
+    loading: 'A preparar o vosso ano',
+    // 0 intro
+    names: (a: string, b: string) => `${a} & ${b}`,
+    intro: (stories: number) => `Um ano de contas a dois, em ${stories} histórias.`,
+    tapToContinue: 'Toca para continuar →',
+    // 1 total
+    splitThisYear: 'Este ano dividiram',
+    splitInYear: (year: number) => `Em ${year} dividiram`,
+    inExpenses: 'em',
+    expenses: (count: number) => (count === 1 ? '1 despesa' : `${count} despesas`),
+    perDay: 'por dia, em média',
+    lists: (count: number) => (count === 1 ? '1 lista' : `${count} listas`),
+    // 2 category
+    categoryOfYear: 'A vossa categoria do ano',
+    categoryCount: (money: string, count: number, category: string) => {
+      const key = category.toLowerCase()
+      const noun =
+        key === 'supermercado'
+          ? count === 1 ? 'ida às compras' : 'idas às compras'
+          : key === 'restaurantes'
+            ? count === 1 ? 'refeição fora' : 'refeições fora'
+            : count === 1 ? 'despesa' : 'despesas'
+      return `${money} em ${count} ${noun}.`
+    },
+    // How often, from the number of expenses and the days of the year so far.
+    frequency: (count: number, days: number) => {
+      const perWeek = (count * 7) / Math.max(days, 1)
+      if (perWeek >= 2.5) return `Umas ${Math.round(perWeek)} por semana!`
+      if (perWeek >= 1.5) return 'Quase duas por semana!'
+      if (perWeek >= 0.8) return 'Uma por semana, quase sempre.'
+      const perMonth = (count * 30) / Math.max(days, 1)
+      if (perMonth >= 1.5) return `Umas ${Math.round(perMonth)} por mês.`
+      if (perMonth >= 0.8) return 'Uma por mês, mais coisa menos coisa.'
+      return 'De vez em quando, mas conta!'
+    },
+    // 3 who paid
+    whoPaid: 'Quem pagou o quê',
+    paidTimes: (money: string, count: number) => `${money} · ${count === 1 ? '1 vez' : `${count} vezes`}`,
+    paidMoreOften: (subject: string) => `${subject} pagou mais vezes.`,
+    paidBigger: (subject: string) => `${subject} pagou as maiores.`,
+    paidBoth: (subject: string) => `${subject} pagou mais vezes e as maiores.`,
+    paidSameCount: 'Pagaram o mesmo número de vezes.',
+    averages: (ofHigh: string, high: string, ofLow: string, low: string) =>
+      `A despesa média ${ofHigh} foi ${high}; a ${ofLow}, ${low}.`,
+    sameAverage: (money: string) => `A despesa média de cada um foi ${money}.`,
+    // 4 month
+    topMonth: 'O mês mais caro foi',
+    topMonthList: (money: string, list: string) => `${money}, a maior parte em “${list}”.`,
+    topMonthPlain: (money: string) => `${money} num só mês.`,
+    // 5 moments
+    moments: 'Os momentos do ano',
+    biggest: 'A maior despesa',
+    smallest: 'A mais pequena',
+    restaurant: 'O restaurante favorito',
+    visits: (count: number, money: string) => `${count} vezes · ${money}`,
+    // 6 reactions
+    exchanged: 'Trocaram',
+    reactionsAnd: (reactions: number, comments: number) =>
+      `${reactions === 1 ? 'reação' : 'reações'}${comments > 0 ? ` e ${comments === 1 ? '1 comentário' : `${comments} comentários`}` : ''}`,
+    commentsOnly: (comments: number) => (comments === 1 ? 'comentário' : 'comentários'),
+    mostCommented: (description: string, count: number) =>
+      `O mais comentado: “${description}”, com ${count === 1 ? '1 comentário' : `${count} comentários`}. 😄`,
+    // 7 settle-ups
+    settled: 'Acertaram contas',
+    times: (count: number) => (count === 1 ? '1 vez' : `${count} vezes`),
+    settleLine: (count: number, months: number) => {
+      const perMonth = count / Math.max(months, 1)
+      if (count === 1) return 'Uma vez chegou. 😌'
+      if (perMonth > 1.3) return 'Mais de uma por mês. Contas sempre em dia! ✨'
+      if (perMonth >= 0.75) return 'Uma por mês, quase como um relógio. ⏰'
+      if (perMonth >= 0.3) return 'De tempos a tempos, sem stress. 😌'
+      return 'Poucas vezes, mas bem acertadas. 👌'
+    },
+    enterQuites: (year: number) => `Entram em ${year} quites`,
+    leftToSettle: (money: string) => `Faltam ${money} para ficarem quites`,
+    lastSettlement: (date: string, money: string) => `Último acerto: ${date} · ${money}`,
+    // 8 end
+    thanks: (year: number) => `Obrigado por dividirem ${year} connosco!`,
+    seeYou: 'Até para o ano. 🦘',
+    share: 'Partilhar o vosso ano',
+    again: 'Ver outra vez',
+    shareTitle: (year: number) => `O nosso ${year} no KangarooSplit`,
+    // Share image
+    imageSplit: (count: number) => `divididos em ${count} despesas`,
+    imageTopCategory: 'Categoria do ano',
+    imageTopMonth: 'Mês mais caro',
+    imageQuites: (year: number) => `Entram em ${year} quites ✓`,
+    imageLeft: (money: string) => `Faltam ${money} para ficarem quites`,
+  },
+
   whatsNew: {
     title: 'O que há de novo',
     close: 'Fechar',
