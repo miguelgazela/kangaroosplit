@@ -449,21 +449,30 @@ export const t = {
     scopeList: (name: string) => `Lista ${name}`,
     scopeAll: 'Todas as listas ativas',
     amount: 'Valor',
-    amountAll: (total: string) => `Acertar tudo: ${total}`,
-    hintList: (balance: string) => `Saldo da lista: ${balance}. Altera o valor para um pagamento parcial.`,
-    hintAll: 'O saldo líquido de todas as listas.',
-    tooMuch: (balance: string) => `O valor não pode passar o saldo da lista (${balance}).`,
+    // Status line under the amount (one list).
+    hintList: (name: string) => `Saldo da lista ${name}. Para pagar só uma parte, escreve um valor mais baixo.`,
+    hintPartial: (left: string) => `Pagamento parcial. Fica a faltar ${left}.`,
+    tooMuch: (balance: string) => `É mais do que o saldo da lista (${balance}).`,
+    empty: 'Escreve um valor maior do que zero.',
+    // All lists: the amount is fixed.
+    hintAll: (count: number) =>
+      count === 1
+        ? 'Saldo de 1 lista. Para pagar só uma parte, acerta a lista em separado.'
+        : `Soma dos saldos das ${count} listas. Para pagar só uma parte, acerta cada lista em separado.`,
     includes: (count: number) => (count === 1 ? 'Inclui 1 lista' : `Inclui ${count} listas`),
-    owesYouLine: (subject: string) => `${subject.toLowerCase()} deve-te`,
-    youOweLine: (to: string) => `deves ${to}`,
     note: 'Nota (opcional)',
-    submit: 'Registar pagamento',
-    doneTitle: 'Contas acertadas!',
+    submit: 'Acertar',
+    submitFull: (amount: string) => `Acertar ${amount}`,
+    submitPartial: (amount: string) => `Registar pagamento de ${amount}`,
+    doneTitle: 'Contas acertadas',
     partialTitle: 'Pagamento registado',
     donePaidYou: (subject: string, amount: string) => `${subject} pagou-te ${amount}.`,
     doneYouPaid: (to: string, amount: string) => `Pagaste ${amount} ${to}.`,
     evenAll: 'Estão quites em todas as listas.',
-    evenList: 'Estão quites nesta lista.',
+    evenList: (name: string) => `Estão quites na lista ${name}.`,
+    // Partial payment: what is still open on the list.
+    stillOwesYou: (amount: string, name: string) => `Ainda te deve ${amount} na lista ${name}.`,
+    youStillOwe: (amount: string, name: string) => `Ainda lhe deves ${amount} na lista ${name}.`,
     done: 'Concluído',
   },
 
