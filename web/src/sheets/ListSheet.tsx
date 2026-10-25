@@ -193,7 +193,7 @@ function ListForm({
                 aria-label={t.listEditor.less(nameForms(members[0]).to)}
                 disabled={percent <= 0}
                 onClick={() => setPercent(percent - 1)}
-                className="flex size-11 items-center justify-center text-[22px] text-accent-text disabled:text-disabled"
+                className="flex size-11 items-center justify-center text-[22px] text-link disabled:text-disabled"
               >
                 −
               </button>
@@ -205,7 +205,7 @@ function ListForm({
                 aria-label={t.listEditor.more(nameForms(members[0]).to)}
                 disabled={percent >= 100}
                 onClick={() => setPercent(percent + 1)}
-                className="flex size-11 items-center justify-center text-[22px] text-accent-text disabled:text-disabled"
+                className="flex size-11 items-center justify-center text-[22px] text-link disabled:text-disabled"
               >
                 +
               </button>
@@ -242,7 +242,7 @@ function ListForm({
 
         {list && !list.is_default && (
           <div className="flex-none overflow-hidden rounded-card bg-surface">
-            <button type="button" disabled={pending} onClick={onArchive} className="h-[50px] w-full text-body text-accent-text">
+            <button type="button" disabled={pending} onClick={onArchive} className="h-[50px] w-full text-body text-link">
               {archived ? t.listEditor.unarchive : t.listEditor.archive}
             </button>
             <button

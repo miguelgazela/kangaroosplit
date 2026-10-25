@@ -8,7 +8,7 @@ export function NoAccess() {
     <div className="flex h-full flex-col items-center justify-center gap-3 px-6 text-center">
       <h1 className="text-title2 font-bold">{t.noAccess.title}</h1>
       <p className="text-body text-text-2">{t.noAccess.body}</p>
-      <button type="button" onClick={() => void signOut()} className="h-11 px-4 text-body text-accent-text">
+      <button type="button" onClick={() => void signOut()} className="h-11 px-4 text-body text-link">
         {t.system.signOut}
       </button>
     </div>

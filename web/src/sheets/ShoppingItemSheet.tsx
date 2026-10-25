@@ -122,7 +122,7 @@ export function ShoppingItemSheet({
                 aria-label={t.shopping.less}
                 disabled={quantity <= 1}
                 onClick={() => setQuantity((value) => Math.max(1, value - 1))}
-                className="h-10 w-11 text-[22px] text-accent-text disabled:text-disabled"
+                className="h-10 w-11 text-[22px] text-link disabled:text-disabled"
               >
                 −
               </button>
@@ -132,7 +132,7 @@ export function ShoppingItemSheet({
                 aria-label={t.shopping.more}
                 disabled={quantity >= MAX_QUANTITY}
                 onClick={() => setQuantity((value) => Math.min(MAX_QUANTITY, value + 1))}
-                className="h-10 w-11 text-[22px] text-accent-text disabled:text-disabled"
+                className="h-10 w-11 text-[22px] text-link disabled:text-disabled"
               >
                 +
               </button>

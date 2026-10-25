@@ -38,7 +38,7 @@ export function OptionSheet({
                 role="radio"
                 aria-checked={active}
                 onClick={() => onPick(option.id)}
-                className={`flex h-[76px] flex-col items-center justify-center gap-1 rounded-button px-1 ${active ? 'bg-accent-soft text-accent-text ring-[1.5px] ring-accent ring-inset' : 'bg-surface'}`}
+                className={`flex h-[76px] flex-col items-center justify-center gap-1 rounded-button px-1 ${active ? 'bg-accent-soft text-link ring-[1.5px] ring-accent ring-inset' : 'bg-surface'}`}
               >
                 <span className="text-2xl leading-7">{option.icon}</span>
                 <span className={`w-full truncate text-center text-footnote ${active ? 'font-semibold' : ''}`}>

@@ -37,7 +37,7 @@ export function Sheet({
           {hideCancel ? (
             <span />
           ) : (
-            <button type="button" onClick={onCancel} className="h-11 justify-self-start px-2 text-body text-accent-text">
+            <button type="button" onClick={onCancel} className="h-11 justify-self-start px-2 text-body text-link">
               {cancelLabel}
             </button>
           )}
@@ -47,7 +47,7 @@ export function Sheet({
               type="button"
               disabled={action.disabled}
               onClick={action.onClick}
-              className="h-11 justify-self-end px-2 text-body font-semibold text-accent-text disabled:text-disabled"
+              className="h-11 justify-self-end px-2 text-body font-semibold text-link disabled:text-disabled"
             >
               {action.label}
             </button>

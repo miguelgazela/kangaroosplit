@@ -80,7 +80,7 @@ export function FilterSheet({
         {datesInvalid && <p className="-mt-1 px-1 text-footnote text-danger">{t.listEditor.datesInvalid}</p>}
 
         {hasAny && (
-          <button type="button" onClick={() => setDraft({})} className="h-[50px] flex-none rounded-card bg-surface text-body text-accent-text">
+          <button type="button" onClick={() => setDraft({})} className="h-[50px] flex-none rounded-card bg-surface text-body text-link">
             {t.filter.clear}
           </button>
         )}

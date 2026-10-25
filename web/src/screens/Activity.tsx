@@ -33,7 +33,7 @@ const BADGES: Record<ActivityAction, { icon: IconName; tone: string }> = {
   list_created: { icon: 'list', tone: 'bg-text-2' },
   list_archived: { icon: 'archive', tone: 'bg-text-2' },
   expense_commented: { icon: 'comment', tone: 'bg-accent' },
-  expense_reacted: { icon: 'heart', tone: 'bg-[#C0367A]' },
+  expense_reacted: { icon: 'heart', tone: 'bg-react' },
 }
 
 const quote = (text: string | undefined) => `“${text ?? ''}”`
@@ -188,7 +188,7 @@ export function Activity() {
                         type="button"
                         disabled={!online || setDeleted.isPending || setSettlementDeleted.isPending}
                         onClick={() => restore(entry)}
-                        className="h-9 flex-none rounded-full bg-accent-soft px-3.5 text-subhead font-semibold text-accent-text disabled:text-disabled"
+                        className="h-9 flex-none rounded-full bg-accent-soft px-3.5 text-subhead font-semibold text-link disabled:text-disabled"
                       >
                         {t.activity.restore}
                       </button>

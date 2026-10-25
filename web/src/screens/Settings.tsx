@@ -138,7 +138,7 @@ export function Settings() {
           </span>
         </Link>
         <Link to="/recorrentes" className="flex h-[52px] items-center gap-3 border-t-[0.5px] border-separator px-3.5">
-          <span className="flex size-8 flex-none items-center justify-center rounded-lg bg-accent-soft text-accent-text">
+          <span className="flex size-8 flex-none items-center justify-center rounded-lg bg-accent-soft text-link">
             <Icon name="repeat" size={18} />
           </span>
           <span className="flex-1 text-body">{t.recurring.title}</span>

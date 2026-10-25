@@ -11,6 +11,7 @@ export const t = {
     settings: 'Definições',
     add: 'Nova despesa',
     nav: 'Navegação principal',
+    shoppingCount: (n: number) => `Compras, ${n} por comprar`,
   },
 
   login: {

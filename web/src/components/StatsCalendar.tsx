@@ -16,7 +16,7 @@ const TINTS = [
   'var(--color-accent)',
 ]
 const SELECTED_RING = '0 0 0 2.5px #F59E0B'
-const TODAY_RING = 'inset 0 0 0 1.5px var(--color-accent-text)'
+const TODAY_RING = 'inset 0 0 0 1.5px var(--color-link)'
 
 function weekdayName(iso: string): string {
   return formatWeekday(iso).split(',')[0]
@@ -177,18 +177,18 @@ export function StatsCalendar({
 
           {picked.settlements.map((settlement) => (
             <div key={settlement.id} className="flex min-h-14 items-center gap-3 rounded-xl bg-settle p-1.5">
-              <span className="flex size-10 flex-none items-center justify-center rounded-xl border-[1.5px] border-dashed border-accent bg-fill text-accent-text">
+              <span className="flex size-10 flex-none items-center justify-center rounded-xl border-[1.5px] border-dashed border-accent bg-fill text-link">
                 <Icon name="settle" size={20} strokeWidth={2.2} />
               </span>
               <span className="flex min-w-0 flex-1 flex-col gap-0.5">
-                <span className="truncate text-base font-semibold text-accent-text">
+                <span className="truncate text-base font-semibold text-link">
                   {settlement.to_user === me.user_id
                     ? t.settlement.paidYou(nameForms(partner).subject)
                     : t.settlement.youPaid(nameForms(partner).to)}
                 </span>
                 <span className="truncate text-footnote text-text-2">{t.settlement.label}</span>
               </span>
-              <span className="flex-none text-base font-semibold text-accent-text tabular-nums">
+              <span className="flex-none text-base font-semibold text-link tabular-nums">
                 {formatMoney(settlement.amount_cents)}
               </span>
             </div>

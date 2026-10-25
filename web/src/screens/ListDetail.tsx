@@ -100,7 +100,7 @@ function ExpenseRow({
             </span>
           )}
           {expense.recurring_id && (
-            <span className="inline-flex flex-none items-center gap-[3px] rounded-full bg-accent-soft px-1.5 py-0.5 text-[11px] font-semibold text-accent-text">
+            <span className="inline-flex flex-none items-center gap-[3px] rounded-full bg-accent-soft px-1.5 py-0.5 text-[11px] font-semibold text-link">
               <Icon name="repeat" size={11} strokeWidth={3} />
               {t.expense.recurring}
             </span>
@@ -113,7 +113,7 @@ function ExpenseRow({
           {count > 0 && (
             <span
               aria-hidden="true"
-              className={`inline-flex flex-none items-center gap-[3px] ${social.unread ? 'font-bold text-accent-text' : 'font-medium'}`}
+              className={`inline-flex flex-none items-center gap-[3px] ${social.unread ? 'font-bold text-link' : 'font-medium'}`}
             >
               <svg
                 width="13"
@@ -158,18 +158,18 @@ function SettlementRow({
   const names = nameForms(partner)
   return (
     <button type="button" onClick={onOpen} className="flex min-h-14 w-full items-center gap-3 bg-settle px-3.5 py-2.5 text-left">
-      <span className="flex size-[42px] flex-none items-center justify-center rounded-full border-[1.5px] border-dashed border-accent text-accent-text">
+      <span className="flex size-[42px] flex-none items-center justify-center rounded-full border-[1.5px] border-dashed border-accent text-link">
         <Icon name="settle" size={20} strokeWidth={2.2} />
       </span>
       <span className="flex min-w-0 flex-1 flex-col gap-0.5">
-        <span className="truncate text-base font-semibold text-accent-text">
+        <span className="truncate text-base font-semibold text-link">
           {settlement.to_user === me.user_id ? t.settlement.paidYou(names.subject) : t.settlement.youPaid(names.to)}
         </span>
         <span className="truncate text-footnote text-text-2">
           {formatDayMonth(settlement.settled_on)} · {t.settlement.label}
         </span>
       </span>
-      <span className="flex-none text-base font-semibold text-accent-text tabular-nums">
+      <span className="flex-none text-base font-semibold text-link tabular-nums">
         {formatMoney(settlement.amount_cents)}
       </span>
     </button>
@@ -379,7 +379,7 @@ export function ListDetail({
         onClick={() => list && onOptions(list)}
         className="flex size-11 items-center justify-center"
       >
-        <span className={`flex size-[34px] items-center justify-center rounded-full bg-surface ${online && list ? 'text-accent-text' : 'text-disabled'}`}>
+        <span className={`flex size-[34px] items-center justify-center rounded-full bg-surface ${online && list ? 'text-link' : 'text-disabled'}`}>
           <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
             <circle cx="5" cy="12" r="2" />
             <circle cx="12" cy="12" r="2" />
@@ -419,11 +419,11 @@ export function ListDetail({
         type="button"
         aria-label={filterCount > 0 ? `${t.lists.filter} (${t.filter.active})` : t.lists.filter}
         onClick={() => !loading && setFiltering(true)}
-        className={`relative flex h-10 w-11 items-center justify-center rounded-xl ${filterCount > 0 ? 'bg-accent text-white' : 'bg-fill text-accent-text'}`}
+        className={`relative flex h-10 w-11 items-center justify-center rounded-xl ${filterCount > 0 ? 'bg-accent text-white' : 'bg-fill text-link'}`}
       >
         <Icon name="filter" size={20} />
         {filterCount > 0 && (
-          <span className="absolute -top-1 -right-1 flex size-[18px] items-center justify-center rounded-full border-2 border-bg bg-accent-text text-[10px] font-bold text-white">
+          <span className="absolute -top-1 -right-1 flex size-[18px] items-center justify-center rounded-full border-2 border-bg bg-link text-[10px] font-bold text-white">
             {filterCount}
           </span>
         )}
@@ -502,7 +502,7 @@ export function ListDetail({
             type="button"
             disabled={!online || setArchived.isPending}
             onClick={() => setArchived.mutate({ id: list.id, archived: false })}
-            className="h-9 rounded-control bg-surface px-3.5 text-subhead font-semibold text-accent-text disabled:text-disabled"
+            className="h-9 rounded-control bg-surface px-3.5 text-subhead font-semibold text-link disabled:text-disabled"
           >
             {t.lists.unarchive}
           </button>
@@ -560,7 +560,7 @@ export function ListDetail({
         >
           <span
             aria-hidden="true"
-            className="flex size-7 flex-none items-center justify-center rounded-lg bg-accent-soft text-accent-text"
+            className="flex size-7 flex-none items-center justify-center rounded-lg bg-accent-soft text-link"
           >
             <Icon name="repeat" size={16} strokeWidth={2.2} />
           </span>

@@ -69,7 +69,7 @@ function ItemRow({
         className="flex size-11 flex-none items-center justify-center"
       >
         <span
-          className={`flex size-6 items-center justify-center rounded-full text-white ${done ? 'bg-pos' : 'border-2 border-[#B4B4BC]'}`}
+          className={`flex size-6 items-center justify-center rounded-full text-white ${done ? 'bg-pos' : 'border-2 border-checkbox-off'}`}
         >
           {done && <Icon name="check" size={14} strokeWidth={3.4} />}
         </span>
@@ -207,7 +207,7 @@ export function Shopping() {
           onClick={() => setMenu(true)}
           className="flex size-11 items-center justify-center"
         >
-          <span className="flex size-[34px] items-center justify-center rounded-full bg-surface text-accent-text">
+          <span className="flex size-[34px] items-center justify-center rounded-full bg-surface text-link">
             <Icon name="more" size={20} />
           </span>
         </button>
@@ -452,7 +452,7 @@ function MenuSheet({
             type="button"
             disabled={clearDisabled}
             onClick={onClear}
-            className="h-[57px] w-full text-xl text-accent-text disabled:text-disabled"
+            className="h-[57px] w-full text-xl text-link disabled:text-disabled"
           >
             {t.shopping.clearCart}
           </button>
@@ -465,7 +465,7 @@ function MenuSheet({
             {t.shopping.deleteAll}
           </button>
         </div>
-        <button type="button" onClick={onClose} className="h-[57px] rounded-sheet bg-surface text-xl font-semibold text-accent-text">
+        <button type="button" onClick={onClose} className="h-[57px] rounded-sheet bg-surface text-xl font-semibold text-link">
           {t.actions.cancel}
         </button>
       </div>

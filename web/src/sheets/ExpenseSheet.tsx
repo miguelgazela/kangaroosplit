@@ -527,7 +527,7 @@ function ExpenseForm({
               <button
                 type="button"
                 onClick={() => setKeypad(false)}
-                className="flex h-[46px] w-full items-center justify-center gap-2 border-t-[0.5px] border-separator bg-accent-soft/60 text-subhead font-medium text-accent-text"
+                className="flex h-[46px] w-full items-center justify-center gap-2 border-t-[0.5px] border-separator bg-accent-soft/60 text-subhead font-medium text-link"
               >
                 <Icon name="plus" size={16} strokeWidth={2.4} />
                 {recurring ? t.recurring.schedule : t.expense.moreDetails}
@@ -610,7 +610,7 @@ function ExpenseForm({
                       {receiptSrc && <img src={receiptSrc} alt="" className="size-full object-cover" />}
                     </button>
                     <span className="min-w-0 flex-1 truncate text-body">{t.expense.receipt}</span>
-                    <label className="flex h-11 flex-none items-center px-2 text-body text-accent-text">
+                    <label className="flex h-11 flex-none items-center px-2 text-body text-link">
                       {t.expense.replaceReceipt}
                       <input type="file" accept="image/*" onChange={(event) => void pickPhoto(event)} className="sr-only" />
                     </label>
@@ -622,7 +622,7 @@ function ExpenseForm({
                   <label className="flex h-11 min-w-0 flex-1 items-center gap-3">
                     <Icon name="camera" size={22} strokeWidth={1.8} className="flex-none text-text-2" />
                     <span className="min-w-0 flex-1 truncate text-body">{t.expense.receipt}</span>
-                    <span className="flex-none px-2 text-body text-accent-text">{t.expense.addReceipt}</span>
+                    <span className="flex-none px-2 text-body text-link">{t.expense.addReceipt}</span>
                     {/* No `capture`: iOS then offers both the camera and the photo library. */}
                     <input type="file" accept="image/*" onChange={(event) => void pickPhoto(event)} className="sr-only" />
                   </label>
@@ -644,7 +644,7 @@ function ExpenseForm({
                       type="button"
                       disabled={pending}
                       onClick={() => onDuplicate(expense)}
-                      className="h-[50px] flex-1 rounded-cta bg-surface text-body font-semibold text-accent-text"
+                      className="h-[50px] flex-1 rounded-cta bg-surface text-body font-semibold text-link"
                     >
                       {t.expense.duplicate}
                     </button>
@@ -672,7 +672,7 @@ function ExpenseForm({
                     type="button"
                     disabled={pending}
                     onClick={onTogglePause}
-                    className="h-[50px] flex-1 rounded-cta bg-surface text-body font-semibold text-accent-text"
+                    className="h-[50px] flex-1 rounded-cta bg-surface text-body font-semibold text-link"
                   >
                     {rule.paused_at ? t.recurring.resume : t.recurring.pause}
                   </button>

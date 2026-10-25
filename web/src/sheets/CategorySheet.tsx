@@ -107,7 +107,7 @@ export function CategorySheet({ category, onClose }: { category?: Category; onCl
             onClick={() =>
               setArchived.mutate({ id: category.id, archived: !archived }, { onSuccess: done, onError: fail })
             }
-            className="h-[50px] flex-none rounded-card bg-surface text-body text-accent-text"
+            className="h-[50px] flex-none rounded-card bg-surface text-body text-link"
           >
             {archived ? t.categories.unarchive : t.categories.archive}
           </button>

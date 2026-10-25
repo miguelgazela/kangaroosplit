@@ -64,7 +64,7 @@ function ListRow({ list, subtitle, balance }: { list: List; subtitle: string; ba
         <span className="flex items-center gap-2">
           <span className="truncate text-headline font-semibold">{list.name}</span>
           {list.is_default && (
-            <span className="rounded-full bg-accent-soft px-2 py-0.5 text-xs font-semibold text-accent-text">
+            <span className="rounded-full bg-accent-soft px-2 py-0.5 text-xs font-semibold text-link">
               {t.lists.main}
             </span>
           )}
@@ -182,7 +182,7 @@ export function Home({ onSettleAll, onNewList }: { onSettleAll: () => void; onNe
             aria-label={news > 0 ? t.activity.bellNews(news) : t.tabs.activity}
             className="relative flex size-11 items-center justify-center"
           >
-            <span className="flex size-9 items-center justify-center rounded-full bg-surface text-accent-text">
+            <span className="flex size-9 items-center justify-center rounded-full bg-surface text-link">
               <Icon name="bell" size={20} />
             </span>
             {news > 0 && (
@@ -262,7 +262,7 @@ export function Home({ onSettleAll, onNewList }: { onSettleAll: () => void; onNe
           type="button"
           disabled={!online}
           onClick={onNewList}
-          className="flex h-11 items-center gap-1 pr-1 pl-3 text-headline font-medium text-accent-text disabled:text-disabled"
+          className="flex h-11 items-center gap-1 pr-1 pl-3 text-headline font-medium text-link disabled:text-disabled"
         >
           <Icon name="plus" size={20} strokeWidth={2.2} />
           {t.lists.create}
@@ -310,7 +310,7 @@ export function Home({ onSettleAll, onNewList }: { onSettleAll: () => void; onNe
                   ))}
                   <Link
                     to={`/lista/${main.id}`}
-                    className="mx-4 mt-0.5 flex h-11 items-center justify-between border-t-[0.5px] border-separator text-subhead font-medium text-accent-text"
+                    className="mx-4 mt-0.5 flex h-11 items-center justify-between border-t-[0.5px] border-separator text-subhead font-medium text-link"
                   >
                     {t.lists.seeAll}
                     <Icon name="chevronRight" size={14} strokeWidth={2.5} />

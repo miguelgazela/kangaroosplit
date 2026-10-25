@@ -72,7 +72,7 @@ export function NotificationPrompt() {
           >
             {t.notifications.enable}
           </button>
-          <button type="button" onClick={close} className="h-12 rounded-cta text-body text-accent-text">
+          <button type="button" onClick={close} className="h-12 rounded-cta text-body text-link">
             {t.notifications.notNow}
           </button>
         </div>

@@ -61,7 +61,7 @@ export function Recurring() {
           type="button"
           aria-label={t.recurring.showAllLists}
           onClick={() => setParams({}, { replace: true })}
-          className="-mt-1 flex h-9 flex-none items-center gap-1.5 self-start rounded-full bg-accent-soft pr-2.5 pl-3 text-subhead font-medium text-accent-text"
+          className="-mt-1 flex h-9 flex-none items-center gap-1.5 self-start rounded-full bg-accent-soft pr-2.5 pl-3 text-subhead font-medium text-link"
         >
           {filterList.icon} {filterList.name}
           <Icon name="close" size={14} strokeWidth={2.6} />
@@ -127,7 +127,7 @@ export function Recurring() {
                         type="button"
                         disabled={!online || setPaused.isPending}
                         onClick={() => resume(rule.id)}
-                        className="-mr-2 h-9 px-2 text-subhead font-semibold text-accent-text disabled:text-disabled"
+                        className="-mr-2 h-9 px-2 text-subhead font-semibold text-link disabled:text-disabled"
                       >
                         {t.recurring.resume}
                       </button>

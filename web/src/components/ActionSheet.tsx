@@ -35,7 +35,7 @@ export function ActionSheet({
             {confirmLabel}
           </button>
         </div>
-        <button type="button" onClick={onCancel} className="h-[57px] rounded-sheet bg-surface text-xl font-semibold text-accent-text">
+        <button type="button" onClick={onCancel} className="h-[57px] rounded-sheet bg-surface text-xl font-semibold text-link">
           {t.actions.cancel}
         </button>
       </div>

@@ -10,6 +10,7 @@ import { Skeleton } from '../components/Skeleton'
 import { StatsCalendar, StatsCalendarSkeleton } from '../components/StatsCalendar'
 import { TrendBars } from '../components/TrendBars'
 import { t } from '../i18n/pt'
+import { CATEGORY_FALLBACK } from '../theme/colors'
 import { buildCalendar } from '../lib/calendar'
 import { todayISO } from '../lib/dates'
 import { formatMoney, formatPercent } from '../lib/format'
@@ -49,7 +50,7 @@ function YearReviewRow({ year }: { year: number }) {
     </Link>
   )
 }
-const FALLBACK_COLOR = '#64748b'
+const FALLBACK_COLOR = CATEGORY_FALLBACK
 
 // Line-height boxes keep each bar where the real text sits, so nothing moves
 // when the data arrives.
@@ -207,7 +208,7 @@ export function Stats() {
             type="button"
             aria-label={yearly ? t.stats.previousYear : t.stats.previousMonth}
             onClick={() => show(scope, previousPeriod)}
-            className="flex h-11 w-9 items-center justify-center text-accent-text"
+            className="flex h-11 w-9 items-center justify-center text-link"
           >
             <Icon name="chevronLeft" size={18} strokeWidth={2.6} />
           </button>
@@ -219,7 +220,7 @@ export function Stats() {
             aria-label={yearly ? t.stats.nextYear : t.stats.nextMonth}
             disabled={isFuture(shiftPeriod(period, 1))}
             onClick={() => show(scope, shiftPeriod(period, 1))}
-            className="flex h-11 w-9 items-center justify-center text-accent-text disabled:text-disabled"
+            className="flex h-11 w-9 items-center justify-center text-link disabled:text-disabled"
           >
             <Icon name="chevronRight" size={18} strokeWidth={2.6} />
           </button>

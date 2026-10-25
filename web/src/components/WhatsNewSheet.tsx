@@ -7,7 +7,7 @@ import { Guru } from './Guru'
 import { Icon } from './Icon'
 
 const TONES: Record<Highlight['tone'], CSSProperties> = {
-  accent: { background: 'var(--color-accent-soft)', color: 'var(--color-accent-text)' },
+  accent: { background: 'var(--color-accent-soft)', color: 'var(--color-link)' },
   teal: { background: 'var(--ks-teal-bg)', color: 'var(--ks-teal-fg)' },
   orange: { background: 'var(--ks-orange-bg)', color: 'var(--ks-orange-fg)' },
 }
@@ -91,7 +91,7 @@ export function WhatsNewSheet() {
           ))}
         </ul>
 
-        <button type="button" onClick={seeAll} className="h-11 w-full rounded-cta text-[15px] font-semibold text-accent-text">
+        <button type="button" onClick={seeAll} className="h-11 w-full rounded-cta text-[15px] font-semibold text-link">
           {t.whatsNew.seeAll}
         </button>
       </div>
