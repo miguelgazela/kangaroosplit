@@ -465,7 +465,7 @@ function ExpenseForm({
             className="block w-full px-4 pt-3 pb-2.5 text-left"
           >
             <span className="text-footnote text-text-2">{t.expense.amount}</span>
-            <span className="flex items-baseline gap-0.5 text-[44px] leading-[52px] font-bold tracking-[-0.8px] tabular-nums">
+            <span className="flex items-baseline gap-0.5 font-rounded text-[48px] leading-[56px] font-bold tabular-nums">
               {keypad ? (
                 <>
                   <span>{amount || '0'}</span>
@@ -483,7 +483,7 @@ function ExpenseForm({
             <input
               type="text"
               aria-label={t.expense.description}
-              placeholder={t.expense.description}
+              placeholder={t.expense.descriptionPlaceholder}
               value={description}
               maxLength={80}
               enterKeyHint="done"
@@ -526,11 +526,19 @@ function ExpenseForm({
               {detailsCard}
               <button
                 type="button"
+                aria-label={recurring ? undefined : t.expense.moreDetailsLabel}
                 onClick={() => setKeypad(false)}
-                className="flex h-[46px] w-full items-center justify-center gap-2 border-t-[0.5px] border-separator bg-accent-soft/60 text-subhead font-medium text-link"
+                className="flex h-[46px] w-full items-center justify-center gap-1.5 border-t-[0.5px] border-separator bg-accent-faint px-4 text-link"
               >
                 <Icon name="plus" size={16} strokeWidth={2.4} />
-                {recurring ? t.recurring.schedule : t.expense.moreDetails}
+                {recurring ? (
+                  <span className="text-subhead font-semibold">{t.recurring.schedule}</span>
+                ) : (
+                  <>
+                    <span className="text-subhead font-semibold">{t.expense.moreDetails}</span>
+                    <span className="text-footnote text-text-2">{t.expense.moreDetailsHint}</span>
+                  </>
+                )}
               </button>
             </div>
             <div className="flex-1" />
@@ -541,7 +549,7 @@ function ExpenseForm({
                   type="button"
                   aria-label={key === 'back' ? t.expense.deleteDigit : key === ',' ? t.expense.decimalComma : key}
                   onClick={() => setAmount((current) => pressKey(current, key))}
-                  className="flex h-[50px] items-center justify-center rounded-button bg-surface text-[26px] font-medium active:bg-fill"
+                  className="flex h-[50px] items-center justify-center rounded-button bg-surface font-rounded text-[26px] font-medium active:bg-fill"
                 >
                   {key === 'back' ? <Icon name="backspace" size={26} /> : key}
                 </button>
