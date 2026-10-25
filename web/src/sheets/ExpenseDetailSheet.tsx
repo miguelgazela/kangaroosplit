@@ -9,7 +9,7 @@ import { useToast } from '../components/ToastContext'
 import { t } from '../i18n/pt'
 import type { ExpenseComment, ExpenseWithShares, Member } from '../lib/database.types'
 import { dayLabel, localDay } from '../lib/dayLabel'
-import { formatISODate, formatMoney, formatTime } from '../lib/format'
+import { formatDayMonthShort, formatMoney, formatTime } from '../lib/format'
 import { OfflineError, useOnline } from '../lib/online'
 import { nameForms } from '../lib/people'
 import {
@@ -43,12 +43,10 @@ import {
 function BubbleView({
   bubble,
   author,
-  subject,
   onMenu,
 }: {
   bubble: Bubble
   author: Member
-  subject: string
   onMenu: (bubble: Bubble, element: HTMLElement) => void
 }) {
   const { comment, mine, endOfRun } = bubble
@@ -78,9 +76,9 @@ function BubbleView({
           {comment.body}
         </span>
         <span className="px-1.5 text-[11px] text-text-2">
-          {mine ? '' : `${subject} · `}
+          {mine ? '' : `${author.display_name}, `}
           {formatTime(comment.created_at)}
-          {comment.edited_at ? ` · ${t.detail.edited}` : ''}
+          {comment.edited_at ? `, ${t.detail.edited}` : ''}
         </span>
       </div>
     </div>
@@ -265,22 +263,27 @@ export function ExpenseDetailSheet({
               <div className="flex min-w-0 flex-1 flex-col gap-0.5">
                 <span className="truncate text-headline font-semibold">{expense.description}</span>
                 <span className="text-footnote text-text-2">
-                  {formatISODate(expense.spent_on)}
-                  {list ? ` · ${list.icon} ${list.name}` : ''} · {payer}
+                  {t.detail.paidOn(payer, formatDayMonthShort(expense.spent_on))}
                 </span>
+                {list && <span className="text-footnote text-text-2">{t.settlement.scopeList(list.name)}</span>}
               </div>
-              <span className="text-title2 font-bold tabular-nums">{formatMoney(expense.amount_cents)}</span>
+              <span className="self-start font-rounded text-[24px] leading-[30px] font-bold tabular-nums">
+                {formatMoney(expense.amount_cents)}
+              </span>
             </div>
             <div className="flex items-center gap-2 border-t-[0.5px] border-separator pt-2.5">
-              <span
-                className={`flex flex-1 items-center gap-1 text-base font-semibold tabular-nums ${
-                  position > 0 ? 'text-pos' : position < 0 ? 'text-neg' : 'text-text-2'
-                }`}
-              >
-                {position !== 0 && (
-                  <Icon name={position > 0 ? 'arrowDownLeft' : 'arrowUpRight'} size={13} strokeWidth={3} />
-                )}
-                {positionLabel} · {split}
+              <span className="flex min-w-0 flex-1 flex-wrap items-center gap-x-2 gap-y-0.5">
+                <span
+                  className={`flex items-center gap-1 text-base font-semibold tabular-nums ${
+                    position > 0 ? 'text-pos' : position < 0 ? 'text-neg' : 'text-text-2'
+                  }`}
+                >
+                  {position !== 0 && (
+                    <Icon name={position > 0 ? 'arrowDownLeft' : 'arrowUpRight'} size={13} strokeWidth={3} />
+                  )}
+                  {positionLabel}
+                </span>
+                <span className="text-subhead text-text-2 tabular-nums">{t.detail.split(split)}</span>
               </span>
               {expense.receipt_path && (
                 <button
@@ -309,7 +312,7 @@ export function ExpenseDetailSheet({
             {reactionSummary(social, names.subject, t.detail.tapToReact)}
           </p>
 
-          <h2 className="px-1 text-footnote font-semibold tracking-[0.4px] text-text-2 uppercase">
+          <h2 className="px-1 text-subhead font-semibold">
             {items.length > 0 ? t.detail.commentsCount(items.length) : t.detail.comments}
           </h2>
         </div>
@@ -333,7 +336,6 @@ export function ExpenseDetailSheet({
                 <BubbleView
                   bubble={bubble}
                   author={bubble.mine ? me : partner}
-                  subject={names.subject}
                   onMenu={openMenu}
                 />
               </div>
@@ -367,8 +369,8 @@ export function ExpenseDetailSheet({
               <input
                 ref={input}
                 type="text"
-                aria-label={t.detail.placeholder}
-                placeholder={t.detail.placeholder}
+                aria-label={t.detail.placeholder(names.to)}
+                placeholder={t.detail.placeholder(names.to)}
                 value={draft}
                 maxLength={COMMENT_MAX_LENGTH}
                 disabled={!online}

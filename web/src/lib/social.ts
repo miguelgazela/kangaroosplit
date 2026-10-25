@@ -59,12 +59,11 @@ export function reactionSummary(
   subject: string,
   empty: string,
 ): string {
-  const parts: string[] = []
-  if (social.theirs) parts.push(`${subject} reagiu com ${social.theirs}`)
-  if (social.mine) parts.push(`reagiste com ${social.mine}`)
-  if (parts.length === 0) return empty
-  const text = parts.join(' · ')
-  return text.charAt(0).toUpperCase() + text.slice(1)
+  // One sentence: "A Mara reagiu com ❤️ e tu com 😂."
+  if (social.theirs && social.mine) return `${subject} reagiu com ${social.theirs} e tu com ${social.mine}.`
+  if (social.theirs) return `${subject} reagiu com ${social.theirs}.`
+  if (social.mine) return `Reagiste com ${social.mine}.`
+  return empty
 }
 
 export type Bubble = {

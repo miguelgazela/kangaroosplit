@@ -64,8 +64,9 @@ describe('nextReaction', () => {
 describe('reactionSummary', () => {
   const empty = 'Toca num emoji para reagir.'
   it('says it in words', () => {
-    expect(reactionSummary({ mine: '😂', theirs: '❤️' }, 'A Mara', empty)).toBe('A Mara reagiu com ❤️ · reagiste com 😂')
-    expect(reactionSummary({ mine: '😂', theirs: null }, 'A Mara', empty)).toBe('Reagiste com 😂')
+    expect(reactionSummary({ mine: '😂', theirs: '❤️' }, 'A Mara', empty)).toBe('A Mara reagiu com ❤️ e tu com 😂.')
+    expect(reactionSummary({ mine: '😂', theirs: null }, 'A Mara', empty)).toBe('Reagiste com 😂.')
+    expect(reactionSummary({ mine: null, theirs: '❤️' }, 'A Mara', empty)).toBe('A Mara reagiu com ❤️.')
     expect(reactionSummary({ mine: null, theirs: null }, 'A Mara', empty)).toBe(empty)
   })
 })

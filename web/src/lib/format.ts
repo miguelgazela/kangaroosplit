@@ -54,6 +54,12 @@ export function formatDayMonth(iso: string): string {
   return `${day} ${MONTHS[Number(month) - 1].slice(0, 3)}`
 }
 
+// '2026-10-08' -> '8 out' (in a sentence, no leading zero)
+export function formatDayMonthShort(iso: string): string {
+  const [, month, day] = iso.split('-')
+  return `${Number(day)} ${MONTHS[Number(month) - 1].slice(0, 3)}`
+}
+
 // '2026-10' -> 'Outubro 2026'
 export function formatMonthYear(month: string): string {
   const [year, monthNumber] = month.split('-')
