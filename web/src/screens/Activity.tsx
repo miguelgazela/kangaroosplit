@@ -23,17 +23,21 @@ import {
   useSettlements,
 } from '../query/hooks'
 
+// Type badge on the avatar (spec 2.7): grey for edits, comments and lists,
+// green for add and restore, red for delete, pink for reactions, gold coin
+// for settle-up.
+const NEUTRAL = 'bg-badge-neutral text-surface'
 const BADGES: Record<ActivityAction, { icon: IconName; tone: string }> = {
-  expense_created: { icon: 'plus', tone: 'bg-pos' },
-  expense_updated: { icon: 'edit', tone: 'bg-accent' },
-  expense_deleted: { icon: 'close', tone: 'bg-danger' },
-  expense_restored: { icon: 'restore', tone: 'bg-pos' },
-  settlement_created: { icon: 'settle', tone: 'bg-accent' },
-  settlement_deleted: { icon: 'close', tone: 'bg-danger' },
-  list_created: { icon: 'list', tone: 'bg-text-2' },
-  list_archived: { icon: 'archive', tone: 'bg-text-2' },
-  expense_commented: { icon: 'comment', tone: 'bg-accent' },
-  expense_reacted: { icon: 'heart', tone: 'bg-react' },
+  expense_created: { icon: 'plus', tone: 'bg-pos text-surface' },
+  expense_updated: { icon: 'edit', tone: NEUTRAL },
+  expense_deleted: { icon: 'close', tone: 'bg-danger text-surface' },
+  expense_restored: { icon: 'restore', tone: 'bg-pos text-surface' },
+  settlement_created: { icon: 'settle', tone: 'bg-coin text-coin-icon' },
+  settlement_deleted: { icon: 'close', tone: 'bg-danger text-surface' },
+  list_created: { icon: 'list', tone: NEUTRAL },
+  list_archived: { icon: 'archive', tone: NEUTRAL },
+  expense_commented: { icon: 'comment', tone: NEUTRAL },
+  expense_reacted: { icon: 'heart', tone: 'bg-react text-surface' },
 }
 
 const quote = (text: string | undefined) => `“${text ?? ''}”`
@@ -44,7 +48,7 @@ function sentence(entry: ActivityEntry, me: Member, partner: Member): string {
   const { snapshot } = entry
   const amount = formatMoney(snapshot.amount_cents ?? 0)
   const expense = quote(snapshot.description)
-  const priced = `${expense} · ${amount}`
+  const priced = `${expense} (${amount})`
   const list = quote(snapshot.name)
 
   switch (entry.action) {
@@ -128,7 +132,7 @@ export function Activity() {
   return (
     <Screen>
       <BackLink to="/" label={t.tabs.home} />
-      <h1 className="-mt-2 flex h-11 items-center text-large-title font-bold tracking-[0.4px]">{t.tabs.activity}</h1>
+      <h1 className="-mt-2 flex h-11 items-center font-rounded text-large-title font-bold tracking-[0.2px]">{t.tabs.activity}</h1>
 
       {ready && entries.length === 0 && (
         <p className="py-10 text-center text-body text-text-2">{t.activity.empty}</p>
@@ -137,7 +141,7 @@ export function Activity() {
       {ready &&
         [...days].map(([day, dayEntries]) => (
           <section key={day} className="flex flex-col gap-2">
-            <h2 className="px-1 text-footnote font-semibold tracking-[0.4px] text-text-2 uppercase">{dayLabel(day)}</h2>
+            <h2 className="px-1 text-subhead font-semibold">{dayLabel(day)}</h2>
             <div className="overflow-hidden rounded-card bg-surface shadow-card">
               {dayEntries.map((entry, index) => {
                 // A payment shows whoever paid, which is not always who recorded it.
@@ -163,7 +167,7 @@ export function Activity() {
                   >
                     <span className="relative flex-none">
                       <Avatar member={actor} size={36} />
-                      <span className={`absolute -right-1 -bottom-1 flex size-[18px] items-center justify-center rounded-full border-2 border-surface text-surface ${badge.tone}`}>
+                      <span className={`absolute -right-1 -bottom-1 flex size-[18px] items-center justify-center rounded-full border-2 ${entry.action === 'settlement_created' ? 'border-settle' : 'border-surface'} ${badge.tone}`}>
                         <Icon name={badge.icon} size={10} strokeWidth={3.4} />
                       </span>
                     </span>

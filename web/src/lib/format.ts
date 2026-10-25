@@ -116,6 +116,14 @@ export function formatWeekday(iso: string): string {
   return `${WEEKDAYS[new Date(year, month - 1, day).getDay()]}, ${formatDayMonth(iso)}`
 }
 
+const LONG_WEEKDAYS = ['domingo', 'segunda-feira', 'terça-feira', 'quarta-feira', 'quinta-feira', 'sexta-feira', 'sábado']
+
+// '2026-10-06' -> 'terça-feira, 6 de outubro' (lower case, for inside a sentence)
+export function formatLongDay(iso: string): string {
+  const [year, month, day] = iso.split('-').map(Number)
+  return `${LONG_WEEKDAYS[new Date(year, month - 1, day).getDay()]}, ${day} de ${MONTHS[month - 1]}`
+}
+
 // Local time of an instant, as 'HH:mm'.
 export function formatTime(instant: string): string {
   const date = new Date(instant)
