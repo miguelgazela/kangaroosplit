@@ -100,7 +100,7 @@ function ExpenseRow({
             </span>
           )}
           {expense.recurring_id && (
-            <span className="inline-flex flex-none items-center gap-[3px] rounded-full bg-accent-soft px-1.5 py-0.5 text-[11px] font-semibold text-link">
+            <span className="inline-flex flex-none items-center gap-[3px] rounded-full bg-fill px-1.5 py-0.5 text-[11px] font-semibold text-text-2">
               <Icon name="repeat" size={11} strokeWidth={3} />
               {t.expense.recurring}
             </span>
@@ -135,7 +135,7 @@ function ExpenseRow({
       <span className="flex flex-none flex-col items-end gap-0.5">
         <span className="text-base font-semibold tabular-nums">{formatMoney(expense.amount_cents)}</span>
         {position !== 0 && (
-          <span className={`text-footnote font-medium tabular-nums ${position > 0 ? 'text-pos' : 'text-neg'}`}>
+          <span className={`text-footnote font-medium tabular-nums ${position > 0 ? 'text-pos' : 'text-neg-2'}`}>
             {position > 0 ? t.expense.lent(formatMoney(position)) : t.expense.owe(formatMoney(-position))}
           </span>
         )}
@@ -158,18 +158,18 @@ function SettlementRow({
   const names = nameForms(partner)
   return (
     <button type="button" onClick={onOpen} className="flex min-h-14 w-full items-center gap-3 bg-settle px-3.5 py-2.5 text-left">
-      <span className="flex size-[42px] flex-none items-center justify-center rounded-full border-[1.5px] border-dashed border-accent text-link">
+      <span aria-hidden="true" className="flex size-[42px] flex-none items-center justify-center rounded-full bg-coin text-coin-icon">
         <Icon name="settle" size={20} strokeWidth={2.2} />
       </span>
       <span className="flex min-w-0 flex-1 flex-col gap-0.5">
-        <span className="truncate text-base font-semibold text-link">
+        <span className="truncate text-base font-semibold">
           {settlement.to_user === me.user_id ? t.settlement.paidYou(names.subject) : t.settlement.youPaid(names.to)}
         </span>
         <span className="truncate text-footnote text-text-2">
           {formatDayMonth(settlement.settled_on)} · {t.settlement.label}
         </span>
       </span>
-      <span className="flex-none text-base font-semibold text-link tabular-nums">
+      <span className="flex-none text-base font-semibold tabular-nums">
         {formatMoney(settlement.amount_cents)}
       </span>
     </button>
@@ -395,7 +395,7 @@ export function ListDetail({
         {list.icon}
       </span>
       <div className="flex min-w-0 flex-col gap-px">
-        <h1 className="truncate text-[30px] leading-9 font-bold tracking-[0.2px]">{list.name}</h1>
+        <h1 className="truncate font-rounded text-[30px] leading-9 font-bold">{list.name}</h1>
         <span className="text-footnote text-text-2">
           {list.is_default ? t.lists.mainList : formatDateRange(list.starts_on, list.ends_on)}
         </span>
@@ -404,7 +404,7 @@ export function ListDetail({
   )
   const searchRow = (
     <div className="flex gap-2">
-      <label className="flex h-10 flex-1 items-center gap-2 rounded-xl bg-fill px-3 text-text-2">
+      <label className="flex h-10 flex-1 items-center gap-2 rounded-xl bg-search px-3 text-text-2">
         <Icon name="search" size={18} strokeWidth={2.2} />
         <input
           type="search"
@@ -419,7 +419,7 @@ export function ListDetail({
         type="button"
         aria-label={filterCount > 0 ? `${t.lists.filter} (${t.filter.active})` : t.lists.filter}
         onClick={() => !loading && setFiltering(true)}
-        className={`relative flex h-10 w-11 items-center justify-center rounded-xl ${filterCount > 0 ? 'bg-accent text-white' : 'bg-fill text-link'}`}
+        className={`relative flex h-10 w-11 items-center justify-center rounded-xl ${filterCount > 0 ? 'bg-accent text-white' : 'bg-search text-link'}`}
       >
         <Icon name="filter" size={20} />
         {filterCount > 0 && (
@@ -515,7 +515,7 @@ export function ListDetail({
             <span className="text-subhead text-text-2">
               {balance > 0 ? t.balance.owesYou(names.subject) : balance < 0 ? t.balance.youOwe(names.to) : t.balance.settled}
             </span>
-            <BalanceAmount cents={balance} iconSize={20} className="gap-1.5 text-[30px] leading-9 !font-bold" />
+            <BalanceAmount cents={balance} iconSize={20} className="gap-1.5 font-rounded text-[32px] leading-[38px] !font-bold" />
           </div>
           {balance !== 0 && !archived && (
             <button
@@ -560,7 +560,7 @@ export function ListDetail({
         >
           <span
             aria-hidden="true"
-            className="flex size-7 flex-none items-center justify-center rounded-lg bg-accent-soft text-link"
+            className="flex size-7 flex-none items-center justify-center rounded-lg bg-fill text-text-2"
           >
             <Icon name="repeat" size={16} strokeWidth={2.2} />
           </span>
@@ -580,10 +580,10 @@ export function ListDetail({
 
       {scheduled.length > 0 && (
         <section className="flex flex-col gap-2">
-          <div className="flex justify-between px-1 pt-1 text-footnote font-semibold text-text-2">
-            <span className="tracking-[0.4px] uppercase">{t.lists.scheduled}</span>
-            <span>{formatMoney(totalCents(scheduled.flatMap((row) => (row.kind === 'expense' ? [row.expense] : []))))}</span>
-          </div>
+          <h2 className="flex justify-between px-1 pt-1 text-subhead font-semibold">
+            <span>{t.lists.scheduled}</span>
+            <span className="font-medium text-text-2 tabular-nums">{formatMoney(totalCents(scheduled.flatMap((row) => (row.kind === 'expense' ? [row.expense] : []))))}</span>
+          </h2>
           <div className="overflow-hidden rounded-card bg-surface shadow-card">
             {scheduled.map((row, index) =>
               row.kind === 'expense' ? (
@@ -606,10 +606,10 @@ export function ListDetail({
 
       {visibleMonths.map(({ month, rows, total }) => (
         <section key={month} className="flex flex-col gap-2">
-          <div className="flex justify-between px-1 pt-1 text-footnote font-semibold text-text-2">
-            <span className="tracking-[0.4px] uppercase">{formatMonthYear(month)}</span>
-            <span>{formatMoney(total)}</span>
-          </div>
+          <h2 className="flex justify-between px-1 pt-1 text-subhead font-semibold">
+            <span>{formatMonthYear(month)}</span>
+            <span className="font-medium text-text-2 tabular-nums">{formatMoney(total)}</span>
+          </h2>
           <div className="overflow-hidden rounded-card bg-surface shadow-card">
             {rows.map((row, index) => (
               <div key={row.kind === 'expense' ? row.expense.id : row.settlement.id} className={index > 0 ? 'border-t-[0.5px] border-separator' : ''}>
