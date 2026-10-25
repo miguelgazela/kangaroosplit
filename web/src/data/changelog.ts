@@ -22,6 +22,38 @@ export type ChangelogEntry = {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '1.10.0',
+    date: '2026-10-25',
+    changes: [
+      'A tua cor (Definições) passa a ser a cor dos botões, dos separadores e do cartão do saldo; a cor da outra pessoa fica reservada',
+      'Acertar contas: escreve um valor mais baixo para registar um pagamento parcial; o botão diz sempre o que vai acontecer',
+      'Compras: “Remover comprados” e, logo a seguir, um atalho para registar o talão',
+      'Reações com animação, títulos e valores com letra arredondada, e “deves” sem laranja',
+      'Estatísticas: cores fixas para as categorias e o calendário com a tua cor',
+      'Textos mais claros em vários ecrãs, incluindo o erro ao iniciar sessão',
+    ],
+    highlights: [
+      {
+        title: 'A app com a tua cor',
+        text: 'Escolhe a tua cor em Definições: os botões, os separadores e o saldo mudam logo.',
+        icon: 'settings',
+        tone: 'accent',
+      },
+      {
+        title: 'Pagamentos parciais',
+        text: 'Em Acertar contas, escreve um valor mais baixo para registar só uma parte.',
+        icon: 'settle',
+        tone: 'teal',
+      },
+      {
+        title: 'Compras feitas?',
+        text: 'Depois de removeres os comprados, regista o talão com um toque.',
+        icon: 'cart',
+        tone: 'orange',
+      },
+    ],
+  },
+  {
     version: '1.9.0',
     date: '2026-10-25',
     changes: [
