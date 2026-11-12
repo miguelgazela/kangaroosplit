@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="pt-PT">
+<head>
+<meta charset="utf-8">
+<title>Pagamentos automáticos</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div style="width: 390px; height: 1300px; position: relative; overflow: hidden; background: #F2F2F7; color: #111114; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', sans-serif">
+  <div style="position: absolute; inset: 0; padding: 54px 16px 120px; box-sizing: border-box; display: flex; flex-direction: column; gap: 12px">
+
+    <div style="height: 44px; display: flex; align-items: center; margin: 0 -8px; flex: none">
+      <a href="Definicoes.dc.html" style="height: 44px; display: flex; align-items: center; gap: 2px; padding-right: 8px; color: #5B3FD9; text-decoration: none; font-size: 17px">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 5-7 7 7 7"></path></svg>
+        Definições
+      </a>
+    </div>
+    <h1 style="margin: 0; font-size: 30px; line-height: 36px; font-weight: 700; flex: none">Pagamentos automáticos</h1>
+    <p style="margin: 0; font-size: 15px; line-height: 21px; color: #6B6B76; flex: none">Cada pagamento que fazes com o Apple Pay chega à app como rascunho. Tu só escolhes a lista e a categoria.</p>
+
+    <!-- Estado -->
+    <div style="flex: none; border-radius: 20px; background: #FFFFFF; box-shadow: 0 1px 2px rgba(17,17,20,0.04); padding: 14px 16px; display: flex; align-items: center; gap: 12px">
+      <span aria-hidden="true" style="width: 42px; height: 42px; border-radius: 12px; background: #E3F4EE; color: #0B7A5C; display: flex; align-items: center; justify-content: center; flex: none">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5L20 7"></path></svg>
+      </span>
+      <span style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px">
+        <span style="font-size: 17px; font-weight: 600">Ligado</span>
+        <span style="font-size: 13px; color: #6B6B76">Último pagamento: hoje, 13:42 · 12 este mês</span>
+      </span>
+      <a href="Pagamentos.dc.html" style="height: 44px; display: flex; align-items: center; gap: 4px; color: #5B3FD9; text-decoration: none; font-size: 15px; font-weight: 600">
+        Ver
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"></path></svg>
+      </a>
+    </div>
+
+    <h2 style="margin: 8px 0 0; padding: 0 16px; font-size: 13px; font-weight: 500; color: #6B6B76; text-transform: uppercase; letter-spacing: 0.3px; flex: none">Como ligar · uma vez só</h2>
+    <ol style="list-style: none; margin: 0; padding: 0; flex: none; border-radius: 20px; background: #FFFFFF; box-shadow: 0 1px 2px rgba(17,17,20,0.04); overflow: hidden">
+
+      <li style="padding: 16px; display: flex; gap: 12px">
+        <span aria-hidden="true" style="width: 28px; height: 28px; border-radius: 14px; background: #EFEAFE; color: #5B3FD9; font-size: 15px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex: none">1</span>
+        <div style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 10px">
+          <span style="font-size: 17px; font-weight: 600; line-height: 28px">Copia a tua chave</span>
+          <div style="display: flex; align-items: center; gap: 8px">
+            <span id="chave" style="flex: 1; min-width: 0; height: 44px; border-radius: 10px; background: #EEEEF3; padding: 0 12px; display: flex; align-items: center; font-size: 15px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; color: #111114; white-space: nowrap; overflow: hidden">ks_••••••••••••7f3a</span>
+            <button type="button" aria-describedby="chave" style="flex: none; height: 44px; padding: 0 14px; border: 0; border-radius: 12px; background: #6847F0; color: #FFFFFF; font: inherit; font-size: 15px; font-weight: 600; display: flex; align-items: center; gap: 6px; cursor: pointer">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="12" height="12" rx="2.5"></rect><path d="M5 15V6a2 2 0 0 1 2-2h8"></path></svg>
+              Copiar
+            </button>
+          </div>
+          <span style="font-size: 13px; line-height: 18px; color: #6B6B76">A chave é só tua. Quem a tiver consegue enviar pagamentos para a tua conta.</span>
+        </div>
+      </li>
+
+      <li style="border-top: 0.5px solid #E6E6EC; padding: 16px; display: flex; gap: 12px">
+        <span aria-hidden="true" style="width: 28px; height: 28px; border-radius: 14px; background: #EFEAFE; color: #5B3FD9; font-size: 15px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex: none">2</span>
+        <div style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 10px">
+          <span style="font-size: 17px; font-weight: 600; line-height: 28px">Adiciona o atalho</span>
+          <a href="#" style="height: 48px; border-radius: 14px; background: #EFEAFE; color: #5B3FD9; text-decoration: none; font-size: 17px; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 8px">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 4 7.5v9L12 21l8-4.5v-9z"></path><path d="m4 7.5 8 4.5 8-4.5M12 12v9"></path></svg>
+            Adicionar ao Atalhos
+          </a>
+          <span style="font-size: 13px; line-height: 18px; color: #6B6B76">Abre a app Atalhos. Cola a chave quando ela pedir.</span>
+        </div>
+      </li>
+
+      <li style="border-top: 0.5px solid #E6E6EC; padding: 16px; display: flex; gap: 12px">
+        <span aria-hidden="true" style="width: 28px; height: 28px; border-radius: 14px; background: #EFEAFE; color: #5B3FD9; font-size: 15px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex: none">3</span>
+        <div style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 10px">
+          <span style="font-size: 17px; font-weight: 600; line-height: 28px">Cria a automação</span>
+          <ul style="list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; font-size: 15px; line-height: 20px">
+            <li style="display: flex; gap: 8px"><span aria-hidden="true" style="color: #6B6B76">•</span><span>No Atalhos: <b style="font-weight: 600">Automação → + → Transação</b></span></li>
+            <li style="display: flex; gap: 8px"><span aria-hidden="true" style="color: #6B6B76">•</span><span>Escolhe os teus cartões</span></li>
+            <li style="display: flex; gap: 8px"><span aria-hidden="true" style="color: #6B6B76">•</span><span>Escolhe o atalho <b style="font-weight: 600">KangarooSplit</b></span></li>
+            <li style="display: flex; gap: 8px"><span aria-hidden="true" style="color: #6B6B76">•</span><span>Liga <b style="font-weight: 600">Executar imediatamente</b>, senão o iPhone pergunta de cada vez</span></li>
+          </ul>
+        </div>
+      </li>
+    </ol>
+
+    <!-- Testar -->
+    <div style="flex: none; border-radius: 20px; background: #FFFFFF; box-shadow: 0 1px 2px rgba(17,17,20,0.04); padding: 14px 16px; display: flex; flex-direction: column; gap: 10px">
+      <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px">
+        <span style="display: flex; flex-direction: column; gap: 2px">
+          <span style="font-size: 17px; font-weight: 600">Testar a ligação</span>
+          <span style="font-size: 13px; color: #6B6B76">Cria um pagamento de teste de 1,00 €.</span>
+        </span>
+        <button type="button" style="flex: none; height: 44px; padding: 0 16px; border: 0; border-radius: 12px; background: #EEEEF3; color: #111114; font: inherit; font-size: 15px; font-weight: 600; cursor: pointer">Enviar</button>
+      </div>
+    </div>
+
+    <!-- Limites -->
+    <div style="flex: none; border-radius: 20px; background: #F7F4FF; padding: 14px 16px; display: flex; gap: 12px">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#5B3FD9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex: none; margin-top: 1px"><circle cx="12" cy="12" r="9"></circle><path d="M12 11v6M12 7.5v.01"></path></svg>
+      <div style="display: flex; flex-direction: column; gap: 4px">
+        <span style="font-size: 15px; font-weight: 600">O que chega e o que não chega</span>
+        <span style="font-size: 14px; line-height: 20px; color: #4A4A55">Só pagamentos feitos com o Apple Pay. Compras online sem Apple Pay, cartão físico e transferências não passam por aqui.</span>
+      </div>
+    </div>
+
+    <!-- Regras -->
+    <div style="flex: none; border-radius: 20px; background: #FFFFFF; box-shadow: 0 1px 2px rgba(17,17,20,0.04); overflow: hidden">
+      <a href="#" style="height: 52px; display: flex; align-items: center; gap: 12px; padding: 0 14px 0 12px; color: inherit; text-decoration: none">
+        <span style="width: 32px; height: 32px; border-radius: 9px; background: #E3F4EE; display: flex; align-items: center; justify-content: center; color: #0B7A5C">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h16M4 12h10M4 18h6"></path></svg>
+        </span>
+        <span style="flex: 1; font-size: 17px">Comerciantes lembrados</span>
+        <span style="font-size: 17px; color: #6B6B76">3</span>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#8A8A94" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"></path></svg>
+      </a>
+      <div style="border-top: 0.5px solid #E6E6EC; padding: 12px 14px; display: flex; align-items: center; justify-content: space-between; gap: 12px">
+        <span id="lbl-ign" style="font-size: 17px">Adicionar sozinho se houver regra</span>
+        <button type="button" role="switch" aria-checked="false" aria-labelledby="lbl-ign" style="flex: none; width: 51px; height: 31px; border: 0; border-radius: 16px; background: #D1D1D6; position: relative; cursor: pointer; padding: 0">
+          <span style="position: absolute; top: 2px; left: 2px; width: 27px; height: 27px; border-radius: 14px; background: #FFFFFF; box-shadow: 0 2px 4px rgba(0,0,0,0.2)"></span>
+        </button>
+      </div>
+    </div>
+    <p style="margin: -4px 0 0; padding: 0 4px; font-size: 13px; line-height: 18px; color: #6B6B76; flex: none">Desligado: tudo passa primeiro por “Por classificar”. Ligado: os comerciantes com regra entram direto na lista, e podes anular na notificação.</p>
+
+    <!-- Privacidade e chave -->
+    <p style="margin: 4px 0 0; padding: 0 4px; font-size: 13px; line-height: 18px; color: #6B6B76; flex: none">Só enviamos o comerciante, o valor, a data e os últimos 4 dígitos do cartão. Nunca o número completo.</p>
+    <div style="flex: none; border-radius: 20px; background: #FFFFFF; box-shadow: 0 1px 2px rgba(17,17,20,0.04); overflow: hidden">
+      <button type="button" style="width: 100%; height: 52px; border: 0; background: transparent; color: #C42B1C; font: inherit; font-size: 17px; cursor: pointer">Gerar nova chave</button>
+    </div>
+    <p style="margin: -4px 0 0; padding: 0 4px; font-size: 13px; line-height: 18px; color: #6B6B76; flex: none">A chave antiga deixa de funcionar. Tens de a colar outra vez no atalho.</p>
+  </div>
+  <div style="position: absolute; left: 0; bottom: 0; width: 390px; height: 100px">
+    <dc-import name="TabBar" active="definicoes" hint-size="390px,100px"></dc-import>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":1300}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

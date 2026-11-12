@@ -25,6 +25,7 @@ import {
   useExpenses,
   useLists,
   useMembers,
+  usePendingPayments,
 } from '../query/hooks'
 
 function HeroBalance({ cents, me, partner }: { cents: number; me: Member; partner: Member }) {
@@ -112,6 +113,39 @@ function YearReviewCard() {
         <Icon name="close" size={14} strokeWidth={2.5} />
       </button>
     </div>
+  )
+}
+
+// Apple Pay payments waiting for a list and a category. Shown only when there
+// are some; the red badge is the count.
+function PendingPaymentsCard() {
+  const { data: payments } = usePendingPayments()
+  if (!payments || payments.length === 0) return null
+  const names = [...new Set(payments.map((payment) => payment.merchant))]
+
+  return (
+    <Link
+      to="/pagamentos"
+      aria-label={t.payments.cardLabel(payments.length)}
+      className="flex min-h-16 flex-none items-center gap-3 rounded-card bg-surface px-4 py-3 shadow-card"
+    >
+      <span
+        aria-hidden="true"
+        className="relative flex size-[42px] flex-none items-center justify-center rounded-xl bg-accent-soft text-link"
+      >
+        <Icon name="card" size={22} />
+        <span className="absolute -top-1.5 -right-1.5 flex h-5 min-w-5 items-center justify-center rounded-full border-2 border-surface bg-danger px-1 text-xs leading-none font-bold text-white">
+          {payments.length}
+        </span>
+      </span>
+      <span className="flex min-w-0 flex-1 flex-col gap-0.5">
+        <span className="text-headline font-semibold">{t.payments.title}</span>
+        <span className="truncate text-footnote text-text-2">
+          {t.payments.cardSubtitle(names.slice(0, 2), Math.max(0, names.length - 2))}
+        </span>
+      </span>
+      <Icon name="chevronRight" size={14} strokeWidth={2.5} className="flex-none text-text-2" />
+    </Link>
   )
 }
 
@@ -241,6 +275,7 @@ export function Home({ onSettleAll, onNewList }: { onSettleAll: () => void; onNe
         )}
       </section>
 
+      <PendingPaymentsCard />
       <YearReviewCard />
 
       <div className="mt-1.5 flex items-center justify-between">

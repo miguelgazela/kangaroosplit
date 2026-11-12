@@ -22,6 +22,30 @@ export type ChangelogEntry = {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '1.11.0',
+    date: '2026-11-12',
+    changes: [
+      'Pagamentos automáticos: cada pagamento com o Apple Pay chega à app como rascunho, em “Por classificar”',
+      'Escolhes a lista e a categoria e a despesa fica criada, com a divisão predefinida da lista',
+      'A app lembra a categoria e a lista de cada comerciante para os pagamentos seguintes',
+      'Em Definições, “Pagamentos automáticos” explica como ligar o atalho do iPhone, uma vez só',
+    ],
+    highlights: [
+      {
+        title: 'Pagamentos com o Apple Pay',
+        text: 'Pagas com o telemóvel e o pagamento aparece na app, pronto a classificar.',
+        icon: 'card',
+        tone: 'accent',
+      },
+      {
+        title: 'A app aprende contigo',
+        text: 'Lembra a categoria e a lista de cada comerciante, para o próximo ser um toque.',
+        icon: 'tag',
+        tone: 'teal',
+      },
+    ],
+  },
+  {
     version: '1.10.0',
     date: '2026-10-25',
     changes: [

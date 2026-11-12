@@ -74,6 +74,20 @@ body{margin:0}
       </div>
     </section>
 
+    <sc-if value="{{pagamentos}}" hint-placeholder-val="{{ false }}">
+      <a href="Pagamentos.dc.html" aria-label="4 pagamentos por classificar" style="flex: none; text-decoration: none; color: inherit; border-radius: 20px; background: {{c.card}}; box-shadow: {{c.shadow}}; padding: 12px 16px; display: flex; align-items: center; gap: 12px; min-height: 64px; box-sizing: border-box">
+        <span aria-hidden="true" style="position: relative; width: 42px; height: 42px; border-radius: 12px; background: {{c.accentSoft}}; color: {{c.link}}; display: flex; align-items: center; justify-content: center; flex: none">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="5" width="19" height="14" rx="3"></rect><path d="M2.5 10h19M6.5 15h4"></path></svg>
+          <span style="position: absolute; right: -6px; top: -6px; min-width: 20px; height: 20px; padding: 0 5px; box-sizing: border-box; border-radius: 10px; background: #C42B1C; color: #FFFFFF; font-size: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center; border: 2px solid {{c.card}}">4</span>
+        </span>
+        <span style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px">
+          <span style="font-size: 17px; font-weight: 600">Por classificar</span>
+          <span style="font-size: 13px; color: {{c.text2}}; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">Pingo Doce, Uber Eats e mais 2 com Apple Pay</span>
+        </span>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="{{c.text2}}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"></path></svg>
+      </a>
+    </sc-if>
+
     <div style="display: flex; align-items: center; justify-content: space-between; margin-top: 6px">
       <h2 style="margin: 0; font-size: 22px; font-weight: 700">Listas</h2>
       <button type="button" disabled="{{offline}}" style="height: 44px; padding: 0 4px 0 12px; border: 0; background: transparent; color: {{c.link}}; font: inherit; font-size: 17px; font-weight: 500; display: flex; align-items: center; gap: 4px; cursor: pointer">
@@ -168,7 +182,7 @@ body{margin:0}
   </div>
 </div>
 </x-dc>
-<script type="text/x-dc" data-dc-script data-props='{"dark":{"editor":"boolean","default":false},"offline":{"editor":"boolean","default":false},"loading":{"editor":"boolean","default":false},"$preview":{"width":390,"height":844}}'>
+<script type="text/x-dc" data-dc-script data-props='{"dark":{"editor":"boolean","default":false},"offline":{"editor":"boolean","default":false},"loading":{"editor":"boolean","default":false},"pagamentos":{"editor":"boolean","default":false},"$preview":{"width":390,"height":844}}'>
 class Component extends DCLogic {
   renderVals() {
     const dark = !!this.props.dark;
@@ -198,7 +212,7 @@ class Component extends DCLogic {
       { icon: '💡', desc: 'Eletricidade', sub: '05 out · Pago por ti', amount: '61,20 €' }
     ];
     return {
-      c, dark, offline, loading, notLoading: !loading, lists, recent,
+      c, dark, offline, loading, notLoading: !loading, pagamentos: !!this.props.pagamentos, lists, recent,
       skeletons: [{ w: '55%' }, { w: '70%' }, { w: '45%' }]
     };
   }

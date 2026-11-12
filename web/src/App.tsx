@@ -17,6 +17,8 @@ import { Home } from './screens/Home'
 import { ListDetail } from './screens/ListDetail'
 import { Login } from './screens/Login'
 import { NoAccess } from './screens/NoAccess'
+import { Payments } from './screens/Payments'
+import { PaymentsSetup } from './screens/PaymentsSetup'
 import { Recurring } from './screens/Recurring'
 import { Settings } from './screens/Settings'
 import { Shopping } from './screens/Shopping'
@@ -122,6 +124,8 @@ function Content() {
           <Route path="definicoes" element={<Settings />} />
           <Route path="recorrentes" element={<Recurring />} />
           <Route path="categorias" element={<Categories />} />
+          <Route path="pagamentos" element={<Payments />} />
+          <Route path="pagamentos/ligar" element={<PaymentsSetup />} />
           <Route path="novidades" element={<Changelog />} />
           <Route path="*" element={<HomeRoute />} />
         </Route>

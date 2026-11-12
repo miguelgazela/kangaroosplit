@@ -187,6 +187,41 @@ export type ShoppingHistory = {
   last_bought_at: string | null
 }
 
+export type PendingPaymentStatus = 'pending' | 'added' | 'ignored'
+
+// An Apple Pay payment waiting to become an expense ("Por classificar").
+export type PendingPayment = {
+  id: string
+  user_id: string
+  merchant_raw: string
+  merchant: string
+  merchant_key: string
+  amount_cents: number
+  currency: string
+  paid_at: string
+  card_last4: string | null
+  status: PendingPaymentStatus
+  expense_id: string | null
+  created_at: string
+  resolved_at: string | null
+}
+
+// What a merchant became last time, so the next payment there is pre-filled.
+export type MerchantRule = {
+  user_id: string
+  merchant_key: string
+  merchant: string
+  category_id: string
+  list_id: string
+  updated_at: string
+}
+
+export type PaymentTokenStatus = {
+  hint: string
+  created_at: string
+  last_used_at: string | null
+}
+
 export type ActivitySnapshot = {
   description?: string
   amount_cents?: number
@@ -283,6 +318,8 @@ export type Database = {
       expense_reads: Table<ExpenseRead, 'expense_id'>
       shopping_items: Table<ShoppingItem, 'name' | 'name_key'>
       shopping_history: Table<ShoppingHistory, 'name_key' | 'name'>
+      pending_payments: Table<PendingPayment, 'merchant_raw' | 'merchant' | 'merchant_key' | 'amount_cents'>
+      merchant_rules: Table<MerchantRule, 'merchant_key' | 'merchant' | 'category_id' | 'list_id'>
       push_subscriptions: Table<PushSubscriptionRow, 'endpoint' | 'p256dh' | 'auth'>
     }
     Views: {
@@ -319,6 +356,14 @@ export type Database = {
       clear_shopping_cart: {
         Args: Record<PropertyKey, never>
         Returns: number
+      }
+      create_payment_token: {
+        Args: Record<PropertyKey, never>
+        Returns: string
+      }
+      payment_token_status: {
+        Args: Record<PropertyKey, never>
+        Returns: PaymentTokenStatus | null
       }
       generate_recurring: {
         Args: { p_today?: string }

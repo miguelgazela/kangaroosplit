@@ -15,6 +15,9 @@ export const queryKeys = {
   reads: ['reads'],
   shoppingItems: ['shoppingItems'],
   shoppingHistory: ['shoppingHistory'],
+  pendingPayments: ['pendingPayments'],
+  merchantRules: ['merchantRules'],
+  paymentToken: ['paymentToken'],
   receipt: ['receipt'],
 } as const
 
@@ -38,6 +41,8 @@ export const keysByTable: Partial<Record<TableName, readonly QueryKey[]>> = {
   expense_reads: [queryKeys.reads],
   shopping_items: [queryKeys.shoppingItems],
   shopping_history: [queryKeys.shoppingHistory],
+  pending_payments: [queryKeys.pendingPayments],
+  merchant_rules: [queryKeys.merchantRules],
 }
 
 export const realtimeTables = Object.keys(keysByTable) as TableName[]

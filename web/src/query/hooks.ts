@@ -22,6 +22,15 @@ import {
 } from '../data/lists'
 import { fetchMembers, updateMember } from '../data/members'
 import {
+  addPaymentAsExpense,
+  createPaymentToken,
+  fetchMerchantRules,
+  fetchPaymentTokenStatus,
+  fetchPendingPayments,
+  setPaymentStatus,
+  type AddPaymentInput,
+} from '../data/payments'
+import {
   addShoppingItem,
   clearShoppingCart,
   deleteAllShoppingItems,
@@ -337,4 +346,41 @@ export function useRestoreShoppingItems() {
 
 export function useDeleteAllShoppingItems() {
   return useWrite(() => deleteAllShoppingItems(), ['shopping_items'])
+}
+
+// Apple Pay drafts are private to the signed-in person (RLS); the activity feed
+// only hears about them once they become expenses.
+export function usePendingPayments() {
+  return useQuery({ queryKey: queryKeys.pendingPayments, queryFn: fetchPendingPayments, enabled: useSignedIn() })
+}
+
+export function useMerchantRules() {
+  return useQuery({ queryKey: queryKeys.merchantRules, queryFn: fetchMerchantRules, enabled: useSignedIn() })
+}
+
+export function usePaymentTokenStatus() {
+  return useQuery({ queryKey: queryKeys.paymentToken, queryFn: fetchPaymentTokenStatus, enabled: useSignedIn() })
+}
+
+export function useCreatePaymentToken() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: () => {
+      if (!isOnline()) throw new OfflineError()
+      return createPaymentToken()
+    },
+    onSettled: () => queryClient.invalidateQueries({ queryKey: queryKeys.paymentToken }),
+  })
+}
+
+export function useAddPayment() {
+  return useWrite((input: AddPaymentInput) => addPaymentAsExpense(input), ['pending_payments', 'merchant_rules', 'expenses'])
+}
+
+export function useSetPaymentStatus() {
+  return useWrite(
+    ({ id, status, expenseId }: { id: string; status: 'pending' | 'ignored'; expenseId?: string | null }) =>
+      setPaymentStatus(id, status, expenseId),
+    ['pending_payments'],
+  )
 }

@@ -40,6 +40,7 @@ Several files are small wrappers that show a variant of a main file. The variant
 | Mascot | `Guru.dc.html` (the mascot component, prop `pose` = `normal` / `ola` / `vazio` / `compras` / `sucesso` / `dormir`, prop `crop` for a head-only avatar; every pose is a 3D image from `assets/guru/`; `crop` is still vector), `Mascote.dc.html` (mascot sheet) | |
 | Comments and reactions | `DespesaDetalhe.dc.html` (expense detail sheet: summary, reactions, comment thread) | `DetalheVazio` (`variant="vazia"`), `DetalheAcoes` (long-press on own comment), `ReacaoRapida` (long-press on a list row), `DetalheEscuro` (`dark`). `Lista` and `Atividade` also changed. |
 | Shopping list (Compras tab) | `Compras.dc.html` (interactive; prop `variant`) | `ComprasEscrever` (typing, suggestions), `ComprasArtigo` (edit item sheet), `ComprasVazia` (empty), `ComprasOffline` (no signal). `Navegacao` shows the chosen tab layout. |
+| Automatic payments (Apple Pay) | `Pagamentos.dc.html` (inbox "Por classificar", interactive; props `variant`, `dark`) | `PagamentosVazio` (`variant="vazia"`), `PagamentosEscuro` (`dark`), `InicioPagamentos` (`Main` with `pagamentos`), `PagamentosAviso` (push on the lock screen), `PagamentosAtivar` (Definições → set-up, full scrolled page). `Definicoes` has the new row. |
 
 ## Decisions (these override DESIGN_BRIEF.md)
 
@@ -399,6 +400,41 @@ Year = calendar year of the summary, all lists (archived ones included). Ignore 
 3. Add the Início card and the Estatísticas entry with the date rules and the 20-expense minimum.
 4. Add sharing (image + Web Share API, PNG fallback).
 5. Add a changelog entry (see `CLAUDE.md`).
+
+## Automatic payments — Apple Pay → "Por classificar"
+
+Status: **approved and built (1.11.0).** Not built yet: the "Adicionar sozinho se houver regra" switch, the "Comerciantes lembrados" list, the "Testar a ligação" button and the push action buttons. The set-up screen shows the shortcut's values to copy, because a shareable shortcut link cannot be made from here.
+
+A Shortcuts personal automation ("Transação") posts each Apple Pay payment to the app. The payment arrives as a **draft**, not as an expense, because the app splits bills and the payment has no list, category or split.
+
+### Entry points
+- **Início**: a card under "Saldo total", shown only when there are drafts. Tile with a card icon and a red count badge, title "Por classificar", one line "Pingo Doce, Uber Eats e mais 2 com Apple Pay". Opens `Pagamentos`.
+- **Definições**: row "Pagamentos automáticos" with the status ("Ligado") in the second card, after "Despesas recorrentes". Opens `PagamentosAtivar`.
+- **Push**: "Pagamento por classificar" / "Pingo Doce · 23,40 €. Já está em Supermercado, na lista Casa." With a saved rule the push has the actions Adicionar, Ignorar, Abrir; without a rule only Abrir. Never notify before the draft exists.
+
+### Inbox (`Pagamentos`)
+- Pushed screen, "‹ Início" back link, title "Por classificar", one-line help under it. The Início tab stays active.
+- One white card per draft: category emoji tile, merchant, "Hoje, 13:42 · Apple Pay ···· 4242", amount (20 px bold). Newest first.
+- Under it, two pills (40 px high): **Categoria** (category colour at 14 % / ring 55 %, same as the expense sheet) and **Lista** (grey, default: the main list). Tapping opens the same pickers as the expense sheet.
+- **Saved rule** (merchant already learned): a green chip "Regra guardada para “Pingo Doce”". **No rule**: a switch "Lembrar “Uber Eats” da próxima vez" (default on once a category is chosen).
+- **No category yet**: dashed warning pill "Escolher categoria", a note "Escolhe uma categoria para poderes adicionar." and "Adicionar" disabled.
+- Buttons: "Ignorar" (grey) and "Adicionar" (accent). "Adicionar" creates a normal expense: payer = the viewer, the list's default split, today's date from the payment. Toast "Adicionado a Casa · Pingo Doce" with "Anular". "Ignorar" gives a toast with "Anular" and keeps nothing in any list.
+- Header action "Adicionar todos (N)" appears only when 2 or more drafts have a category.
+- Footer: "Só chegam pagamentos feitos com Apple Pay. Ignorar não apaga nada do Wallet." and a link row to `PagamentosAtivar`.
+- Empty: Guru `sucesso`, "Está tudo classificado." Add this to the Guru table.
+- Merchant names come raw from Wallet. Clean them (title case, remove trailing numbers) but let the user edit the name later in the expense sheet.
+
+### Set-up (`PagamentosAtivar`)
+Status card ("Ligado", last payment, count this month) → three numbered steps (copy the key, add the shortcut, create the automation) → "Testar a ligação" (creates a 1,00 € test draft) → limits note → "Comerciantes lembrados" row and the switch "Adicionar sozinho se houver regra" (**default off**) → privacy line → "Gerar nova chave" (destructive).
+- The key is shown masked (`ks_••••••••••••7f3a`) with a "Copiar" button. It is a per-user secret. Never show it in full after the first copy; "Gerar nova chave" replaces it.
+- Before the first payment arrives, the status card reads "À espera do primeiro pagamento" in the warning style.
+
+### Data (suggested)
+- `pending_payments`: `id`, `user_id`, `merchant_raw`, `merchant`, `amount_cents`, `currency`, `paid_at`, `card_last4`, `status` (`pending` / `added` / `ignored`), `expense_id` null, `created_at`.
+- `merchant_rules`: `user_id`, `merchant_key` (normalised), `category_id`, `list_id`.
+- `payment_tokens`: `user_id`, `token_hash`, `created_at`, `last_used_at`. Store only the hash.
+- Endpoint: a Supabase Edge Function that checks the token and inserts one `pending_payments` row. It has no access to anything else.
+- Needs a DB migration. The Supabase project is shared, so the user runs it by hand.
 
 ## Not shown in the mockups
 

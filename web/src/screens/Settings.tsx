@@ -22,6 +22,7 @@ import {
   useExpenses,
   useLists,
   useMembers,
+  usePaymentTokenStatus,
   useRecurring,
   useSettlements,
   useUpdateProfile,
@@ -34,6 +35,7 @@ export function Settings() {
   const { me, partner } = useCurrentMember()
   const { data: categories } = useCategories()
   const { data: rules } = useRecurring()
+  const { data: paymentToken } = usePaymentTokenStatus()
   const updateProfile = useUpdateProfile()
   const [name, setName] = useState<string | null>(null)
   const [confirmingSignOut, setConfirmingSignOut] = useState(false)
@@ -166,6 +168,16 @@ export function Settings() {
           </span>
           <span className="flex-1 text-body">{t.recurring.title}</span>
           <span className="text-body text-text-2">{rules?.length ?? ''}</span>
+          <Icon name="chevronRight" size={14} strokeWidth={2.5} className="text-text-2" />
+        </Link>
+        <Link to="/pagamentos/ligar" className="flex h-[52px] items-center gap-3 border-t-[0.5px] border-separator px-3.5">
+          <span className="flex size-8 flex-none items-center justify-center rounded-lg bg-fill text-text-2">
+            <Icon name="card" size={18} />
+          </span>
+          <span className="flex-1 text-body">{t.settings.payments}</span>
+          <span className={`text-body ${paymentToken?.last_used_at ? 'text-pos' : 'text-text-2'}`}>
+            {paymentToken?.last_used_at ? t.settings.paymentsOn : ''}
+          </span>
           <Icon name="chevronRight" size={14} strokeWidth={2.5} className="text-text-2" />
         </Link>
         <div className="flex min-h-[52px] items-center gap-3 border-t-[0.5px] border-separator px-3.5 py-2">

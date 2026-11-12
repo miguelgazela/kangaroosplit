@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="pt-PT">
+<head>
+<meta charset="utf-8">
+<title>Pagamento — notificação</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; position: relative; overflow: hidden; background: linear-gradient(170deg, #3B2799 0%, #6847F0 45%, #B9A8F8 100%); color: #FFFFFF; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', sans-serif">
+  <div style="position: absolute; top: 96px; left: 0; right: 0; text-align: center">
+    <div style="font-size: 18px; font-weight: 600; opacity: 0.9">quinta-feira, 12 de novembro</div>
+    <div style="font-size: 88px; line-height: 96px; font-weight: 600; letter-spacing: -1px">13:42</div>
+  </div>
+
+  <div style="position: absolute; left: 8px; right: 8px; top: 300px; display: flex; flex-direction: column; gap: 8px">
+    <!-- Pagamento por classificar -->
+    <div role="article" aria-label="Notificação da KangarooSplit" style="border-radius: 22px; background: rgba(255,255,255,0.86); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); color: #111114; padding: 12px 14px; display: flex; gap: 10px">
+      <span aria-hidden="true" style="width: 38px; height: 38px; border-radius: 9px; background: #6847F0; display: flex; align-items: center; justify-content: center; flex: none">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#FFC94A" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="8"></circle><path d="M12 8v8M9.5 10h4a1.5 1.5 0 0 1 0 3h-3a1.5 1.5 0 0 0 0 3H14"></path></svg>
+      </span>
+      <span style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 1px">
+        <span style="display: flex; justify-content: space-between; font-size: 13px; color: #4A4A55"><span>KANGAROOSPLIT</span><span>agora</span></span>
+        <span style="font-size: 15px; font-weight: 600">Pagamento por classificar</span>
+        <span style="font-size: 15px; line-height: 20px">Pingo Doce · 23,40 €. Já está em Supermercado, na lista Casa.</span>
+      </span>
+    </div>
+    <!-- Ações expandidas -->
+    <div style="display: flex; gap: 8px">
+      <span style="flex: 1; height: 44px; border-radius: 14px; background: rgba(255,255,255,0.86); color: #111114; font-size: 15px; font-weight: 600; display: flex; align-items: center; justify-content: center">Adicionar</span>
+      <span style="flex: 1; height: 44px; border-radius: 14px; background: rgba(255,255,255,0.86); color: #111114; font-size: 15px; font-weight: 600; display: flex; align-items: center; justify-content: center">Ignorar</span>
+      <span style="flex: 1; height: 44px; border-radius: 14px; background: rgba(255,255,255,0.86); color: #111114; font-size: 15px; font-weight: 600; display: flex; align-items: center; justify-content: center">Abrir</span>
+    </div>
+    <p style="margin: 6px 4px 0; font-size: 13px; line-height: 18px; color: rgba(255,255,255,0.86); text-align: center">Sem regra guardada: “Pagamento por classificar · CP Comboios · 4,50 €”. Só “Abrir”.</p>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

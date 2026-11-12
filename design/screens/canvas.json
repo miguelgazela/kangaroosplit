@@ -1,5 +1,4 @@
 {
-  "v": 3,
   "attachments": {},
   "boards": {
     "AcertarTudo.dc.html": {
@@ -203,6 +202,13 @@
       "x": 0,
       "y": 11480
     },
+    "EstatisticasLoading.dc.html": {
+      "h": 1360,
+      "title": "Estatísticas — a carregar",
+      "w": 390,
+      "x": 940,
+      "y": 11480
+    },
     "EstatisticasPrevista.dc.html": {
       "h": 1360,
       "title": "Estatísticas — dia com recorrente prevista",
@@ -245,6 +251,13 @@
       "x": 940,
       "y": 3660
     },
+    "InicioPagamentos.dc.html": {
+      "h": 844,
+      "title": "Início — por classificar",
+      "w": 390,
+      "x": 1410,
+      "y": 13360
+    },
     "Instalar.dc.html": {
       "h": 844,
       "title": "Instalar (Safari)",
@@ -272,6 +285,13 @@
       "w": 390,
       "x": 470,
       "y": 4880
+    },
+    "ListaLoading.dc.html": {
+      "h": 844,
+      "title": "Lista — a carregar",
+      "w": 390,
+      "x": 3760,
+      "y": 2440
     },
     "ListaVazia.dc.html": {
       "h": 844,
@@ -329,6 +349,49 @@
       "x": 940,
       "y": 2440
     },
+    "Novidades.dc.html": {
+      "h": 844,
+      "title": "Novidades da versão",
+      "w": 390,
+      "x": 3760,
+      "y": 3660
+    },
+    "Pagamentos.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "title": "Por classificar",
+      "w": 390,
+      "x": 0,
+      "y": 13360
+    },
+    "PagamentosAtivar.dc.html": {
+      "h": 1300,
+      "title": "Ligar pagamentos",
+      "w": 390,
+      "x": 2350,
+      "y": 13360
+    },
+    "PagamentosAviso.dc.html": {
+      "h": 844,
+      "title": "Notificação push",
+      "w": 390,
+      "x": 1880,
+      "y": 13360
+    },
+    "PagamentosEscuro.dc.html": {
+      "h": 844,
+      "title": "Por classificar — escuro",
+      "w": 390,
+      "x": 940,
+      "y": 13360
+    },
+    "PagamentosVazio.dc.html": {
+      "h": 844,
+      "title": "Por classificar — vazio",
+      "w": 390,
+      "x": 470,
+      "y": 13360
+    },
     "ReacaoRapida.dc.html": {
       "h": 844,
       "title": "Lista — reação rápida (toque longo)",
@@ -363,27 +426,6 @@
       "w": 390,
       "x": 3290,
       "y": 3660
-    },
-    "Novidades.dc.html": {
-      "h": 844,
-      "title": "Novidades da versão",
-      "w": 390,
-      "x": 3760,
-      "y": 3660
-    },
-    "ListaLoading.dc.html": {
-      "h": 844,
-      "title": "Lista — a carregar",
-      "w": 390,
-      "x": 3760,
-      "y": 2440
-    },
-    "EstatisticasLoading.dc.html": {
-      "h": 1360,
-      "title": "Estatísticas — a carregar",
-      "w": 390,
-      "x": 940,
-      "y": 11480
     }
   },
   "createdOnFiles": {
@@ -410,6 +452,14 @@
       "w": 240,
       "x": 0,
       "y": 11220
+    },
+    "r11": {
+      "kind": "title1",
+      "maxW": 2800,
+      "text": "Pagamentos automáticos (Apple Pay)",
+      "w": 240,
+      "x": 0,
+      "y": 13100
     },
     "r2": {
       "kind": "title1",
@@ -530,8 +580,15 @@
     "Navegacao.dc.html",
     "EstatisticasCalendario.dc.html",
     "EstatisticasPrevista.dc.html",
-    "EstatisticasLoading.dc.html"
+    "EstatisticasLoading.dc.html",
+    "Pagamentos.dc.html",
+    "PagamentosVazio.dc.html",
+    "PagamentosEscuro.dc.html",
+    "InicioPagamentos.dc.html",
+    "PagamentosAviso.dc.html",
+    "PagamentosAtivar.dc.html"
   ],
   "pages": [],
-  "title": "KangarooSplit UI"
+  "title": "KangarooSplit UI",
+  "v": 3
 }

@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="pt-PT">
+<head>
+<meta charset="utf-8">
+<title>Pagamentos por classificar</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; position: relative; overflow: hidden; background: {{c.bg}}; color: {{c.text}}; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', sans-serif">
+  <div style="position: absolute; inset: 0; overflow-y: auto; scrollbar-width: none; padding: 54px 16px 120px; box-sizing: border-box; display: flex; flex-direction: column; gap: 12px">
+
+    <div style="height: 44px; display: flex; align-items: center; justify-content: space-between; margin: 0 -8px; flex: none">
+      <a href="Main.dc.html" style="height: 44px; display: flex; align-items: center; gap: 2px; padding-right: 8px; color: {{c.link}}; text-decoration: none; font-size: 17px">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 5-7 7 7 7"></path></svg>
+        Início
+      </a>
+      <sc-if value="{{canAddAll}}" hint-placeholder-val="{{ true }}">
+        <button type="button" onClick="{{addAll}}" style="height: 44px; padding: 0 8px; border: 0; background: transparent; color: {{c.link}}; font: inherit; font-size: 17px; font-weight: 600; cursor: pointer">Adicionar {{readyCount}}</button>
+      </sc-if>
+    </div>
+
+    <div style="flex: none; display: flex; flex-direction: column; gap: 4px">
+      <h1 style="margin: 0; font-size: 30px; line-height: 36px; font-weight: 700">Por classificar</h1>
+      <sc-if value="{{hasItems}}" hint-placeholder-val="{{ true }}">
+        <p style="margin: 0; font-size: 15px; line-height: 20px; color: {{c.text2}}">{{count}} com Apple Pay. Escolhe a lista e a categoria, ou ignora o que não é para dividir.</p>
+      </sc-if>
+    </div>
+
+    <sc-if value="{{empty}}" hint-placeholder-val="{{ false }}">
+      <div style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; text-align: center; padding-bottom: 60px">
+        <dc-import name="Guru" pose="sucesso" size="{{ 150 }}" hint-size="150px,150px"></dc-import>
+        <p style="margin: 0; font-size: 17px; font-weight: 600">Está tudo classificado.</p>
+        <p style="margin: 0; font-size: 15px; color: {{c.text2}}; max-width: 290px; line-height: 21px">Os próximos pagamentos com Apple Pay aparecem aqui assim que os fizeres.</p>
+      </div>
+    </sc-if>
+
+    <sc-for list="{{items}}" as="p" hint-placeholder-count="3">
+      <section aria-label="{{p.aria}}" style="flex: none; border-radius: 20px; background: {{c.card}}; box-shadow: {{c.shadow}}; padding: 14px 14px 12px; display: flex; flex-direction: column; gap: 12px">
+        <div style="display: flex; align-items: center; gap: 12px">
+          <span aria-hidden="true" style="width: 42px; height: 42px; border-radius: 12px; background: {{c.fill}}; display: flex; align-items: center; justify-content: center; font-size: 21px; flex: none">{{p.icon}}</span>
+          <span style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px">
+            <span style="font-size: 17px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">{{p.name}}</span>
+            <span style="display: flex; align-items: center; gap: 5px; font-size: 13px; color: {{c.text2}}">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2.5" y="5" width="19" height="14" rx="3"></rect><path d="M2.5 10h19"></path></svg>
+              {{p.when}} · Apple Pay ···· {{p.card}}
+            </span>
+          </span>
+          <span style="font-size: 20px; font-weight: 700; font-variant-numeric: tabular-nums">{{p.amount}}</span>
+        </div>
+
+        <div style="display: flex; gap: 8px; flex-wrap: wrap">
+          <button type="button" aria-label="Categoria: {{p.catLabel}}. Alterar" style="height: 40px; padding: 0 12px; border: 0; border-radius: 10px; background: {{p.catBg}}; box-shadow: {{p.catRing}}; color: {{c.text}}; font: inherit; font-size: 15px; display: flex; align-items: center; gap: 6px; cursor: pointer">
+            <span aria-hidden="true">{{p.catEmoji}}</span>
+            {{p.catLabel}}
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="{{c.text2}}" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg>
+          </button>
+          <button type="button" aria-label="Lista: {{p.list}}. Alterar" style="height: 40px; padding: 0 12px; border: 0; border-radius: 10px; background: {{c.fill}}; color: {{c.text}}; font: inherit; font-size: 15px; display: flex; align-items: center; gap: 6px; cursor: pointer">
+            <span aria-hidden="true">🏠</span>
+            {{p.list}}
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="{{c.text2}}" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg>
+          </button>
+        </div>
+
+        <sc-if value="{{p.hasRule}}" hint-placeholder-val="{{ true }}">
+          <div style="display: flex; align-items: center; gap: 6px; font-size: 13px; color: {{c.pos}}; background: {{c.posSoft}}; padding: 6px 10px; border-radius: 10px; align-self: flex-start">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 5 5L20 7"></path></svg>
+            Regra guardada para “{{p.name}}”
+          </div>
+        </sc-if>
+        <sc-if value="{{p.needsCat}}" hint-placeholder-val="{{ false }}">
+          <div role="status" style="font-size: 13px; line-height: 18px; color: {{c.warnText}}; background: {{c.warnSoft}}; padding: 6px 10px; border-radius: 10px; align-self: flex-start">Escolhe uma categoria para poderes adicionar.</div>
+        </sc-if>
+        <sc-if value="{{p.canRemember}}" hint-placeholder-val="{{ false }}">
+          <div style="min-height: 44px; margin: -4px 0; display: flex; align-items: center; justify-content: space-between; gap: 12px">
+            <span id="lem-{{p.id}}" style="font-size: 15px">Lembrar “{{p.name}}” da próxima vez</span>
+            <button type="button" role="switch" aria-checked="{{p.remember}}" aria-labelledby="lem-{{p.id}}" onClick="{{p.toggleRemember}}" style="flex: none; width: 51px; height: 31px; border: 0; border-radius: 16px; background: {{p.switchBg}}; position: relative; cursor: pointer; padding: 0">
+              <span style="position: absolute; top: 2px; left: {{p.knobLeft}}; width: 27px; height: 27px; border-radius: 14px; background: #FFFFFF; box-shadow: 0 2px 4px rgba(0,0,0,0.2)"></span>
+            </button>
+          </div>
+        </sc-if>
+
+        <div style="display: flex; gap: 8px; border-top: 0.5px solid {{c.sep}}; padding-top: 10px; margin: 0 -2px">
+          <button type="button" onClick="{{p.ignore}}" style="flex: 1; height: 44px; border: 0; border-radius: 12px; background: {{c.fill}}; color: {{c.text}}; font: inherit; font-size: 17px; cursor: pointer">Ignorar</button>
+          <button type="button" disabled="{{p.needsCat}}" onClick="{{p.add}}" style="flex: 1.4; height: 44px; border: 0; border-radius: 12px; background: {{p.addBg}}; color: {{p.addText}}; font: inherit; font-size: 17px; font-weight: 600; cursor: {{p.addCursor}}">Adicionar</button>
+        </div>
+      </section>
+    </sc-for>
+
+    <sc-if value="{{hasItems}}" hint-placeholder-val="{{ true }}">
+      <p style="margin: 0; padding: 0 4px; font-size: 13px; line-height: 18px; color: {{c.text2}}; flex: none">Só chegam pagamentos feitos com Apple Pay. Ignorar não apaga nada do Wallet.</p>
+    </sc-if>
+    <a href="PagamentosAtivar.dc.html" style="flex: none; text-decoration: none; color: inherit; border-radius: 16px; background: {{c.card}}; box-shadow: {{c.shadow}}; height: 52px; padding: 0 16px; display: flex; align-items: center; gap: 12px">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="{{c.text2}}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"></path><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"></path></svg>
+      <span style="flex: 1; font-size: 17px">Pagamentos automáticos</span>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="{{c.text2}}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"></path></svg>
+    </a>
+  </div>
+
+  <sc-if value="{{toast}}" hint-placeholder-val="{{ false }}">
+    <div role="status" aria-live="polite" style="position: absolute; left: 16px; right: 16px; bottom: 108px; height: 52px; border-radius: 16px; background: {{c.toast}}; color: {{c.toastText}}; padding: 0 16px; display: flex; align-items: center; justify-content: space-between; font-size: 15px; box-shadow: 0 8px 24px rgba(0,0,0,0.25)">
+      <span>{{toastText}}</span>
+      <button type="button" onClick="{{undo}}" style="height: 44px; padding: 0 4px; border: 0; background: transparent; color: {{c.toastLink}}; font: inherit; font-size: 15px; font-weight: 600; cursor: pointer">Anular</button>
+    </div>
+  </sc-if>
+
+  <div style="position: absolute; left: 0; bottom: 0; width: 390px; height: 100px">
+    <dc-import name="TabBar" active="inicio" dark="{{dark}}" hint-size="390px,100px"></dc-import>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"dark":{"editor":"boolean","default":false},"variant":{"editor":"enum","options":["lista","vazia"],"default":"lista"},"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    const empty = props.variant === 'vazia';
+    this.state = {
+      toast: null, last: null,
+      items: empty ? [] : [
+        { id: 'a', name: 'Pingo Doce', icon: '🛒', amount: '23,40 €', when: 'Hoje, 13:42', card: '4242', cat: { e: '🛒', n: 'Supermercado', col: '#E07020' }, rule: true },
+        { id: 'b', name: 'Uber Eats', icon: '🍽️', amount: '18,90 €', when: 'Hoje, 12:15', card: '4242', cat: { e: '🍽️', n: 'Restaurantes', col: '#1A9E8F' }, rule: false, remember: true },
+        { id: 'c', name: 'CP Comboios', icon: '🚆', amount: '4,50 €', when: 'Ontem, 08:03', card: '4242', cat: null, rule: false, remember: false },
+        { id: 'd', name: 'Amazon.es', icon: '📦', amount: '36,99 €', when: '10 nov, 21:30', card: '4242', cat: { e: '📦', n: 'Outros', col: '#D04E8A' }, rule: false, remember: false }
+      ]
+    };
+  }
+  renderVals() {
+    const dark = !!this.props.dark;
+    const c = dark ? {
+      bg: '#000000', card: '#1C1C1E', text: '#F5F5F7', text2: '#A1A1AA', sep: '#38383A', fill: '#2C2C2E',
+      link: '#A893FF', accent: '#7B5CFA', pos: '#3DD6A3', posSoft: '#12302A', warnText: '#FFC46B', warnSoft: '#3A2A12',
+      shadow: 'none', toast: '#F5F5F7', toastText: '#111114', toastLink: '#5B3FD9', ringA: 'B3', bgA: '3D', off: '#48484A'
+    } : {
+      bg: '#F2F2F7', card: '#FFFFFF', text: '#111114', text2: '#6B6B76', sep: '#E6E6EC', fill: '#EEEEF3',
+      link: '#5B3FD9', accent: '#6847F0', pos: '#0B7A5C', posSoft: '#E3F4EE', warnText: '#7A4A00', warnSoft: '#FFF1D6',
+      shadow: '0 1px 2px rgba(17,17,20,0.04)', toast: '#111114', toastText: '#FFFFFF', toastLink: '#B9A8FF', ringA: '8C', bgA: '24', off: '#D1D1D6'
+    };
+    const st = this.state;
+    const items = st.items.map((it) => {
+      const needsCat = !it.cat;
+      const canRemember = !it.rule && !needsCat || (!it.rule && needsCat);
+      const col = it.cat ? it.cat.col : (dark ? '#FFC46B' : '#B85A12');
+      const remember = !!it.remember;
+      return {
+        id: it.id, name: it.name, icon: it.icon, amount: it.amount, when: it.when, card: it.card,
+        list: 'Casa', needsCat, hasRule: !!it.rule, canRemember: canRemember && !it.rule, remember: remember ? 'true' : 'false',
+        catEmoji: it.cat ? it.cat.e : '🏷️', catLabel: it.cat ? it.cat.n : 'Escolher categoria',
+        catBg: it.cat ? col + c.bgA : 'transparent',
+        catRing: it.cat ? 'inset 0 0 0 1.5px ' + col + c.ringA : 'inset 0 0 0 1.5px ' + col,
+        addBg: needsCat ? c.fill : c.accent, addText: needsCat ? c.text2 : '#FFFFFF', addCursor: needsCat ? 'default' : 'pointer',
+        switchBg: remember ? c.pos : c.off, knobLeft: remember ? '22px' : '2px',
+        aria: it.name + ', ' + it.amount + ', ' + it.when,
+        toggleRemember: () => this.setState({ items: st.items.map((x) => x.id === it.id ? Object.assign({}, x, { remember: !x.remember }) : x) }),
+        add: () => { if (!needsCat) this.setState({ items: st.items.filter((x) => x.id !== it.id), last: st.items, toast: 'Adicionado a Casa · ' + it.name }); },
+        ignore: () => this.setState({ items: st.items.filter((x) => x.id !== it.id), last: st.items, toast: 'Ignorado · ' + it.name })
+      };
+    });
+    const ready = st.items.filter((x) => x.cat);
+    return {
+      c, dark, items,
+      empty: st.items.length === 0, hasItems: st.items.length > 0,
+      count: st.items.length === 1 ? '1 pagamento' : st.items.length + ' pagamentos',
+      canAddAll: ready.length > 1, readyCount: ready.length > 1 ? 'todos (' + ready.length + ')' : '',
+      addAll: () => this.setState({ items: st.items.filter((x) => !x.cat), last: st.items, toast: ready.length + ' despesas adicionadas a Casa' }),
+      toast: !!st.toast, toastText: st.toast || '',
+      undo: () => this.setState({ items: st.last || st.items, toast: null })
+    };
+  }
+}
+</script>
+</body>
+</html>
