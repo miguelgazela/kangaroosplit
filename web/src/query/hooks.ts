@@ -1,4 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useEffect, useMemo, useSyncExternalStore } from 'react'
 import { useAuth } from '../auth/AuthContext'
 import { fetchActivity } from '../data/activity'
 import {
@@ -67,9 +68,11 @@ import {
   settleAll,
   type SettlementInput,
 } from '../data/settlements'
-import type { Member } from '../lib/database.types'
+import type { Member, ShoppingItem } from '../lib/database.types'
 import { isOnline, OfflineError } from '../lib/online'
 import { receiptLink } from '../lib/receipts'
+import { shoppingImageLink } from '../lib/shoppingImage'
+import { pendingChecks, withPending } from '../lib/shoppingQueue'
 import { keysByTable, queryKeys } from './keys'
 
 type TableName = keyof typeof keysByTable
@@ -127,7 +130,22 @@ export function useReads() {
 }
 
 export function useShoppingItems() {
-  return useQuery({ queryKey: queryKeys.shoppingItems, queryFn: fetchShoppingItems, enabled: useSignedIn() })
+  const query = useQuery({ queryKey: queryKeys.shoppingItems, queryFn: fetchShoppingItems, enabled: useSignedIn() })
+  // Ticks made without a connection stay on top of whatever the server says.
+  const pending = useSyncExternalStore(pendingChecks.subscribe, pendingChecks.snapshot)
+  const data = useMemo(() => (query.data ? withPending(query.data, pending) : query.data), [query.data, pending])
+  return { ...query, data }
+}
+
+// A temporary link to a shopping photo, refreshed before it expires.
+export function useShoppingImage(path: string | null | undefined) {
+  return useQuery({
+    queryKey: [...queryKeys.shoppingImage, path],
+    queryFn: () => shoppingImageLink(path!),
+    enabled: Boolean(path),
+    staleTime: 1000 * 60 * 45,
+    gcTime: 1000 * 60 * 50,
+  })
 }
 
 export function useShoppingHistory() {
@@ -328,8 +346,96 @@ export function useUpdateShoppingItem() {
   return useWrite(updateShoppingItem, ['shopping_items', 'shopping_history'])
 }
 
+type CheckInput = { id: string; userId: string; checked: boolean }
+
+const SHOPPING_KEYS = [queryKeys.shoppingItems, queryKeys.shoppingHistory]
+
+const applyCheck = (items: ShoppingItem[] | undefined, input: CheckInput, at: string | null) =>
+  items?.map((item) =>
+    item.id === input.id
+      ? { ...item, checked_at: input.checked ? at : null, checked_by: input.checked ? input.userId : null }
+      : item,
+  )
+
+// Ticking shows at once: the cached list changes before the server answers
+// and goes back if the write fails. Without a connection the change waits in
+// a small queue and is sent when the connection returns (see flush below).
 export function useSetShoppingChecked() {
-  return useWrite(setShoppingChecked, ['shopping_items', 'shopping_history'])
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationKey: ['shoppingCheck'],
+    networkMode: 'always',
+    mutationFn: async (input: CheckInput) => {
+      if (!isOnline()) {
+        pendingChecks.add(input)
+        return
+      }
+      await setShoppingChecked(input)
+    },
+    onMutate: async (input) => {
+      await queryClient.cancelQueries({ queryKey: queryKeys.shoppingItems })
+      const before = queryClient
+        .getQueryData<ShoppingItem[]>(queryKeys.shoppingItems)
+        ?.find((item) => item.id === input.id)
+      queryClient.setQueryData<ShoppingItem[]>(queryKeys.shoppingItems, (items) =>
+        applyCheck(items, input, new Date().toISOString()),
+      )
+      return { before }
+    },
+    onError: (_error, input, context) => {
+      // Put back only this item: other ticks may be in flight.
+      const before = context?.before
+      queryClient.setQueryData<ShoppingItem[]>(queryKeys.shoppingItems, (items) =>
+        items?.map((item) => (item.id === input.id && before ? before : item)),
+      )
+    },
+    onSettled: () => {
+      // Refetching while another tick is still in flight would show the old
+      // state for a moment; the last one to settle refreshes.
+      if (queryClient.isMutating({ mutationKey: ['shoppingCheck'] }) > 1) return
+      return Promise.all(SHOPPING_KEYS.map((queryKey) => queryClient.invalidateQueries({ queryKey })))
+    },
+  })
+}
+
+let flushing = false
+
+// Sends the ticks queued while offline. Runs on launch, when the connection
+// returns and when the app comes back to the front.
+export function useFlushShoppingQueue() {
+  const queryClient = useQueryClient()
+  useEffect(() => {
+    const flush = async () => {
+      if (flushing || !isOnline()) return
+      flushing = true
+      try {
+        let sent = false
+        for (const check of pendingChecks.snapshot()) {
+          try {
+            await setShoppingChecked(check)
+            pendingChecks.remove(check)
+            sent = true
+          } catch {
+            // Kept for the next time; the item may also have been deleted.
+            if (!isOnline()) break
+          }
+        }
+        if (sent) await Promise.all(SHOPPING_KEYS.map((queryKey) => queryClient.invalidateQueries({ queryKey })))
+      } finally {
+        flushing = false
+      }
+    }
+    const onVisible = () => {
+      if (document.visibilityState === 'visible') void flush()
+    }
+    void flush()
+    window.addEventListener('online', flush)
+    document.addEventListener('visibilitychange', onVisible)
+    return () => {
+      window.removeEventListener('online', flush)
+      document.removeEventListener('visibilitychange', onVisible)
+    }
+  }, [queryClient])
 }
 
 export function useDeleteShoppingItem() {

@@ -29,8 +29,8 @@ export const persistOptions = {
   // Bump when cached shapes change, to discard old caches.
   buster: '1',
   dehydrateOptions: {
-    // Receipt links expire within the hour; a saved one would be dead on next launch.
-    shouldDehydrateQuery: (query: Query) => query.state.status === 'success' && query.queryKey[0] !== 'receipt',
+    // Receipt and shopping photo links expire within the hour; a saved one would be dead on next launch.
+    shouldDehydrateQuery: (query: Query) => query.state.status === 'success' && query.queryKey[0] !== 'receipt' && query.queryKey[0] !== 'shoppingImage',
   },
 }
 

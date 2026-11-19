@@ -21,7 +21,7 @@ export const sectionLabel = (id: ShoppingSection): string =>
 export const DEFAULT_EMOJI = '🛒'
 export const MAX_QUANTITY = 99
 
-export type Known = { name: string; emoji: string; section: ShoppingSection }
+export type Known = { name: string; emoji: string; section: ShoppingSection; image_path?: string | null }
 
 const k = (name: string, emoji: string, section: ShoppingSection): Known => ({ name, emoji, section })
 
@@ -106,7 +106,12 @@ export function knownNames(history: ShoppingHistory[]): Known[] {
   const byKey = new Map<string, Known>()
   for (const entry of DICTIONARY) byKey.set(nameKey(entry.name), entry)
   for (const entry of history) {
-    byKey.set(entry.name_key, { name: entry.name, emoji: entry.emoji, section: entry.section })
+    byKey.set(entry.name_key, {
+      name: entry.name,
+      emoji: entry.emoji,
+      section: entry.section,
+      image_path: entry.image_path ?? null,
+    })
   }
   return [...byKey.values()]
 }
@@ -165,8 +170,8 @@ export function suggest(text: string, items: ShoppingItem[], history: ShoppingHi
   return suggestions
 }
 
-// Most often bought names that are not on the list, for the "Habituais" chips.
-export function usual(items: ShoppingItem[], history: ShoppingHistory[], limit = 6): ShoppingHistory[] {
+// Most often bought names that are not on the list, for the "Habituais" tiles.
+export function usual(items: ShoppingItem[], history: ShoppingHistory[], limit = Infinity): ShoppingHistory[] {
   const open = new Set(items.filter((item) => item.checked_at === null).map((item) => item.name_key))
   return history
     .filter((entry) => entry.times_bought > 0 && !open.has(entry.name_key))
@@ -181,9 +186,11 @@ export function usual(items: ShoppingItem[], history: ShoppingHistory[], limit =
 export type SectionGroup = { section: ShoppingSection; label: string; items: ShoppingItem[] }
 
 // Open items by store section (empty sections left out), oldest first.
-export function groupOpen(items: ShoppingItem[]): SectionGroup[] {
+// `lingering` keeps just-ticked items in their section for a moment, so the
+// list does not jump under the finger during a run of taps.
+export function groupOpen(items: ShoppingItem[], lingering: ReadonlySet<string> = new Set()): SectionGroup[] {
   const open = items
-    .filter((item) => item.checked_at === null)
+    .filter((item) => item.checked_at === null || lingering.has(item.id))
     .sort((a, b) => a.created_at.localeCompare(b.created_at))
   return SECTIONS.map(({ id, label }) => ({
     section: id,
@@ -192,12 +199,19 @@ export function groupOpen(items: ShoppingItem[]): SectionGroup[] {
   })).filter((group) => group.items.length > 0)
 }
 
-// Ticked items, most recently ticked first.
-export function cartItems(items: ShoppingItem[]): ShoppingItem[] {
+// Ticked items, most recently ticked first (minus the ones still lingering).
+export function cartItems(items: ShoppingItem[], lingering: ReadonlySet<string> = new Set()): ShoppingItem[] {
   return items
-    .filter((item) => item.checked_at !== null)
+    .filter((item) => item.checked_at !== null && !lingering.has(item.id))
     .sort((a, b) => (b.checked_at ?? '').localeCompare(a.checked_at ?? ''))
 }
 
 export const openCount = (items: ShoppingItem[]): number =>
   items.filter((item) => item.checked_at === null).length
+
+export const cartCount = (items: ShoppingItem[]): number =>
+  items.filter((item) => item.checked_at !== null).length
+
+// 0 to 1, for the progress bar ("3 de 9 no carrinho").
+export const progress = (items: ShoppingItem[]): number =>
+  items.length === 0 ? 0 : cartCount(items) / items.length

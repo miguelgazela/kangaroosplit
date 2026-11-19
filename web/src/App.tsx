@@ -7,7 +7,7 @@ import { OfflineScreen } from './components/OfflineScreen'
 import { TabBar } from './components/TabBar'
 import { ToastProvider } from './components/Toast'
 import { applyBrand } from './lib/brand'
-import { useOnline } from './lib/online'
+import { useOnline, useOfflineScreenSuppressed } from './lib/online'
 import { useCurrentMember } from './query/hooks'
 import { Activity } from './screens/Activity'
 import { Categories } from './screens/Categories'
@@ -22,6 +22,7 @@ import { PaymentsSetup } from './screens/PaymentsSetup'
 import { Recurring } from './screens/Recurring'
 import { Settings } from './screens/Settings'
 import { Shopping } from './screens/Shopping'
+import { ShoppingStore } from './screens/ShoppingStore'
 import { Stats } from './screens/Stats'
 import { YearReview } from './screens/YearReview'
 import { useSheets } from './sheets/SheetContext'
@@ -131,6 +132,7 @@ function Content() {
         </Route>
         {/* Full screen, over everything: no tab bar. */}
         <Route path="resumo/:ano" element={<YearReview />} />
+        <Route path="compras/loja" element={<ShoppingStore />} />
       </Routes>
         </SheetHost>
       </BrowserRouter>
@@ -140,10 +142,11 @@ function Content() {
 
 function App() {
   const online = useOnline()
+  const suppressed = useOfflineScreenSuppressed()
   return (
     <>
       <Content />
-      {!online && <OfflineScreen />}
+      {!online && !suppressed && <OfflineScreen />}
     </>
   )
 }

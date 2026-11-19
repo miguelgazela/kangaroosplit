@@ -22,6 +22,37 @@ export type ChangelogEntry = {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '1.12.0',
+    date: '2026-11-19',
+    changes: [
+      'Compras: o visto aparece logo ao tocar, sem esperar pela ligação. A linha toda marca e o artigo fica riscado um instante antes de passar para “No carrinho”',
+      'Os Habituais são agora uma grelha de 8 mosaicos, sem scroll para o lado. Ao tocar no campo de adicionar, abrem-se todos por cima do teclado e um toque adiciona o artigo',
+      'O campo de adicionar fica por cima da barra de separadores e há um cartão “3 de 9 no carrinho” com “Remover comprados”',
+      'Novo modo “Na loja”: lista grande e compacta, “Faltam N”, “No carrinho”, “Esqueci-me” e texto maior em “AA”. O ecrã não adormece e continua a marcar sem rede',
+      'Os artigos podem ter qualquer emoji (pesquisa em português ou o teclado) ou uma foto tua, que a Mara também vê',
+    ],
+    highlights: [
+      {
+        title: 'Marcar sem esperar',
+        text: 'O visto aparece no toque e a linha toda marca o artigo.',
+        icon: 'check',
+        tone: 'accent',
+      },
+      {
+        title: 'Modo “Na loja”',
+        text: 'Uma lista grande para o supermercado, que continua a funcionar sem rede.',
+        icon: 'cart',
+        tone: 'teal',
+      },
+      {
+        title: 'Ícones à tua maneira',
+        text: 'Escolhe qualquer emoji ou tira uma foto ao artigo, como o teu café.',
+        icon: 'camera',
+        tone: 'orange',
+      },
+    ],
+  },
+  {
     version: '1.11.0',
     date: '2026-11-12',
     changes: [

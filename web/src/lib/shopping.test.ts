@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import type { ShoppingHistory, ShoppingItem } from './database.types'
-import { cartItems, groupOpen, lookup, nameKey, parseDraft, suggest, usual } from './shopping'
+import { cartCount, cartItems, groupOpen, lookup, nameKey, parseDraft, progress, suggest, usual } from './shopping'
 
 const item = (patch: Partial<ShoppingItem>): ShoppingItem => ({
   id: 'i',
@@ -83,5 +83,54 @@ describe('grouping', () => {
     ]
     expect(groupOpen(items).map((group) => group.section)).toEqual(['frutas', 'limpeza'])
     expect(cartItems(items).map((entry) => entry.id)).toEqual(['3'])
+  })
+})
+
+describe('lingering items (ticked, still in their section)', () => {
+  const open = item({ id: 'a', created_at: '2026-10-14T10:00:00Z' })
+  const ticked = item({ id: 'b', created_at: '2026-10-14T10:01:00Z', checked_at: '2026-10-14T11:00:00Z' })
+
+  it('leaves a ticked item out of the sections and puts it in the cart', () => {
+    expect(groupOpen([open, ticked])[0].items.map((entry) => entry.id)).toEqual(['a'])
+    expect(cartItems([open, ticked]).map((entry) => entry.id)).toEqual(['b'])
+  })
+
+  it('keeps a lingering item in its section and out of the cart', () => {
+    const lingering = new Set(['b'])
+    expect(groupOpen([open, ticked], lingering)[0].items.map((entry) => entry.id)).toEqual(['a', 'b'])
+    expect(cartItems([open, ticked], lingering)).toEqual([])
+  })
+})
+
+describe('progress', () => {
+  it('is the share of items in the cart', () => {
+    const list = [item({ id: '1' }), item({ id: '2', checked_at: 'x' }), item({ id: '3', checked_at: 'x' }), item({ id: '4' })]
+    expect(cartCount(list)).toBe(2)
+    expect(progress(list)).toBe(0.5)
+  })
+  it('is 0 for an empty list', () => {
+    expect(progress([])).toBe(0)
+  })
+})
+
+describe('usual tiles', () => {
+  it('returns every candidate when there is no limit, most bought first', () => {
+    const history = [
+      past({ name_key: 'a', name: 'A', times_bought: 1 }),
+      past({ name_key: 'b', name: 'B', times_bought: 5 }),
+      past({ name_key: 'c', name: 'C', times_bought: 0 }),
+    ]
+    expect(usual([], history).map((entry) => entry.name)).toEqual(['B', 'A'])
+  })
+  it('skips what is already on the list', () => {
+    const history = [past({ name_key: 'leite', name: 'Leite' }), past({ name_key: 'pao', name: 'Pão' })]
+    expect(usual([item({ name_key: 'leite' })], history).map((entry) => entry.name)).toEqual(['Pão'])
+  })
+})
+
+describe('known names keep the photo', () => {
+  it('carries the photo of a name from the history', () => {
+    const known = lookup('cafe', [past({ name_key: 'cafe', name: 'Café', image_path: 'x.webp' })])
+    expect(known?.image_path).toBe('x.webp')
   })
 })

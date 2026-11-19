@@ -1,20 +1,17 @@
-import { useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
+import { ShoppingIcon } from '../components/ShoppingIcon'
 import { Sheet } from '../components/Sheet'
 import { useToast } from '../components/ToastContext'
 import { t } from '../i18n/pt'
 import type { Member, ShoppingItem, ShoppingSection } from '../lib/database.types'
 import { dayLabel, localDay } from '../lib/dayLabel'
 import { formatTime } from '../lib/format'
-import { OfflineError } from '../lib/online'
+import { isOnline, OfflineError } from '../lib/online'
 import { nameForms } from '../lib/people'
 import { MAX_QUANTITY, SECTIONS } from '../lib/shopping'
+import { removeShoppingImage, uploadShoppingImage } from '../lib/shoppingImage'
 import { useDeleteShoppingItem, useUpdateShoppingItem } from '../query/hooks'
-
-// What the emoji button offers; the list is short on purpose.
-const EMOJIS = [
-  '🛒', '🍌', '🍎', '🍊', '🍋', '🍇', '🍓', '🍅', '🥑', '🥕', '🥬', '🥔', '🧅', '🍞', '🥐', '🥛', '🧀', '🥚',
-  '🍗', '🥩', '🐟', '🍚', '🍝', '☕', '🍫', '🍪', '🥫', '🧊', '🍨', '💧', '🍷', '🍺', '🧽', '🧻', '🪥', '🧴',
-]
+import { ShoppingIconSheet, type IconChoice } from './ShoppingIconSheet'
 
 const adder = (item: ShoppingItem, me: Member, partner: Member): string =>
   item.added_by === me.user_id ? 'por ti' : nameForms(partner).by
@@ -38,22 +35,77 @@ export function ShoppingItemSheet({
   const [quantity, setQuantity] = useState(item.quantity)
   const [note, setNote] = useState(item.note ?? '')
   const [section, setSection] = useState<ShoppingSection>(item.section)
-  const [pickingEmoji, setPickingEmoji] = useState(false)
+  const [pickingIcon, setPickingIcon] = useState(false)
+  // The photo: kept as it is, removed, or a new one still to be uploaded.
+  const [image, setImage] = useState<{ kind: 'keep' } | { kind: 'remove' } | { kind: 'new'; blob: Blob }>({
+    kind: 'keep',
+  })
+  const preview = useMemo(() => (image.kind === 'new' ? URL.createObjectURL(image.blob) : null), [image])
+  useEffect(() => () => {
+    if (preview) URL.revokeObjectURL(preview)
+  }, [preview])
+  const [uploading, setUploading] = useState(false)
 
   const failed = (error: unknown) =>
     toast({ kind: 'error', message: error instanceof OfflineError ? t.system.offline : t.system.error })
 
   const valid = name.trim().length > 0
-  const busy = update.isPending || remove.isPending
+  const busy = update.isPending || remove.isPending || uploading
 
-  const save = () =>
+  const applyIcon = (choice: IconChoice) => {
+    setPickingIcon(false)
+    if (choice.kind === 'emoji') {
+      setEmoji(choice.emoji)
+      setImage(item.image_path ? { kind: 'remove' } : { kind: 'keep' })
+    } else if (choice.blob) {
+      setImage({ kind: 'new', blob: choice.blob })
+    } else {
+      setImage({ kind: 'keep' })
+    }
+  }
+
+  const save = async () => {
+    const patch: Parameters<typeof update.mutate>[0]['patch'] = {
+      name,
+      emoji,
+      quantity,
+      section,
+      note: note.trim() === '' ? null : note.trim(),
+    }
+    let uploaded: string | null = null
+    if (image.kind === 'new') {
+      if (!isOnline()) {
+        toast({ kind: 'error', message: t.shopping.photoOffline })
+        return
+      }
+      setUploading(true)
+      try {
+        uploaded = await uploadShoppingImage(image.blob)
+      } catch {
+        setUploading(false)
+        toast({ kind: 'error', message: t.shopping.photoUploadError })
+        return
+      }
+      patch.image_path = uploaded
+    } else if (image.kind === 'remove') {
+      patch.image_path = null
+    }
     update.mutate(
+      { id: item.id, patch },
       {
-        id: item.id,
-        patch: { name, emoji, quantity, section, note: note.trim() === '' ? null : note.trim() },
+        onSuccess: () => {
+          // The old file is no longer used by anything.
+          if (image.kind !== 'keep' && item.image_path) void removeShoppingImage(item.image_path)
+          onClose()
+        },
+        onError: (error) => {
+          if (uploaded) void removeShoppingImage(uploaded)
+          setUploading(false)
+          failed(error)
+        },
       },
-      { onSuccess: onClose, onError: failed },
     )
+  }
 
   const erase = () =>
     remove.mutate(item.id, {
@@ -78,11 +130,14 @@ export function ShoppingItemSheet({
             <button
               type="button"
               aria-label={t.shopping.changeEmoji}
-              aria-expanded={pickingEmoji}
-              onClick={() => setPickingEmoji((open) => !open)}
-              className="flex size-11 flex-none items-center justify-center rounded-xl bg-fill text-2xl"
+              onClick={() => setPickingIcon(true)}
+              className="flex-none touch-manipulation"
             >
-              {emoji}
+              {preview ? (
+                <img src={preview} alt="" className="size-11 rounded-xl object-cover" />
+              ) : (
+                <ShoppingIcon emoji={emoji} imagePath={image.kind === 'remove' ? null : item.image_path} size={44} />
+              )}
             </button>
             <input
               type="text"
@@ -93,26 +148,6 @@ export function ShoppingItemSheet({
               className="min-w-0 flex-1 bg-transparent text-body font-semibold outline-none"
             />
           </div>
-
-          {pickingEmoji && (
-            <div role="listbox" aria-label={t.shopping.emoji} className="grid grid-cols-9 gap-1 border-t-[0.5px] border-separator p-2">
-              {EMOJIS.map((candidate) => (
-                <button
-                  key={candidate}
-                  type="button"
-                  role="option"
-                  aria-selected={candidate === emoji}
-                  onClick={() => {
-                    setEmoji(candidate)
-                    setPickingEmoji(false)
-                  }}
-                  className={`flex h-10 items-center justify-center rounded-lg text-xl ${candidate === emoji ? 'bg-accent-soft' : ''}`}
-                >
-                  {candidate}
-                </button>
-              ))}
-            </div>
-          )}
 
           <div className="flex h-[52px] items-center border-t-[0.5px] border-separator pr-2 pl-4">
             <span className="flex-1 text-body">{t.shopping.quantity}</span>
@@ -186,6 +221,17 @@ export function ShoppingItemSheet({
           {t.shopping.deleteItem}
         </button>
       </div>
+      {pickingIcon && (
+        <ShoppingIconSheet
+          name={name}
+          emoji={emoji}
+          imagePath={image.kind === 'remove' ? null : image.kind === 'new' ? null : (item.image_path ?? null)}
+          partnerSubject={nameForms(partner).subject}
+          onCancel={() => setPickingIcon(false)}
+          onUse={applyIcon}
+          onError={(message) => toast({ kind: 'error', message })}
+        />
+      )}
     </Sheet>
   )
 }

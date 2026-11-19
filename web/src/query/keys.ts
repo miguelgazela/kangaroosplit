@@ -19,6 +19,7 @@ export const queryKeys = {
   merchantRules: ['merchantRules'],
   paymentToken: ['paymentToken'],
   receipt: ['receipt'],
+  shoppingImage: ['shoppingImage'],
 } as const
 
 type QueryKey = (typeof queryKeys)[keyof typeof queryKeys]

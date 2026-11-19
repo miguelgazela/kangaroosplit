@@ -24,3 +24,25 @@ function subscribe(onChange: () => void): () => void {
 export function useOnline(): boolean {
   return useSyncExternalStore(subscribe, isOnline, () => true)
 }
+
+// "Na loja" keeps working without a connection (ticks are queued), so while it
+// is open the full-screen "Sem ligação" notice steps aside and the screen
+// shows its own small warning.
+let offlineScreenSuppressed = false
+const suppressListeners = new Set<() => void>()
+
+export function suppressOfflineScreen(value: boolean): void {
+  offlineScreenSuppressed = value
+  suppressListeners.forEach((listener) => listener())
+}
+
+export function useOfflineScreenSuppressed(): boolean {
+  return useSyncExternalStore(
+    (onChange) => {
+      suppressListeners.add(onChange)
+      return () => suppressListeners.delete(onChange)
+    },
+    () => offlineScreenSuppressed,
+    () => false,
+  )
+}

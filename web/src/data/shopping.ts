@@ -14,21 +14,30 @@ export async function fetchShoppingHistory(): Promise<ShoppingHistory[]> {
 export type NewShoppingItem = {
   name: string
   emoji: string
+  // Only sent when there is a photo, so everything else keeps working before
+  // the column exists.
+  image_path?: string | null
   section: ShoppingSection
   quantity: number
 }
 
 export async function addShoppingItem(input: NewShoppingItem): Promise<void> {
+  const { image_path, ...rest } = input
   unwrap(
     await supabase
       .from('shopping_items')
-      .insert({ ...input, name: input.name.trim(), name_key: nameKey(input.name) })
+      .insert({
+        ...rest,
+        ...(image_path ? { image_path } : {}),
+        name: input.name.trim(),
+        name_key: nameKey(input.name),
+      })
       .select('id')
       .single(),
   )
 }
 
-export type ShoppingPatch = Partial<Pick<ShoppingItem, 'name' | 'emoji' | 'section' | 'quantity' | 'note'>>
+export type ShoppingPatch = Partial<Pick<ShoppingItem, 'name' | 'emoji' | 'image_path' | 'section' | 'quantity' | 'note'>>
 
 export async function updateShoppingItem(input: { id: string; patch: ShoppingPatch }): Promise<void> {
   const patch: ShoppingPatch & { name_key?: string } = { ...input.patch }
@@ -43,13 +52,15 @@ export async function setShoppingChecked(input: {
   id: string
   userId: string
   checked: boolean
+  // When it was ticked, for a change that waited for the connection.
+  at?: string
 }): Promise<void> {
   unwrap(
     await supabase
       .from('shopping_items')
       .update(
         input.checked
-          ? { checked_at: new Date().toISOString(), checked_by: input.userId }
+          ? { checked_at: input.at ?? new Date().toISOString(), checked_by: input.userId }
           : { checked_at: null, checked_by: null },
       )
       .eq('id', input.id)

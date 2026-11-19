@@ -169,6 +169,9 @@ export type ShoppingItem = {
   name: string
   name_key: string
   emoji: string
+  // Photo in the `kangaroosplit-shopping` bucket; replaces the emoji when set.
+  // Absent until migration 0012 is applied.
+  image_path?: string | null
   section: ShoppingSection
   quantity: number
   note: string | null
@@ -182,6 +185,7 @@ export type ShoppingHistory = {
   name_key: string
   name: string
   emoji: string
+  image_path?: string | null
   section: ShoppingSection
   times_bought: number
   last_bought_at: string | null
