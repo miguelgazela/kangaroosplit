@@ -35,11 +35,13 @@ import {
   addShoppingItem,
   clearShoppingCart,
   deleteAllShoppingItems,
+  deleteShoppingHistory,
   deleteShoppingItem,
   fetchShoppingHistory,
   fetchShoppingItems,
   restoreShoppingItems,
   setShoppingChecked,
+  updateShoppingHistory,
   updateShoppingItem,
 } from '../data/shopping'
 import {
@@ -436,6 +438,14 @@ export function useFlushShoppingQueue() {
       document.removeEventListener('visibilitychange', onVisible)
     }
   }, [queryClient])
+}
+
+export function useUpdateShoppingHistory() {
+  return useWrite(updateShoppingHistory, ['shopping_history'])
+}
+
+export function useDeleteShoppingHistory() {
+  return useWrite(deleteShoppingHistory, ['shopping_history'])
 }
 
 export function useDeleteShoppingItem() {

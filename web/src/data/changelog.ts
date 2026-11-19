@@ -22,6 +22,13 @@ export type ChangelogEntry = {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '1.12.1',
+    date: '2026-11-19',
+    changes: [
+      'Compras: mantém premido um habitual para mudar o nome, o ícone (emoji ou foto) e a secção, ou para o remover dos habituais',
+    ],
+  },
+  {
     version: '1.12.0',
     date: '2026-11-19',
     changes: [

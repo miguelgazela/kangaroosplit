@@ -592,6 +592,12 @@ export const t = {
     photoOffline: 'Precisas de ligação para guardar uma foto.',
     cropArea: 'Enquadramento da foto',
 
+    // Editing a "Habitual"
+    editUsual: 'Editar habitual',
+    removeUsual: 'Remover dos habituais',
+    usualRemoved: (name: string) => `${name} saiu dos habituais. Volta se o comprares outra vez.`,
+    usualExists: 'Já existe um habitual com esse nome.',
+
     // "Na loja"
     store: {
       finish: 'Terminar',

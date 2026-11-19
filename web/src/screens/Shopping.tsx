@@ -12,7 +12,7 @@ import { useToast } from '../components/ToastContext'
 import { useShoppingAdder } from '../components/useShoppingAdder'
 import { UsualTiles } from '../components/UsualTiles'
 import { t } from '../i18n/pt'
-import type { ShoppingItem } from '../lib/database.types'
+import type { ShoppingHistory, ShoppingItem } from '../lib/database.types'
 import { nameForms } from '../lib/people'
 import { OfflineError } from '../lib/online'
 import { cartCount, cartItems, groupOpen, openCount, progress, usual } from '../lib/shopping'
@@ -27,6 +27,7 @@ import {
   useShoppingItems,
 } from '../query/hooks'
 import { ShoppingItemSheet } from '../sheets/ShoppingItemSheet'
+import { UsualEditSheet } from '../sheets/UsualEditSheet'
 import { useSheets } from '../sheets/SheetContext'
 
 // Tiles on the list screen; "Ver todos" opens the rest.
@@ -48,6 +49,7 @@ export function Shopping() {
   const [editing, setEditing] = useState<string | null>(null)
   const [menu, setMenu] = useState(false)
   const [allUsual, setAllUsual] = useState(false)
+  const [editingUsual, setEditingUsual] = useState<ShoppingHistory | null>(null)
   const [confirmDeleteAll, setConfirmDeleteAll] = useState(false)
   // Shown after "Remover comprados" until dismissed or used.
   const [donePrompt, setDonePrompt] = useState(false)
@@ -241,7 +243,7 @@ export function Shopping() {
                 </button>
               )}
             </h2>
-            <UsualTiles entries={tiles.slice(0, TILE_ROWS)} added={adder.just} onAdd={adder.addUsual} />
+            <UsualTiles entries={tiles.slice(0, TILE_ROWS)} added={adder.just} onAdd={adder.addUsual} onEdit={setEditingUsual} />
           </section>
         )}
 
@@ -311,9 +313,18 @@ export function Shopping() {
         {allUsual && (
           <Sheet title={t.shopping.usualTitle} cancelLabel={t.shopping.close} onCancel={() => setAllUsual(false)}>
             <div className="overflow-y-auto px-4 pt-1 pb-[calc(env(safe-area-inset-bottom)+34px)]">
-              <UsualTiles entries={tiles} added={adder.just} onAdd={adder.addUsual} />
+              <UsualTiles entries={tiles} added={adder.just} onAdd={adder.addUsual} onEdit={setEditingUsual} />
             </div>
           </Sheet>
+        )}
+
+        {editingUsual && (
+          <UsualEditSheet
+            key={editingUsual.name_key}
+            entry={editingUsual}
+            partnerSubject={nameForms(partner).subject}
+            onClose={() => setEditingUsual(null)}
+          />
         )}
 
         {menu && (

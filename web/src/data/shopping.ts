@@ -88,3 +88,20 @@ export async function restoreShoppingItems(items: ShoppingItem[]): Promise<void>
 export async function deleteAllShoppingItems(): Promise<void> {
   unwrap(await supabase.from('shopping_items').delete().not('id', 'is', null).select('id'))
 }
+
+export type HistoryPatch = Partial<Pick<ShoppingHistory, 'name' | 'emoji' | 'image_path' | 'section'>>
+
+// Edits a "Habitual". The name is part of the key, so renaming moves the row.
+export async function updateShoppingHistory(input: { nameKey: string; patch: HistoryPatch }): Promise<void> {
+  const patch: HistoryPatch & { name_key?: string } = { ...input.patch }
+  if (patch.name !== undefined) {
+    patch.name = patch.name.trim()
+    patch.name_key = nameKey(patch.name)
+  }
+  unwrap(await supabase.from('shopping_history').update(patch).eq('name_key', input.nameKey).select('name_key').single())
+}
+
+// Takes a name out of "Habituais". Buying it again brings it back.
+export async function deleteShoppingHistory(nameKeyValue: string): Promise<void> {
+  unwrap(await supabase.from('shopping_history').delete().eq('name_key', nameKeyValue).select('name_key'))
+}
