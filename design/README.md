@@ -39,7 +39,7 @@ Several files are small wrappers that show a variant of a main file. The variant
 | Shared | `TabBar.dc.html` (tab bar + raised "+"), `Componentes.dc.html` (component sheet), `Icone.dc.html` (app icon) | |
 | Mascot | `Guru.dc.html` (the mascot component, prop `pose` = `normal` / `ola` / `vazio` / `compras` / `sucesso` / `dormir`, prop `crop` for a head-only avatar; every pose is a 3D image from `assets/guru/`; `crop` is still vector), `Mascote.dc.html` (mascot sheet) | |
 | Comments and reactions | `DespesaDetalhe.dc.html` (expense detail sheet: summary, reactions, comment thread) | `DetalheVazio` (`variant="vazia"`), `DetalheAcoes` (long-press on own comment), `ReacaoRapida` (long-press on a list row), `DetalheEscuro` (`dark`). `Lista` and `Atividade` also changed. |
-| Shopping list (Compras tab) | `Compras.dc.html` (interactive; prop `variant`) | `ComprasEscrever` (typing, suggestions), `ComprasArtigo` (edit item sheet), `ComprasVazia` (empty), `ComprasOffline` (no signal). `Navegacao` shows the chosen tab layout. |
+| Shopping list (Compras tab) | `Compras.dc.html` (interactive; prop `variant`) | `ComprasEscrever` (typing, suggestions), `ComprasArtigo` (edit item sheet), `ComprasVazia` (empty), `ComprasOffline` (no signal); v2 and Na loja live in the canvas boards (see "Compras v2" below). `Navegacao` shows the chosen tab layout. |
 | Automatic payments (Apple Pay) | `Pagamentos.dc.html` (inbox "Por classificar", interactive; props `variant`, `dark`) | `PagamentosVazio` (`variant="vazia"`), `PagamentosEscuro` (`dark`), `InicioPagamentos` (`Main` with `pagamentos`), `PagamentosAviso` (push on the lock screen), `PagamentosAtivar` (Definições → set-up, full scrolled page). `Definicoes` has the new row. |
 
 ## Decisions (these override DESIGN_BRIEF.md)
@@ -155,22 +155,32 @@ This overrides the tab table in DESIGN_BRIEF.md.
 
 One shared shopping list for both people. It does **not** create expenses.
 
+### Compras v2 (nov 2026): overrides the points below where they differ
+Reference: the canvas boards `ComprasV2*` and `Loja*` (artifact "KangarooSplit UI"). Built in `web/src/screens/Shopping.tsx`.
+- **Header:** "Compras" title, an accent pill "Na loja" (opens the in-store mode) and the ⋯ menu.
+- **Progress card** under the header: "3 de 9 no carrinho", a 6 px bar in `--ks-pos`, and the button "Remover comprados" (disabled with nothing ticked). It replaces the old floating bar; the "Compras feitas?" prompt now appears inline under the card after "Remover comprados".
+- **Add field is fixed at the bottom**, above the tab bar (not at the top), 52 px high, with a round accent button. A soft fade sits under it. While focused it moves above the keyboard.
+- **Habituais:** a 4 × 2 grid of tiles, 76 px high (icon, short name, a small "+" badge), the 8 most bought items that are not on the list, plus "Ver todos (n)" (a sheet with the whole grid). No horizontal scrolling anywhere on the screen. One tap adds the item and the tile shows a tick for about a second.
+- **Focusing the add field** dims the list and opens a panel above the keyboard: the whole Habituais grid (vertical scroll) while the field is empty, suggestions while typing. Tapping a tile adds the item, shows a tick and keeps the keyboard open. Tapping outside closes it.
+- **Ticking is optimistic.** The tick shows on touch (cache updated first, rolled back with an error toast if the write fails). The whole row ticks (short vibration where available); the icon, or pressing and holding the row, opens the item. The ticked row stays in place, struck through and tinted `--ks-pos-soft`, for 1 s, then moves to "No carrinho". With reduced motion the colour change has no transition (the 1 s pause stays so the list does not jump).
+- **Icon picker** ("Ícone" sheet, opened from the item sheet): segmented "Emoji" / "Foto". Emoji: search in pt-PT (no accents needed), suggestions for the item's name, a grid by group, and any emoji typed with the keyboard is taken at once. Foto: "Tirar foto" or "Escolher da galeria", drag and zoom inside a square frame, saved as a 256 px square (WebP, JPEG where the browser cannot encode WebP). The photo replaces the emoji everywhere (list, tiles, suggestions, Na loja) and is remembered in the history, so the name comes back with it. Stored in the private bucket `kangaroosplit-shopping` (migration `0012_shopping_photos.sql`, column `image_path` on `shopping_items` and `shopping_history`).
+
 ### Adding (must be fast)
-- The add field is always at the top: "Adicionar artigo…". Enter adds the item, clears the field and **keeps the keyboard open** for the next item (`enterkeyhint="done"` is fine; do not blur on submit).
+- The add field is fixed at the bottom (see Compras v2): "Adicionar artigo…". Enter adds the item, clears the field and **keeps the keyboard open** for the next item (`enterkeyhint="done"` is fine; do not blur on submit).
 - **Quantity from text:** a leading number sets the quantity: "2 leite" → Leite ×2 (also "2x leite").
 - **Automatic emoji and section:** match the text against a small pt-PT dictionary (case- and accent-insensitive) to set the emoji and the section. No match → 🛒 and "Outros". The user can change both in the edit sheet. Store the user's corrections so the same name gets the same section next time.
 - **Suggestions while typing** (max 3 + "Adicionar “…”"): from the dictionary and from previously bought items. If the item is already on the list, the suggestion shows "Já na lista (n)".
 - **No duplicates:** adding an item that is already on the list (not ticked) increases its quantity and shows "Leite já estava na lista. Agora são 4."
-- **"Habituais" chips** under the field when it is empty: the most often bought items that are not on the list. One tap adds the item.
+- **"Habituais"**: the most often bought items that are not on the list, as tiles (see Compras v2). One tap adds the item.
 
 ### Sections
 Fixed order (store route): Frutas e legumes · Padaria · Laticínios e ovos · Talho e peixe · Mercearia · Congelados · Bebidas · Limpeza · Higiene · Outros. Show only sections with items, with a count.
 
 ### Managing
-- **Tick** (44 × 44 checkbox, green when ticked): the item moves to "No carrinho" at the bottom, struck through and faded. Tap again to untick.
-- **Tap the item name:** edit sheet (`ComprasArtigo`) with emoji, name, quantity stepper, note, section chips, "Adicionado pela Mara · ontem, 19:02" and "Apagar artigo".
+- **Tick** (the whole row; the circle turns green): the item stays struck through for 1 s, then moves to "No carrinho" at the bottom. Tap again to untick.
+- **Tap the icon, or press and hold the row:** edit sheet (`ComprasArtigo`) with emoji, name, quantity stepper, note, section chips, "Adicionado pela Mara · ontem, 19:02" and "Apagar artigo".
 - Items added by the other person show a small avatar ("Ma") on the right.
-- **Bottom bar** when the cart has items: "3 no carrinho" + **"Limpar carrinho"**. It removes the ticked items and shows the toast with "Anular".
+- **"Remover comprados"** (progress card, or ⋯ → "Limpar carrinho"): removes the ticked items and shows a line with "Anular".
 - Menu (⋯) in the header: "Limpar carrinho", "Apagar tudo" (with destructive confirmation).
 - Changes from the other person appear live.
 
@@ -178,12 +188,24 @@ Fixed order (store route): Frutas e legumes · Padaria · Laticínios e ovos · 
 Guru (`compras`, behind an empty cart), "A lista está vazia.", "Escreve acima ou toca num artigo habitual.", plus the "Habituais" chips.
 
 ### Offline — different from the rest of the app
-Shops often have no signal, so **this tab stays fully usable offline**. Queue the changes locally and send them when the connection returns. Show the banner "Sem rede. Podes continuar. As alterações são enviadas quando voltares a ter ligação." and a small "a enviar" marker on changed items. If both people changed the same item, the last change wins.
+Shops often have no signal. **Only ticking and unticking works offline, and only in "Na loja"** (the rest of the app shows the full-screen "Sem ligação" notice): the change shows at once, waits in a small queue (`web/src/lib/shoppingQueue.ts`, saved in `localStorage`) and is sent when the connection returns. Adding, editing and photos need a connection. Original wish, not built outside Na loja: show the banner "Sem rede. Podes continuar. As alterações são enviadas quando voltares a ter ligação." and a small "a enviar" marker on changed items. If both people changed the same item, the last change wins.
 
 ### Suggested data (adapt to DATA_MODEL.md)
 - `shopping_items`: `id`, `name`, `emoji`, `section`, `quantity` (≥ 1), `note` null, `added_by`, `created_at`, `checked_at` null, `checked_by` null. "Limpar carrinho" deletes the rows where `checked_at` is not null.
 - `shopping_history`: `name` (normalized), `emoji`, `section`, `times_bought`, `last_bought_at`, for "Habituais" and for remembered sections.
 - Activity: shopping list changes do **not** create activity entries or push notifications.
+
+### Na loja (nov 2026): route `/compras/loja`
+Reference: canvas boards `Loja`, `LojaMarcado`, `LojaCarrinho`, `LojaFim`, `LojaSemRede`, `LojaEscuro`, `LojaNotas`. Built in `web/src/screens/ShoppingStore.tsx`. Full screen: no tab bar, no Habituais, no add field. Never use the words "por apanhar".
+- **Header:** "Terminar" (left, back to Compras), "🛒 Na loja" (centre), "AA" (right).
+- **Title** "Faltam N" (34 px bold), a progress bar in `--ks-pos` and "n no carrinho" on its right.
+- **Rows:** 52 px (68 px with large text), icon 36 px, name 18 px (22 px), quantity in a pill ("×6", accent soft), the note on one line (or "pedido pela Mara" when she added it and there is no note), a 30 px circle on the right. The whole row ticks. Sections as small uppercase labels ("FRUTAS E LEGUMES · 3").
+- **Ticking:** the row stays in place for 1 s (struck through, `--ks-pos-soft`), the toast "X no carrinho · Anular" shows, then it leaves the list. Changes from the other person appear live without reordering.
+- **Bottom bar:** "✓ No carrinho (n)" opens a sheet where one tap returns an item to the list; "+ Esqueci-me" opens the add field over the list (suggestions only) without leaving the mode.
+- **"AA":** bigger text and rows. The choice is kept (`localStorage` `ks.storeLargeText`).
+- **Screen Wake Lock** while the mode is open; released on leaving or when the app is hidden.
+- **No connection:** the app-wide offline notice steps aside; an amber banner "Sem rede. Continua a marcar; envia quando houver ligação." shows, with the number of changes waiting.
+- **Finished** (nothing left to buy): title "Já está tudo!", Guru `sucesso`, "Tens os N artigos no carrinho.", the button "Limpar carrinho e terminar" and the link "Terminar sem limpar".
 
 ## Statistics — calendar
 
