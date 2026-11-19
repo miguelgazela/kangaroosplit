@@ -22,6 +22,13 @@ export type ChangelogEntry = {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '1.12.3',
+    date: '2026-11-19',
+    changes: [
+      'Nova despesa: corrigido o toque nas sugestões da descrição, que desapareciam antes de conseguires escolher uma',
+    ],
+  },
+  {
     version: '1.12.2',
     date: '2026-11-19',
     changes: [

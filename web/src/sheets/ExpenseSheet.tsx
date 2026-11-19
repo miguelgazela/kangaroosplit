@@ -1,5 +1,5 @@
 import { useQueryClient } from '@tanstack/react-query'
-import { useEffect, useMemo, useState, type ChangeEvent } from 'react'
+import { useEffect, useMemo, useRef, useState, type ChangeEvent } from 'react'
 import { ActionSheet } from '../components/ActionSheet'
 import { Avatar } from '../components/Avatar'
 import { DateRow } from '../components/DateRow'
@@ -211,6 +211,10 @@ function ExpenseForm({
   // Until the category is chosen by hand, it follows what the description usually gets.
   const [categoryTouched, setCategoryTouched] = useState(template !== undefined)
   const [describing, setDescribing] = useState(false)
+  // iOS blurs the field before the tap on a suggestion arrives, which would
+  // remove the suggestions under the finger. Hiding waits a moment instead.
+  const blurTimer = useRef<number | undefined>(undefined)
+  useEffect(() => () => window.clearTimeout(blurTimer.current), [])
   const [confirmingDelete, setConfirmingDelete] = useState(false)
 
   // Receipt photo. `photo` is what this edit does to it: undefined leaves the
@@ -261,6 +265,7 @@ function ExpenseForm({
   const isSelectable = (id: string) => selectableCategories.some((candidate) => candidate.id === id)
 
   const changeDescription = (value: string) => {
+    window.clearTimeout(blurTimer.current)
     setDescription(value)
     // Picking a suggestion hides them; typing on brings them back.
     setDescribing(true)
@@ -269,6 +274,7 @@ function ExpenseForm({
   }
 
   const pickSuggestion = (suggestion: Suggestion) => {
+    window.clearTimeout(blurTimer.current)
     setDescription(suggestion.description)
     if (!categoryTouched && isSelectable(suggestion.categoryId)) setCategoryId(suggestion.categoryId)
     setDescribing(false)
@@ -488,8 +494,13 @@ function ExpenseForm({
               maxLength={80}
               enterKeyHint="done"
               onChange={(event) => changeDescription(event.target.value)}
-              onFocus={() => setDescribing(true)}
-              onBlur={() => setDescribing(false)}
+              onFocus={() => {
+                window.clearTimeout(blurTimer.current)
+                setDescribing(true)
+              }}
+              onBlur={() => {
+                blurTimer.current = window.setTimeout(() => setDescribing(false), 250)
+              }}
               className="min-w-0 flex-1 bg-transparent text-body text-text outline-none placeholder:text-text-2"
             />
           </div>
@@ -509,6 +520,7 @@ function ExpenseForm({
                     aria-selected={false}
                     // Keeps the field focused, so the tap is not lost to the blur.
                     onPointerDown={(event) => event.preventDefault()}
+                    onMouseDown={(event) => event.preventDefault()}
                     onClick={() => pickSuggestion(suggestion)}
                     className="h-9 flex-none rounded-full bg-fill px-3 text-subhead whitespace-nowrap"
                   >
