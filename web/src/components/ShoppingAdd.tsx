@@ -13,7 +13,7 @@ import {
   suggest,
   usual,
 } from '../lib/shopping'
-import { useKeyboardInset } from '../lib/useKeyboardInset'
+import { useVisualViewport } from '../lib/useVisualViewport'
 
 const SECTION_LABELS = Object.fromEntries(SECTIONS.map(({ id, label }) => [id, label])) as Record<
   ShoppingSection,
@@ -46,7 +46,7 @@ export function ShoppingAdd({
 }) {
   const [draft, setDraft] = useState('')
   const [focused, setFocused] = useState(false)
-  const inset = useKeyboardInset()
+  const viewport = useVisualViewport(focused)
   const { addKnown, addUsual, just, setHold } = adder
 
   useEffect(() => setHold(focused), [focused, setHold])
@@ -67,12 +67,17 @@ export function ShoppingAdd({
     addKnown(known, quantity)
   }
 
-  const bottom =
-    inset > 0
-      ? `${inset + 8}px`
-      : aboveTabBar
-        ? 'calc(env(safe-area-inset-bottom) + 74px)'
-        : 'calc(env(safe-area-inset-bottom) + 12px)'
+  // Focused: the whole visible area (over the keyboard), field at the bottom.
+  // Not focused: a bar above the tab bar (or at the bottom of a full-screen view).
+  const rootStyle: React.CSSProperties =
+    focused && viewport
+      ? { top: viewport.top, height: viewport.height, paddingBottom: 8 }
+      : {
+          bottom: aboveTabBar
+            ? 'calc(env(safe-area-inset-bottom) + 74px)'
+            : 'calc(env(safe-area-inset-bottom) + 12px)',
+        }
+  const panelMax = viewport ? viewport.height - 52 - 16 - 56 : 360
 
   return (
     <>
@@ -84,19 +89,9 @@ export function ShoppingAdd({
           style={{ bottom: 'calc(env(safe-area-inset-bottom) + 49px)' }}
         />
       )}
-      {focused && (
-        <div
-          aria-hidden="true"
-          className="fixed inset-0 z-20 bg-black/45"
-          style={{ animation: 'ks-fade-in 0.15s ease-out' }}
-          // Keep the focus until the tap is over, then let go.
-          onMouseDown={(event) => event.preventDefault()}
-          onClick={() => (document.activeElement as HTMLElement | null)?.blur()}
-        />
-      )}
       <div
-        className="fixed inset-x-0 z-30 flex flex-col gap-2 px-3"
-        style={{ bottom }}
+        className="fixed inset-x-0 z-30 flex flex-col justify-end gap-2 px-3"
+        style={rootStyle}
         onBlur={(event) => {
           // Moving between the field and the panel is not leaving.
           if (!event.currentTarget.contains(event.relatedTarget)) {
@@ -105,10 +100,20 @@ export function ShoppingAdd({
           }
         }}
       >
+        {focused && (
+          <div
+            aria-hidden="true"
+            className="absolute inset-0 bg-black/45"
+            style={{ animation: 'ks-fade-in 0.15s ease-out' }}
+            // Keep the focus until the tap is over, then let go.
+            onMouseDown={(event) => event.preventDefault()}
+            onClick={() => (document.activeElement as HTMLElement | null)?.blur()}
+          />
+        )}
         {panel && (
           <div
-            className="flex flex-col overflow-hidden rounded-[20px] bg-surface shadow-[0_10px_30px_rgba(17,17,20,0.18)]"
-            style={{ maxHeight: `calc(100dvh - ${inset}px - 190px)`, animation: 'ks-toast-in 0.15s ease-out' }}
+            className="relative flex flex-col overflow-hidden rounded-[20px] bg-surface shadow-[0_10px_30px_rgba(17,17,20,0.18)]"
+            style={{ maxHeight: panelMax, animation: 'ks-toast-in 0.15s ease-out' }}
           >
             {hasDraft ? (
               <div role="listbox" aria-label={t.shopping.suggestions} className="overflow-y-auto overscroll-contain">
@@ -167,7 +172,7 @@ export function ShoppingAdd({
           </div>
         )}
 
-        <form onSubmit={submit} className="flex-none">
+        <form onSubmit={submit} className="relative flex-none">
           <label
             className={`flex h-[52px] items-center gap-2.5 rounded-2xl bg-surface pr-1.5 pl-3 shadow-[0_6px_20px_rgba(17,17,20,0.14)] ${focused || extraFocusRing ? 'ring-2 ring-accent' : ''}`}
           >

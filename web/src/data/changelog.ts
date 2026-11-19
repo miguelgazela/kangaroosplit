@@ -22,6 +22,13 @@ export type ChangelogEntry = {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '1.12.2',
+    date: '2026-11-19',
+    changes: [
+      'Compras: o campo de adicionar e os habituais ficam agora colados ao teclado, sem a barra de separadores pelo meio',
+    ],
+  },
+  {
     version: '1.12.1',
     date: '2026-11-19',
     changes: [
